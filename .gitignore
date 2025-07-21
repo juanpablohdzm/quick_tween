@@ -1,0 +1,64 @@
+# Ignore binary files and intermediate build data
+Binaries/
+Build/
+Intermediate/
+DerivedDataCache/
+
+# Ignore compiled code output
+*.obj
+*.pdb
+*.exe
+*.dll
+*.lib
+*.app
+*.dSYM
+*.so
+*.a
+
+# Ignore VS Code settings (optional)
+.vscode/
+
+# Ignore Visual Studio/IDE files
+.vs/
+*.sln
+*.suo
+*.opensdf
+*.VC.db
+*.VC.opendb
+
+# Ignore Unreal-specific user and local config
+Saved/
+*.xcodeproj
+*.xcworkspace
+*.idea/
+*.DS_Store
+*.swp
+*.sdf
+*.ipch
+*.aps
+*.ncb
+
+# Ignore backup files
+*~
+*.bak
+
+# Ignore auto-generated plugin descriptor cache
+*.uplugin.content
+
+# Ignore user-generated log and debug files
+*.log
+
+# Ignore plugin temp files
+*.tmp
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore Linux build leftovers
+Makefile
+CMakeLists.txt
+cmake-build-*/
+
+# Optional: If you are developing inside a test project and want to exclude the entire project:
+# /YourTestProject/
+
