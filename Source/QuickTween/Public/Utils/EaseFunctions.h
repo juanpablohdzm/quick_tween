@@ -2,11 +2,58 @@
 
 #include "CoreMinimal.h"
 
-template <typename T, typename = typename TEnableIf<TIsArithmetic<T>::Value>::Type>
+template <typename T>
 class QUICKTWEEN_API FEaseFunctions
 {
 public:
 
+    static T Ease(T Start, T End, float Alpha, EEaseType EaseType)
+    {
+        switch (EaseType)
+        {
+            case EEaseType::Linear:
+                return FMath::Lerp(Start, End, Alpha);
+            case EEaseType::InSine:
+                return EaseInSine(Start, End, Alpha);
+            case EEaseType::OutSine:
+                return EaseOutSine(Start, End, Alpha);
+            case EEaseType::InOutSine:
+                return EaseInOutSine(Start, End, Alpha);
+            case EEaseType::InQuad:
+                return EaseInQuad(Start, End, Alpha);
+            case EEaseType::OutQuad:
+                return EaseOutQuad(Start, End, Alpha);
+            case EEaseType::InOutQuad:
+                return EaseInOutQuad(Start, End, Alpha);
+            case EEaseType::InCubic:
+                return EaseInCubic(Start, End, Alpha);
+            case EEaseType::OutCubic:
+                return EaseOutCubic(Start, End, Alpha);
+            case EEaseType::InOutCubic:
+                return EaseInOutCubic(Start, End, Alpha);
+            case EEaseType::InQuart:
+                return EaseInQuart(Start, End, Alpha);
+            case EEaseType::OutQuart:
+                return EaseOutQuart(Start, End, Alpha);
+            case EEaseType::InOutQuart:
+                return EaseInOutQuart(Start, End, Alpha);
+            case EEaseType::InQuint:
+                return EaseInQuint(Start, End, Alpha);
+            case EEaseType::OutQuint:
+                return EaseOutQuint(Start, End, Alpha);
+            case EEaseType::InOutQuint:
+                return EaseInOutQuint(Start, End, Alpha);
+            case EEaseType::InExpo:
+                return EaseInExpo(Start, End, Alpha);
+            case EEaseType::OutExpo:
+                return EaseOutExpo(Start, End, Alpha);
+            case EEaseType::InOutExpo:
+                return EaseInOutExpo(Start, End, Alpha);
+            default: // Circ
+                return FMath::Lerp(Start, End,
+                                   1.f - FMath::Sqrt(1.f - FMath::Pow(Alpha * 2.f - 1.f, 2.f)));
+        }
+    }
     // ---------------------
     // Sine
     // ---------------------
