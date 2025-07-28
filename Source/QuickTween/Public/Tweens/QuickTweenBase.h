@@ -10,7 +10,6 @@ enum class ELoopType : uint8
 	None UMETA(DisplayName = "None"),
 	Restart UMETA(DisplayName = "Restart"),
 	PingPong UMETA(DisplayName = "Ping Pong"),
-	Reverse UMETA(DisplayName = "Reverse"),
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStart, UQuickTweenBase*, Tween);
@@ -32,43 +31,34 @@ public:
 		UCurveFloat* easeCurve,
 		int32 loops,
 		ELoopType loopType,
-		const FString& tweenTag = FString())
-	{
-		  Duration = duration;
-		  TimeScale = timeScale;
-		  EaseType = easeType;
-		  EaseCurve = easeCurve;
-		  Loops = loops;
-		  LoopType = loopType;
-		  TweenTag = tweenTag;
-	}
+		const FString& tweenTag = FString());
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual void Update(float deltaTime) {}
+	virtual void Update(float deltaTime);
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual UQuickTweenBase* Play() { return this;}
+	virtual UQuickTweenBase* Play();
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual UQuickTweenBase* Pause() { return this; }
+	virtual UQuickTweenBase* Pause();
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual UQuickTweenBase* Stop() { return this; }
+	virtual UQuickTweenBase* Stop();
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual UQuickTweenBase* Reverse() { return this; }
+	virtual UQuickTweenBase* Reverse();
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual UQuickTweenBase* Restart() { return this; }
+	virtual UQuickTweenBase* Restart();
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual UQuickTweenBase* Complete() { return this; }
+	virtual UQuickTweenBase* Complete();
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual UQuickTweenBase* Reset() { return this; }
+	virtual UQuickTweenBase* Reset();
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual void Kill() { }
+	virtual void Kill();
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] float GetDuration() const { return Duration;}
@@ -86,17 +76,17 @@ public:
 	UQuickTweenBase* SetTimeScale(float timeScale) { TimeScale = timeScale; return this; }
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] bool IsIsPlaying() const { return bIsPlaying; }
+	[[nodiscard]] bool GetIsPlaying() const { return bIsPlaying; }
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	UQuickTweenBase* SetIsPlaying(bool isPlaying) { bIsPlaying = isPlaying; return this; }
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] bool IsIsCompleted() const { return bIsCompleted; }
+	[[nodiscard]] bool GetIsCompleted() const { return bIsCompleted; }
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	UQuickTweenBase* SetIsCompleted(bool isCompleted) { bIsCompleted = isCompleted; return this; }
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] bool IsIsBackwards() const { return bIsBackwards; }
+	[[nodiscard]] bool GetIsBackwards() const { return bIsBackwards; }
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	UQuickTweenBase* SetIsBackwards(bool isBackwards) { bIsBackwards = isBackwards; return this; }
 
@@ -153,6 +143,7 @@ private:
 	UPROPERTY(Transient)
 	UCurveFloat* EaseCurve = nullptr;
 
+	int32 CurrentLoop = 0;
 	int32 Loops = 0;
 	ELoopType LoopType = ELoopType::None;
 

@@ -4,14 +4,6 @@
 #include "TweenBuilders/QuickTweenBuilderCameraComponent.h"
 
 
-QuickTweenBuilderCameraComponent::QuickTweenBuilderCameraComponent()
-{
-}
-
-QuickTweenBuilderCameraComponent::~QuickTweenBuilderCameraComponent()
-{
-}
-
 FQuickTweenBuilderCameraComponent& FQuickTweenBuilderCameraComponent::AspectRatioTo(float To, float Duration,
 	FString&& TweenTag)
 {

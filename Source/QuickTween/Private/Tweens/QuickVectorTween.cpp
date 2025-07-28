@@ -7,21 +7,14 @@
 
 void UQuickVectorTween::Update(float deltaTime)
 {
-	ElapsedTime += deltaTime * GetTimeScale();
+	float progress = GetIsBackwards() ? 1.0f - ElapsedTime / GetDuration() : ElapsedTime / GetDuration();
+	if (UCurveFloat* curve = GetEaseCurve())
+	{
+		progress = curve->GetFloatValue(progress);
+	}
+	const FVector value = FEaseFunctions<FVector>::Ease(From, To, progress, GetEaseType());
+	SetterFunction(value);
+	SetProgress(progress);
 
-	if (ElapsedTime >= GetDuration())
-	{
-		SetterFunction(To);
-		SetIsCompleted(true);
-	}
-	else
-	{
-		float progress = ElapsedTime / GetDuration();
-		if (UCurveFloat* curve = GetEaseCurve())
-		{
-			progress = curve->GetFloatValue(progress);
-		}
-		const FVector value = FEaseFunctions<FVector>::Ease(From, To, progress, GetEaseType());
-		SetterFunction(value);
-	}
+	UQuickTweenBase::Update(deltaTime);
 }
