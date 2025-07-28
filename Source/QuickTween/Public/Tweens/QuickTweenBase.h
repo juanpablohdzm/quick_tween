@@ -22,7 +22,6 @@ class QUICKTWEEN_API UQuickTweenBase : public UObject
 {
 	GENERATED_BODY()
 public:
-	UQuickTweenBase(const FObjectInitializer& objectInitializer) : Super(objectInitializer);
 
 	void Initialize(
 		float duration,

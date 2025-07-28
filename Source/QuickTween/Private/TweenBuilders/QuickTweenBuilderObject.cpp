@@ -7,7 +7,7 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenBuilder, Log, All);
 
-FQuickTweenBuilderObject& FQuickTweenBuilderObject::SetLoops(int32 Loops)
+UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetLoopsBase(int32 Loops)
 {
 	if (UQuickTweenBase* LastTween = Tweens.Last())
 	{
@@ -17,10 +17,10 @@ FQuickTweenBuilderObject& FQuickTweenBuilderObject::SetLoops(int32 Loops)
 	{
 		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tween to set loops on."));
 	}
-	return *this;
+	return this;
 }
 
-FQuickTweenBuilderObject& FQuickTweenBuilderObject::SetLoopType(ELoopType LoopType)
+UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetLoopTypeBase(ELoopType LoopType)
 {
 	if (UQuickTweenBase* LastTween = Tweens.Last())
 	{
@@ -30,10 +30,10 @@ FQuickTweenBuilderObject& FQuickTweenBuilderObject::SetLoopType(ELoopType LoopTy
 	{
 		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tween to set loops on."));
 	}
-	return *this;
+	return this;
 }
 
-FQuickTweenBuilderObject& FQuickTweenBuilderObject::SetEaseType(EEaseType EaseType)
+UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetEaseTypeBase(EEaseType EaseType)
 {
 	if (UQuickTweenBase* LastTween = Tweens.Last())
 	{
@@ -43,10 +43,10 @@ FQuickTweenBuilderObject& FQuickTweenBuilderObject::SetEaseType(EEaseType EaseTy
 	{
 		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tween to set loops on."));
 	}
-	return *this;
+	return this;
 }
 
-FQuickTweenBuilderObject& FQuickTweenBuilderObject::SetEaseCurve(UCurveFloat* EaseCurve)
+UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetEaseCurveBase(UCurveFloat* EaseCurve)
 {
 	if (UQuickTweenBase* LastTween = Tweens.Last())
 	{
@@ -56,10 +56,10 @@ FQuickTweenBuilderObject& FQuickTweenBuilderObject::SetEaseCurve(UCurveFloat* Ea
 	{
 		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tween to set loops on."));
 	}
-	return *this;
+	return this;
 }
 
-FQuickTweenBuilderObject& FQuickTweenBuilderObject::SetTimeScale(float TimeScale)
+UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetTimeScaleBase(float TimeScale)
 {
 	if (UQuickTweenBase* LastTween = Tweens.Last())
 	{
@@ -69,10 +69,10 @@ FQuickTweenBuilderObject& FQuickTweenBuilderObject::SetTimeScale(float TimeScale
 	{
 		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tween to set loops on."));
 	}
-	return *this;
+	return this;
 }
 
-FQuickTweenBuilderObject& FQuickTweenBuilderObject::SetIsBackwards(bool bIsBackwards)
+UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetIsBackwardsBase(bool bIsBackwards)
 {
 	if (UQuickTweenBase* LastTween = Tweens.Last())
 	{
@@ -82,5 +82,5 @@ FQuickTweenBuilderObject& FQuickTweenBuilderObject::SetIsBackwards(bool bIsBackw
 	{
 		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tween to set loops on."));
 	}
-	return *this;
+	return this;
 }

@@ -10,52 +10,48 @@
 /**
  * 
  */
-USTRUCT(BlueprintType)
-struct FQuickTweenBuilderCameraComponent : public FQuickTweenBuilderObject
+UCLASS(BlueprintType)
+class UQuickTweenBuilderCameraComponent : public UQuickTweenBuilderObject
 {
 	GENERATED_BODY()
 public:
-	FQuickTweenBuilderCameraComponent(UCameraComponent* InTarget) : FQuickTweenBuilderObject(InTarget) {}
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderCameraComponent& AspectRatioTo(float To, float Duration, FString&& TweenTag = "");
+	UQuickTweenBuilderCameraComponent* AspectRatioTo(float To, float Duration, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderCameraComponent& FarClipPlaneTo(float To, float Duration, FString&& TweenTag = "");
+	UQuickTweenBuilderCameraComponent* FarClipPlaneTo(float To, float Duration, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderCameraComponent& NearClipPlaneTo(float To, float Duration, FString&& TweenTag = "");
+	UQuickTweenBuilderCameraComponent* NearClipPlaneTo(float To, float Duration, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderSceneComponent& MoveTo(FVector To, float Duration, FString&& TweenTag = "");
+	UQuickTweenBuilderCameraComponent* MoveTo(FVector To, float Duration, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderSceneComponent& RotateTo(FRotator To, float Duration, bool bUseShortestPath = true, FString&& TweenTag = "");
+	UQuickTweenBuilderCameraComponent* RotateTo(FRotator To, float Duration, bool bUseShortestPath = true, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderSceneComponent& RotateTo(FQuat To, float Duration, bool bUseShortestPath = true, FString&& TweenTag = "");
+	UQuickTweenBuilderCameraComponent* RotateToQuat(FQuat To, float Duration, bool bUseShortestPath = true, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderSceneComponent& LookAt(FVector Forward, float Duration, bool bUseShortestPath = true, FVector Up = FVector::UpVector, FString&& TweenTag = "");
+	UQuickTweenBuilderCameraComponent* LookAt(FVector Forward, float Duration, bool bUseShortestPath = true, FVector Up = FVector::UpVector, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderSceneComponent& SetLoops(int32 Loops) override;
+	UQuickTweenBuilderCameraComponent* SetLoops(int32 Loops);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderSceneComponent& SetLoopType(ELoopType LoopType) override;
+	UQuickTweenBuilderCameraComponent* SetLoopType(ELoopType LoopType);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderSceneComponent& SetEaseType(EEaseType EaseType) override;
+	UQuickTweenBuilderCameraComponent* SetEaseType(EEaseType EaseType);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderSceneComponent& SetEaseCurve(UCurveFloat* EaseCurve) override;
+	UQuickTweenBuilderCameraComponent* SetEaseCurve(UCurveFloat* EaseCurve);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderSceneComponent& SetTimeScale(float TimeScale) override;
+	UQuickTweenBuilderCameraComponent* SetTimeScale(float TimeScale);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderSceneComponent& SetIsBackwards(bool bIsBackwards) override;
-
-	UFUNCTION(BlueprintCallable)
-	virtual UQuickTweenBase* Build() override;
+	UQuickTweenBuilderCameraComponent* SetIsBackwards(bool bIsBackwards);
 };

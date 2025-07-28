@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "TweenBuilders/QuickTweenBuilderCameraComponent.h"
+#include "TweenBuilders/QuickTweenBuilderMaterial.h"
 #include "QuickTweenLibrary.generated.h"
 
 /**
@@ -15,12 +17,12 @@ class QUICKTWEEN_API UQuickTweenLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, ForceInline, meta = (Keywords = "Tween"), Category = "QuickTween")
-	static FQuickTweenBuilderSceneComponent CreateQuickTweenBuilder(USceneComponent* InTarget);
-	UFUNCTION(BlueprintCallable, ForceInline, meta = (Keywords = "Tween"), Category = "QuickTween")
-	static FQuickTweenBuilderCameraComponent CreateQuickTweenBuilder(UCameraComponent* InTarget);
-	UFUNCTION(BlueprintCallable, ForceInline, meta = (Keywords = "Tween"), Category = "QuickTween")
-	static FQuickTweenBuilderMaterial CreateQuickTweenBuilder(UMaterialInstanceDynamic* InTarget);
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "QuickTween")
+	static UQuickTweenBuilderSceneComponent* CreateQuickTweenBuilderSceneComp(USceneComponent* InTarget);
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "QuickTween")
+	static UQuickTweenBuilderCameraComponent* CreateQuickTweenBuilderCameraComp(UCameraComponent* InTarget);
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "QuickTween")
+	static UQuickTweenBuilderMaterial* CreateQuickTweenBuilderMaterial(UMaterialInstanceDynamic* InTarget);
 
 
 };

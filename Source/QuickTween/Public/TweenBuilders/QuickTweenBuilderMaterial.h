@@ -6,43 +6,40 @@
 #include "TweenBuilders/QuickTweenBuilderObject.h"
 #include "QuickTweenBuilderMaterial.generated.h"
 
+enum class EEaseType : uint8;
 /**
  * 
  */
-USTRUCT(BlueprintType)
-struct FQuickTweenBuilderMaterial : public FQuickTweenBuilderObject
+UCLASS(BlueprintType)
+class UQuickTweenBuilderMaterial : public UQuickTweenBuilderObject
 {
 	GENERATED_BODY()
 public:
-	FQuickTweenBuilderMaterial(UMaterialInstanceDynamic* InTarget) : FQuickTweenBuilderObject(InTarget) {}
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderMaterial& VectorParameterTo(FName ParameterName, FVector To, float Duration, FString&& TweenTag = "");
+	UQuickTweenBuilderMaterial* VectorParameterTo(FName ParameterName, FVector To, float Duration, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderMaterial& ScalarParameterTo(FName ParameterName, float To, float Duration, FString&& TweenTag = "");
+	UQuickTweenBuilderMaterial* ScalarParameterTo(FName ParameterName, float To, float Duration, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderMaterial& ColorParameterTo(FName ParameterName, FColor To, float Duration, FString&& TweenTag = "");
+	UQuickTweenBuilderMaterial* ColorParameterTo(FName ParameterName, FColor To, float Duration, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderMaterial& SetLoops(int32 Loops);
+	UQuickTweenBuilderMaterial* SetLoops(int32 Loops);
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderMaterial& SetLoopType(ELoopType LoopType);
+	UQuickTweenBuilderMaterial* SetLoopType(ELoopType LoopType);
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderMaterial& SetEaseType(EEaseType EaseType);
+	UQuickTweenBuilderMaterial* SetEaseType(EEaseType EaseType);
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderMaterial& SetEaseCurve(UCurveFloat* EaseCurve);
+	UQuickTweenBuilderMaterial* SetEaseCurve(UCurveFloat* EaseCurve);
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderMaterial& SetTimeScale(float TimeScale);
+	UQuickTweenBuilderMaterial* SetTimeScale(float TimeScale);
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderMaterial& SetIsBackwards(bool bIsBackwards);
-
-	UFUNCTION(BlueprintCallable)
-	virtual UQuickTweenBase* Build() override;
+	UQuickTweenBuilderMaterial* SetIsBackwards(bool bIsBackwards);
 };

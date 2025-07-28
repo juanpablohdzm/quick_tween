@@ -14,7 +14,6 @@ class QUICKTWEEN_API UQuickVectorTween : public UQuickTweenBase
 {
 	GENERATED_BODY()
 public:
-	UQuickVectorTween(const FObjectInitializer& objectInitializer) : Super(objectInitializer){}
 
 	void Initialize(
 		FVector from,
@@ -42,7 +41,6 @@ public:
 
 	}
 
-	UFUNCTION(BlueprintCallable)
 	virtual void Update(float deltaTime) override;
 
 private:

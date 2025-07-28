@@ -5,35 +5,37 @@
 #include "CoreMinimal.h"
 #include "QuickTweenBuilderObject.generated.h"
 
+enum class EEaseType : uint8;
+enum class ELoopType : uint8;
 class UQuickTweenBase;
 /**
  * 
  */
-USTRUCT()
-struct FQuickTweenBuilderObject
+UCLASS()
+class UQuickTweenBuilderObject : public UObject
 {
 	GENERATED_BODY()
 public:
-	FQuickTweenBuilderObject(UObject* InObject) : Target(InObject) {}
-	virtual ~FQuickTweenBuilderObject() = default;
+	virtual ~UQuickTweenBuilderObject() = default;
+	virtual void Initialize(UObject* InObject) { Target = InObject; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderObject& SetLoops(int32 Loops);
+	UQuickTweenBuilderObject* SetLoopsBase(int32 Loops);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderObject& SetLoopType(ELoopType LoopType);
+	UQuickTweenBuilderObject* SetLoopTypeBase(ELoopType LoopType);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderObject& SetEaseType(EEaseType EaseType);
+	UQuickTweenBuilderObject* SetEaseTypeBase(EEaseType EaseType);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderObject& SetEaseCurve(UCurveFloat* EaseCurve);
+	UQuickTweenBuilderObject* SetEaseCurveBase(UCurveFloat* EaseCurve);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderObject& SetTimeScale(float TimeScale);
+	UQuickTweenBuilderObject* SetTimeScaleBase(float TimeScale);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderObject& SetIsBackwards(bool bIsBackwards);
+	UQuickTweenBuilderObject* SetIsBackwardsBase(bool bIsBackwards);
 
 	UFUNCTION(BlueprintCallable)
 	virtual UQuickTweenBase* Build() { return nullptr; }

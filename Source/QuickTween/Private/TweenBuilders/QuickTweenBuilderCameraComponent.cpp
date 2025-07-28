@@ -4,72 +4,80 @@
 #include "TweenBuilders/QuickTweenBuilderCameraComponent.h"
 
 
-FQuickTweenBuilderCameraComponent& FQuickTweenBuilderCameraComponent::AspectRatioTo(float To, float Duration,
-	FString&& TweenTag)
+UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::AspectRatioTo(float To, float Duration,
+	const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderCameraComponent& FQuickTweenBuilderCameraComponent::FarClipPlaneTo(float To, float Duration,
-	FString&& TweenTag)
+UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::FarClipPlaneTo(float To, float Duration,
+	const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderCameraComponent& FQuickTweenBuilderCameraComponent::NearClipPlaneTo(float To, float Duration,
-	FString&& TweenTag)
+UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::NearClipPlaneTo(float To, float Duration,
+	const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderCameraComponent::MoveTo(FVector To, float Duration,
-	FString&& TweenTag)
+UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::MoveTo(FVector To, float Duration,
+	const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderCameraComponent::RotateTo(FRotator To, float Duration,
-	bool bUseShortestPath, FString&& TweenTag)
+UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::RotateTo(FRotator To, float Duration,
+	bool bUseShortestPath, const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderCameraComponent::RotateTo(FQuat To, float Duration,
-	bool bUseShortestPath, FString&& TweenTag)
+UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::RotateToQuat(FQuat To, float Duration,
+	bool bUseShortestPath, const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderCameraComponent::LookAt(FVector Forward, float Duration,
-	bool bUseShortestPath, FVector Up, FString&& TweenTag)
+UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::LookAt(FVector Forward, float Duration,
+	bool bUseShortestPath, FVector Up, const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderCameraComponent::SetLoops(int32 Loops)
+UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::SetLoops(int32 Loops)
 {
-	return static_cast<FQuickTweenBuilderSceneComponent&>(FQuickTweenBuilderObject::SetLoops(Loops));
+	UQuickTweenBuilderObject::SetLoopsBase(Loops);
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderCameraComponent::SetLoopType(ELoopType LoopType)
+UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::SetLoopType(ELoopType LoopType)
 {
-	return static_cast<FQuickTweenBuilderSceneComponent&>(FQuickTweenBuilderObject::SetLoopType(LoopType));
+	UQuickTweenBuilderObject::SetLoopTypeBase(LoopType);
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderCameraComponent::SetEaseType(EEaseType EaseType)
+UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::SetEaseType(EEaseType EaseType)
 {
-	return static_cast<FQuickTweenBuilderSceneComponent&>(FQuickTweenBuilderObject::SetEaseType(EaseType));
+	UQuickTweenBuilderObject::SetEaseTypeBase(EaseType);
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderCameraComponent::SetEaseCurve(UCurveFloat* EaseCurve)
+UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::SetEaseCurve(UCurveFloat* EaseCurve)
 {
-	return static_cast<FQuickTweenBuilderSceneComponent&>(FQuickTweenBuilderObject::SetEaseCurve(EaseCurve));
+	UQuickTweenBuilderObject::SetEaseCurveBase(EaseCurve);
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderCameraComponent::SetTimeScale(float TimeScale)
+UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::SetTimeScale(float TimeScale)
 {
-	return static_cast<FQuickTweenBuilderSceneComponent&>(FQuickTweenBuilderObject::SetTimeScale(TimeScale));
+	UQuickTweenBuilderObject::SetTimeScaleBase(TimeScale);
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderCameraComponent::SetIsBackwards(bool bIsBackwards)
+UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::SetIsBackwards(bool bIsBackwards)
 {
-	return static_cast<FQuickTweenBuilderSceneComponent&>(FQuickTweenBuilderObject::SetIsBackwards(bIsBackwards));
-}
-
-UQuickTweenBase* FQuickTweenBuilderCameraComponent::Build()
-{
-	return FQuickTweenBuilderObject::Build();
+	UQuickTweenBuilderObject::SetIsBackwardsBase(bIsBackwards);
+	return this;
 }

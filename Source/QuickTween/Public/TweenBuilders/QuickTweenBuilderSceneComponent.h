@@ -11,46 +11,42 @@ enum class ELoopType : uint8;
 /**
  * 
  */
-USTRUCT(BlueprintType)
-struct FQuickTweenBuilderSceneComponent : public FQuickTweenBuilderObject
+UCLASS(BlueprintType)
+class UQuickTweenBuilderSceneComponent : public UQuickTweenBuilderObject
 {
 	GENERATED_BODY()
 public:
-	FQuickTweenBuilderSceneComponent(USceneComponent* InTarget) : FQuickTweenBuilderObject(InTarget) {}
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderSceneComponent& MoveTo(FVector To, float Duration, FString&& TweenTag = "");
+	UQuickTweenBuilderSceneComponent* MoveTo(FVector To, float Duration, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderSceneComponent& RotateTo(FRotator To, float Duration, bool bUseShortestPath = true, FString&& TweenTag = "");
+	UQuickTweenBuilderSceneComponent* RotateTo(FRotator To, float Duration, bool bUseShortestPath = true, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderSceneComponent& RotateTo(FQuat To, float Duration, bool bUseShortestPath = true, FString&& TweenTag = "");
+	UQuickTweenBuilderSceneComponent* RotateToQuat(FQuat To, float Duration, bool bUseShortestPath = true, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderSceneComponent& ScaleTo(FVector To, float Duration, FString&& TweenTag = "");
+	UQuickTweenBuilderSceneComponent* ScaleTo(FVector To, float Duration, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	FQuickTweenBuilderSceneComponent& LookAt(FVector Forward, float Duration, bool bUseShortestPath = true, FVector Up = FVector::UpVector, FString&& TweenTag = "");
+	UQuickTweenBuilderSceneComponent* LookAt(FVector Forward, float Duration, bool bUseShortestPath = true, FVector Up = FVector::UpVector, const FString& TweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderSceneComponent& SetLoops(int32 Loops) override;
+	UQuickTweenBuilderSceneComponent* SetLoops(int32 Loops);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderSceneComponent& SetLoopType(ELoopType LoopType) override;
+	UQuickTweenBuilderSceneComponent* SetLoopType(ELoopType LoopType);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderSceneComponent& SetEaseType(EEaseType EaseType) override;
+	UQuickTweenBuilderSceneComponent* SetEaseType(EEaseType EaseType);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderSceneComponent& SetEaseCurve(UCurveFloat* EaseCurve) override;
+	UQuickTweenBuilderSceneComponent* SetEaseCurve(UCurveFloat* EaseCurve);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderSceneComponent& SetTimeScale(float TimeScale) override;
+	UQuickTweenBuilderSceneComponent* SetTimeScale(float TimeScale);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FQuickTweenBuilderSceneComponent& SetIsBackwards(bool bIsBackwards) override;
-
-	UFUNCTION(BlueprintCallable)
-	virtual UQuickTweenBase* Build() override;
+	UQuickTweenBuilderSceneComponent* SetIsBackwards(bool bIsBackwards);
 };

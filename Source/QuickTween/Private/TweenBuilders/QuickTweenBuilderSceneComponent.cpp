@@ -4,62 +4,68 @@
 #include "TweenBuilders/QuickTweenBuilderSceneComponent.h"
 
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderSceneComponent::MoveTo(FVector To, float Duration,
-	FString&& TweenTag)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::MoveTo(FVector To, float Duration,
+                                                                           const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderSceneComponent::RotateTo(FRotator To, float Duration,
-                                                                             bool bUseShortestPath, FString&& TweenTag)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateTo(FRotator To, float Duration,
+                                                                             bool bUseShortestPath, const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderSceneComponent::RotateTo(FQuat To, float Duration,
-	bool bUseShortestPath, FString&& TweenTag)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateToQuat(FQuat To, float Duration,
+	bool bUseShortestPath, const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderSceneComponent::ScaleTo(FVector To, float Duration,
-	FString&& TweenTag)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::ScaleTo(FVector To, float Duration,
+	const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderSceneComponent::LookAt(FVector Forward, float Duration,
-	bool bUseShortestPath, FVector Up, FString&& TweenTag)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::LookAt(FVector Forward, float Duration,
+	bool bUseShortestPath, FVector Up, const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderSceneComponent::SetLoops(int32 Loops)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetLoops(int32 Loops)
 {
-	return static_cast<FQuickTweenBuilderSceneComponent&>(FQuickTweenBuilderObject::SetLoops(Loops));
+	UQuickTweenBuilderObject::SetLoopsBase(Loops);
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderSceneComponent::SetLoopType(ELoopType LoopType)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetLoopType(ELoopType LoopType)
 {
-	return static_cast<FQuickTweenBuilderSceneComponent&>(FQuickTweenBuilderObject::SetLoopType(LoopType));
+	UQuickTweenBuilderObject::SetLoopTypeBase(LoopType);
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderSceneComponent::SetEaseType(EEaseType EaseType)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetEaseType(EEaseType EaseType)
 {
-	return static_cast<FQuickTweenBuilderSceneComponent&>(FQuickTweenBuilderObject::SetEaseType(EaseType));
+	UQuickTweenBuilderObject::SetEaseTypeBase(EaseType);
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderSceneComponent::SetEaseCurve(UCurveFloat* EaseCurve)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetEaseCurve(UCurveFloat* EaseCurve)
 {
-	return static_cast<FQuickTweenBuilderSceneComponent&>(FQuickTweenBuilderObject::SetEaseCurve(EaseCurve));
+	UQuickTweenBuilderObject::SetEaseCurveBase(EaseCurve);
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderSceneComponent::SetTimeScale(float TimeScale)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetTimeScale(float TimeScale)
 {
-	return static_cast<FQuickTweenBuilderSceneComponent&>(FQuickTweenBuilderObject::SetTimeScale(TimeScale));
+	UQuickTweenBuilderObject::SetTimeScaleBase(TimeScale);
+	return this;
 }
 
-FQuickTweenBuilderSceneComponent& FQuickTweenBuilderSceneComponent::SetIsBackwards(bool bIsBackwards)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetIsBackwards(bool bIsBackwards)
 {
-	return static_cast<FQuickTweenBuilderSceneComponent&>(FQuickTweenBuilderObject::SetIsBackwards(bIsBackwards));
-}
-
-UQuickTweenBase* FQuickTweenBuilderSceneComponent::Build()
-{
-	return FQuickTweenBuilderObject::Build();
+	UQuickTweenBuilderObject::SetIsBackwardsBase(bIsBackwards);
+	return this;
 }

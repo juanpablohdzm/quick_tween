@@ -4,52 +4,56 @@
 #include "TweenBuilders/QuickTweenBuilderMaterial.h"
 
 
-FQuickTweenBuilderMaterial& FQuickTweenBuilderMaterial::VectorParameterTo(FName ParameterName, FVector To,
-	float Duration, FString&& TweenTag)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::VectorParameterTo(FName ParameterName, FVector To,
+                                                                          float Duration, const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderMaterial& FQuickTweenBuilderMaterial::ScalarParameterTo(FName ParameterName, float To, float Duration,
-	FString&& TweenTag)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::ScalarParameterTo(FName ParameterName, float To, float Duration,
+	const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderMaterial& FQuickTweenBuilderMaterial::ColorParameterTo(FName ParameterName, FColor To, float Duration,
-	FString&& TweenTag)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::ColorParameterTo(FName ParameterName, FColor To, float Duration,
+	const FString& TweenTag)
 {
+	return this;
 }
 
-FQuickTweenBuilderMaterial& FQuickTweenBuilderMaterial::SetLoops(int32 Loops)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetLoops(int32 Loops)
 {
-	return static_cast<FQuickTweenBuilderMaterial&>(FQuickTweenBuilderObject::SetLoops(Loops));
+	UQuickTweenBuilderObject::SetLoopsBase(Loops);
+	return this;
 }
 
-FQuickTweenBuilderMaterial& FQuickTweenBuilderMaterial::SetLoopType(ELoopType LoopType)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetLoopType(ELoopType LoopType)
 {
-	return static_cast<FQuickTweenBuilderMaterial&>(FQuickTweenBuilderObject::SetLoopType(LoopType));
+	UQuickTweenBuilderObject::SetLoopTypeBase(LoopType);
+	return this;
 }
 
-FQuickTweenBuilderMaterial& FQuickTweenBuilderMaterial::SetEaseType(EEaseType EaseType)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetEaseType(EEaseType EaseType)
 {
-	return static_cast<FQuickTweenBuilderMaterial&>(FQuickTweenBuilderObject::SetEaseType(EaseType));
+	UQuickTweenBuilderObject::SetEaseTypeBase(EaseType);
+	return this;
 }
 
-FQuickTweenBuilderMaterial& FQuickTweenBuilderMaterial::SetEaseCurve(UCurveFloat* EaseCurve)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetEaseCurve(UCurveFloat* EaseCurve)
 {
-	return static_cast<FQuickTweenBuilderMaterial&>(FQuickTweenBuilderObject::SetEaseCurve(EaseCurve));
+	UQuickTweenBuilderObject::SetEaseCurveBase(EaseCurve);
+	return this;
 }
 
-FQuickTweenBuilderMaterial& FQuickTweenBuilderMaterial::SetTimeScale(float TimeScale)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetTimeScale(float TimeScale)
 {
-	return static_cast<FQuickTweenBuilderMaterial&>(FQuickTweenBuilderObject::SetTimeScale(TimeScale));
+	UQuickTweenBuilderObject::SetTimeScaleBase(TimeScale);
+	return this;
 }
 
-FQuickTweenBuilderMaterial& FQuickTweenBuilderMaterial::SetIsBackwards(bool bIsBackwards)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetIsBackwards(bool bIsBackwards)
 {
-	return static_cast<FQuickTweenBuilderMaterial&>(FQuickTweenBuilderObject::SetIsBackwards(bIsBackwards));
-}
-
-UQuickTweenBase* FQuickTweenBuilderMaterial::Build()
-{
-	return FQuickTweenBuilderObject::Build();
+	UQuickTweenBuilderObject::SetIsBackwardsBase(bIsBackwards);
+	return this;
 }
