@@ -5,8 +5,11 @@
 
 #include "Utils/EaseFunctions.h"
 
-void UQuickVectorTween::Update(float deltaTime)
+bool UQuickVectorTween::Update(float deltaTime)
 {
+
+	if (!UQuickTweenBase::Update(deltaTime)) return false;
+
 	float progress = GetIsBackwards() ? 1.0f - ElapsedTime / GetDuration() : ElapsedTime / GetDuration();
 	if (UCurveFloat* curve = GetEaseCurve())
 	{
@@ -16,5 +19,11 @@ void UQuickVectorTween::Update(float deltaTime)
 	SetterFunction(value);
 	SetProgress(progress);
 
-	UQuickTweenBase::Update(deltaTime);
+	return true;
+}
+
+UQuickTweenBase* UQuickVectorTween::Complete()
+{
+	SetterFunction(To);
+	return Super::Complete();
 }

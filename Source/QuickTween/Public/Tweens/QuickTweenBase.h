@@ -7,7 +7,6 @@
 UENUM(BlueprintType)
 enum class ELoopType : uint8
 {
-	None UMETA(DisplayName = "None"),
 	Restart UMETA(DisplayName = "Restart"),
 	PingPong UMETA(DisplayName = "Ping Pong"),
 };
@@ -16,6 +15,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStart, UQuickTweenBase*, Tween);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdate, UQuickTweenBase*, Tween, float, Progress);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnComplete, UQuickTweenBase*, Tween);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilled, UQuickTweenBase*, Tween);
+
+#define INFINITE_LOOPS -1
 
 UCLASS(Blueprintable, BlueprintType, Abstract)
 class QUICKTWEEN_API UQuickTweenBase : public UObject
@@ -33,7 +34,7 @@ public:
 		const FString& tweenTag = FString());
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual void Update(float deltaTime);
+	virtual bool Update(float deltaTime);
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	virtual UQuickTweenBase* Play();
@@ -144,7 +145,7 @@ private:
 
 	int32 CurrentLoop = 0;
 	int32 Loops = 0;
-	ELoopType LoopType = ELoopType::None;
+	ELoopType LoopType = ELoopType::Restart;
 
 	FString TweenTag;
 };

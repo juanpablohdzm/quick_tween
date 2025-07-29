@@ -19,8 +19,10 @@ void UQuickTweenBase::Initialize(
 	TweenTag = tweenTag;
 }
 
-void UQuickTweenBase::Update(float deltaTime)
+bool UQuickTweenBase::Update(float deltaTime)
 {
+	if (GetIsCompleted() || !GetIsPlaying()) return false;
+
 	ElapsedTime += deltaTime * GetTimeScale();
 
 	if (OnUpdate.IsBound())
@@ -30,10 +32,10 @@ void UQuickTweenBase::Update(float deltaTime)
 
 	if (ElapsedTime >= GetDuration())
 	{
-		if (LoopType == ELoopType::None || CurrentLoop >= Loops - 1)
+		if (Loops != INFINITE_LOOPS && CurrentLoop >= Loops - 1)
 		{
 			Complete();
-			return;
+			return false;
 		}
 
 		switch (LoopType)
@@ -49,6 +51,7 @@ void UQuickTweenBase::Update(float deltaTime)
 		}
 		CurrentLoop++;
 	}
+	return true;
 }
 
 UQuickTweenBase* UQuickTweenBase::Play()
@@ -107,7 +110,7 @@ UQuickTweenBase* UQuickTweenBase::Reset()
 	EaseType = EEaseType::Linear;
 	EaseCurve = nullptr;
 	Loops = 0;
-	LoopType = ELoopType::None;
+	LoopType = ELoopType::Restart;
 	CurrentLoop = 0;
 	return this;
 }

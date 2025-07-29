@@ -16,15 +16,15 @@ class QUICKTWEEN_API UQuickVectorTween : public UQuickTweenBase
 public:
 
 	void Initialize(
-		FVector from,
-		FVector to,
-		TFunction<void(FVector)> setterFunction,
+		const FVector& from,
+		const FVector& to,
+		TFunction<void(const FVector&)> setterFunction,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
-		ELoopType loopType = ELoopType::None,
+		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = FString())
 	{
 		From = from;
@@ -41,10 +41,11 @@ public:
 
 	}
 
-	virtual void Update(float deltaTime) override;
+	virtual bool Update(float deltaTime) override;
+	virtual UQuickTweenBase* Complete() override;
 
 private:
 	FVector From;
 	FVector To;
-	TFunction<void(FVector)> SetterFunction;
+	TFunction<void(const FVector&)> SetterFunction;
 };
