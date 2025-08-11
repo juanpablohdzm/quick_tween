@@ -116,6 +116,10 @@ public:
 	UQuickTweenBase* SetTweenTag(const FString& tag) { TweenTag = tag; return this; }
 
 protected:
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetCurrentLoop() const { return CurrentLoop; }
+
 	UPROPERTY(BlueprintAssignable)
 	FOnStart OnStart;
 
@@ -143,7 +147,7 @@ private:
 	UPROPERTY(Transient)
 	UCurveFloat* EaseCurve = nullptr;
 
-	int32 CurrentLoop = 0;
+	int32 CurrentLoop = 1;
 	int32 Loops = 0;
 	ELoopType LoopType = ELoopType::Restart;
 

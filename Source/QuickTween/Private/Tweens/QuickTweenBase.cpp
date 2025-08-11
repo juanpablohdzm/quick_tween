@@ -30,9 +30,9 @@ bool UQuickTweenBase::Update(float deltaTime)
 		OnUpdate.Broadcast(this, Progress);
 	}
 
-	if (ElapsedTime >= GetDuration())
+	if (ElapsedTime >= (GetDuration() * GetCurrentLoop()))
 	{
-		if (Loops != INFINITE_LOOPS && CurrentLoop >= Loops - 1)
+		if (Loops != INFINITE_LOOPS && CurrentLoop >= Loops)
 		{
 			Complete();
 			return false;
@@ -41,7 +41,7 @@ bool UQuickTweenBase::Update(float deltaTime)
 		switch (LoopType)
 		{
 		case ELoopType::Restart:
-			Restart();
+			// Nothing to do here, just continue to the next loop
 			break;
 		case ELoopType::PingPong:
 			Reverse();
@@ -71,7 +71,7 @@ UQuickTweenBase* UQuickTweenBase::Stop()
 	bIsPlaying = false;
 	bIsCompleted = true;
 	Restart();
-	CurrentLoop = 0;
+	CurrentLoop = 1;
 	return this;
 }
 
@@ -111,7 +111,7 @@ UQuickTweenBase* UQuickTweenBase::Reset()
 	EaseCurve = nullptr;
 	Loops = 0;
 	LoopType = ELoopType::Restart;
-	CurrentLoop = 0;
+	CurrentLoop = 1;
 	return this;
 }
 

@@ -10,7 +10,8 @@ bool UQuickVectorTween::Update(float deltaTime)
 
 	if (!UQuickTweenBase::Update(deltaTime)) return false;
 
-	float progress = GetIsBackwards() ? 1.0f - ElapsedTime / GetDuration() : ElapsedTime / GetDuration();
+	const float currentLoopElapsedTime = FMath::Fmod(ElapsedTime, GetDuration());
+	float progress = GetIsBackwards() ? 1.0f - (currentLoopElapsedTime / GetDuration()) : currentLoopElapsedTime / GetDuration();
 	if (UCurveFloat* curve = GetEaseCurve())
 	{
 		progress = curve->GetFloatValue(progress);
@@ -24,6 +25,10 @@ bool UQuickVectorTween::Update(float deltaTime)
 
 UQuickTweenBase* UQuickVectorTween::Complete()
 {
-	SetterFunction(To);
+	bool useFrom = false;
+	if (GetLoopType() == ELoopType::PingPong) {
+	    useFrom = (GetLoops() % 2 == 0);
+	}
+	SetterFunction(useFrom ? From : To);
 	return Super::Complete();
 }
