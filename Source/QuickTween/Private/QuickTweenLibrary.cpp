@@ -8,23 +8,23 @@
 #include "TweenBuilders/QuickTweenBuilderSceneComponent.h"
 
 
-UQuickTweenBuilderSceneComponent* UQuickTweenLibrary::CreateQuickTweenBuilderSceneComp(USceneComponent* InTarget)
+UQuickTweenBuilderSceneComponent* UQuickTweenLibrary::CreateQuickTweenBuilderSceneComp(USceneComponent* inTarget)
 {
 	UQuickTweenBuilderSceneComponent* builder = NewObject<UQuickTweenBuilderSceneComponent>();
-	builder->Initialize(InTarget);
+	builder->Initialize(inTarget);
 	return builder;
 }
 
-UQuickTweenBuilderCameraComponent* UQuickTweenLibrary::CreateQuickTweenBuilderCameraComp(UCameraComponent* InTarget)
+UQuickTweenBuilderCameraComponent* UQuickTweenLibrary::CreateQuickTweenBuilderCameraComp(UCameraComponent* inTarget)
 {
 	UQuickTweenBuilderCameraComponent* builder = NewObject<UQuickTweenBuilderCameraComponent>();
-	builder->Initialize(InTarget);
+	builder->Initialize(inTarget);
 	return builder;
 }
 
-UQuickTweenBuilderMaterial* UQuickTweenLibrary::CreateQuickTweenBuilderMaterial(UMaterialInstanceDynamic* InTarget)
+UQuickTweenBuilderMaterial* UQuickTweenLibrary::CreateQuickTweenBuilderMaterial(UMaterialInstanceDynamic* inTarget)
 {
 	UQuickTweenBuilderMaterial* builder = NewObject<UQuickTweenBuilderMaterial>();
-	builder->Initialize(InTarget);
+	builder->Initialize(inTarget);
 	return builder;
 }

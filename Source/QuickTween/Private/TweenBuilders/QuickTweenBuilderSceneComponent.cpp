@@ -3,64 +3,70 @@
 
 #include "TweenBuilders/QuickTweenBuilderSceneComponent.h"
 
+#include "TweenBuilders/QuickTweenBuilderObject.h"
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::MoveTo(FVector To, float Duration,
-                                                                           const FString& TweenTag)
+
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::MoveTo(FVector to, float duration,
+                                                                           const FString& tweenTag)
+{
+	if (bIsAppend)
+	{
+
+	}
+	return this;
+}
+
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateTo(FRotator to, float duration,
+                                                                             bool bUseShortestPath, const FString& tweenTag)
 {
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateTo(FRotator To, float Duration,
-                                                                             bool bUseShortestPath, const FString& TweenTag)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateToQuat(FQuat to, float duration,
+	bool bUseShortestPath, const FString& tweenTag)
 {
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateToQuat(FQuat To, float Duration,
-	bool bUseShortestPath, const FString& TweenTag)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::ScaleTo(FVector to, float duration,
+	const FString& tweenTag)
 {
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::ScaleTo(FVector To, float Duration,
-	const FString& TweenTag)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::LookAt(FVector forward, float duration,
+	bool bUseShortestPath, FVector up, const FString& tweenTag)
 {
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::LookAt(FVector Forward, float Duration,
-	bool bUseShortestPath, FVector Up, const FString& TweenTag)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetLoops(int32 loops)
 {
+	UQuickTweenBuilderObject::SetLoopsBase(loops);
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetLoops(int32 Loops)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetLoopType(ELoopType loopType)
 {
-	UQuickTweenBuilderObject::SetLoopsBase(Loops);
+	UQuickTweenBuilderObject::SetLoopTypeBase(loopType);
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetLoopType(ELoopType LoopType)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetEaseType(EEaseType easeType)
 {
-	UQuickTweenBuilderObject::SetLoopTypeBase(LoopType);
+	UQuickTweenBuilderObject::SetEaseTypeBase(easeType);
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetEaseType(EEaseType EaseType)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetEaseCurve(UCurveFloat* easeCurve)
 {
-	UQuickTweenBuilderObject::SetEaseTypeBase(EaseType);
+	UQuickTweenBuilderObject::SetEaseCurveBase(easeCurve);
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetEaseCurve(UCurveFloat* EaseCurve)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetTimeScale(float timeScale)
 {
-	UQuickTweenBuilderObject::SetEaseCurveBase(EaseCurve);
-	return this;
-}
-
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetTimeScale(float TimeScale)
-{
-	UQuickTweenBuilderObject::SetTimeScaleBase(TimeScale);
+	UQuickTweenBuilderObject::SetTimeScaleBase(timeScale);
 	return this;
 }
 

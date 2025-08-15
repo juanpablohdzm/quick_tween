@@ -17,28 +17,28 @@ class UQuickTweenBuilderMaterial : public UQuickTweenBuilderObject
 public:
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderMaterial* VectorParameterTo(FName ParameterName, FVector To, float Duration, const FString& TweenTag = "");
+	UQuickTweenBuilderMaterial* VectorParameterTo(FName parameterName, FVector To, float duration, const FString& tweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderMaterial* ScalarParameterTo(FName ParameterName, float To, float Duration, const FString& TweenTag = "");
+	UQuickTweenBuilderMaterial* ScalarParameterTo(FName parameterName, float To, float duration, const FString& tweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderMaterial* ColorParameterTo(FName ParameterName, FColor To, float Duration, const FString& TweenTag = "");
+	UQuickTweenBuilderMaterial* ColorParameterTo(FName parameterName, FColor To, float duration, const FString& tweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderMaterial* SetLoops(int32 Loops);
+	UQuickTweenBuilderMaterial* SetLoops(int32 loops);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderMaterial* SetLoopType(ELoopType LoopType);
+	UQuickTweenBuilderMaterial* SetLoopType(ELoopType loopType);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderMaterial* SetEaseType(EEaseType EaseType);
+	UQuickTweenBuilderMaterial* SetEaseType(EEaseType easeType);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderMaterial* SetEaseCurve(UCurveFloat* EaseCurve);
+	UQuickTweenBuilderMaterial* SetEaseCurve(UCurveFloat* easeCurve);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderMaterial* SetTimeScale(float TimeScale);
+	UQuickTweenBuilderMaterial* SetTimeScale(float timeScale);
 
 	UFUNCTION(BlueprintCallable)
 	UQuickTweenBuilderMaterial* SetIsBackwards(bool bIsBackwards);

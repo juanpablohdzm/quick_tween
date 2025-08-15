@@ -18,34 +18,34 @@ class UQuickTweenBuilderSceneComponent : public UQuickTweenBuilderObject
 public:
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* MoveTo(FVector To, float Duration, const FString& TweenTag = "");
+	UQuickTweenBuilderSceneComponent* MoveTo(FVector to, float duration, const FString& tweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* RotateTo(FRotator To, float Duration, bool bUseShortestPath = true, const FString& TweenTag = "");
+	UQuickTweenBuilderSceneComponent* RotateTo(FRotator to, float duration, bool bUseShortestPath = true, const FString& tweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* RotateToQuat(FQuat To, float Duration, bool bUseShortestPath = true, const FString& TweenTag = "");
+	UQuickTweenBuilderSceneComponent* RotateToQuat(FQuat to, float duration, bool bUseShortestPath = true, const FString& tweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* ScaleTo(FVector To, float Duration, const FString& TweenTag = "");
+	UQuickTweenBuilderSceneComponent* ScaleTo(FVector to, float duration, const FString& tweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* LookAt(FVector Forward, float Duration, bool bUseShortestPath = true, FVector Up = FVector::UpVector, const FString& TweenTag = "");
+	UQuickTweenBuilderSceneComponent* LookAt(FVector forward, float duration, bool bUseShortestPath = true, FVector up = FVector::UpVector, const FString& tweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* SetLoops(int32 Loops);
+	UQuickTweenBuilderSceneComponent* SetLoops(int32 loops);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* SetLoopType(ELoopType LoopType);
+	UQuickTweenBuilderSceneComponent* SetLoopType(ELoopType loopType);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* SetEaseType(EEaseType EaseType);
+	UQuickTweenBuilderSceneComponent* SetEaseType(EEaseType easeType);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* SetEaseCurve(UCurveFloat* EaseCurve);
+	UQuickTweenBuilderSceneComponent* SetEaseCurve(UCurveFloat* easeCurve);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* SetTimeScale(float TimeScale);
+	UQuickTweenBuilderSceneComponent* SetTimeScale(float timeScale);
 
 	UFUNCTION(BlueprintCallable)
 	UQuickTweenBuilderSceneComponent* SetIsBackwards(bool bIsBackwards);

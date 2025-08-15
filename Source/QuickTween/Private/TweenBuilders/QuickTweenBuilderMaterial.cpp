@@ -4,51 +4,51 @@
 #include "TweenBuilders/QuickTweenBuilderMaterial.h"
 
 
-UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::VectorParameterTo(FName ParameterName, FVector To,
-                                                                          float Duration, const FString& TweenTag)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::VectorParameterTo(FName parameterName, FVector to,
+                                                                          float duration, const FString& tweenTag)
 {
 	return this;
 }
 
-UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::ScalarParameterTo(FName ParameterName, float To, float Duration,
-	const FString& TweenTag)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::ScalarParameterTo(FName parameterName, float to, float duration,
+	const FString& tweenTag)
 {
 	return this;
 }
 
-UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::ColorParameterTo(FName ParameterName, FColor To, float Duration,
-	const FString& TweenTag)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::ColorParameterTo(FName parameterName, FColor to, float duration,
+	const FString& tweenTag)
 {
 	return this;
 }
 
-UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetLoops(int32 Loops)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetLoops(int32 loops)
 {
-	UQuickTweenBuilderObject::SetLoopsBase(Loops);
+	UQuickTweenBuilderObject::SetLoopsBase(loops);
 	return this;
 }
 
-UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetLoopType(ELoopType LoopType)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetLoopType(ELoopType loopType)
 {
-	UQuickTweenBuilderObject::SetLoopTypeBase(LoopType);
+	UQuickTweenBuilderObject::SetLoopTypeBase(loopType);
 	return this;
 }
 
-UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetEaseType(EEaseType EaseType)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetEaseType(EEaseType easeType)
 {
-	UQuickTweenBuilderObject::SetEaseTypeBase(EaseType);
+	UQuickTweenBuilderObject::SetEaseTypeBase(easeType);
 	return this;
 }
 
-UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetEaseCurve(UCurveFloat* EaseCurve)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetEaseCurve(UCurveFloat* easeCurve)
 {
-	UQuickTweenBuilderObject::SetEaseCurveBase(EaseCurve);
+	UQuickTweenBuilderObject::SetEaseCurveBase(easeCurve);
 	return this;
 }
 
-UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetTimeScale(float TimeScale)
+UQuickTweenBuilderMaterial* UQuickTweenBuilderMaterial::SetTimeScale(float timeScale)
 {
-	UQuickTweenBuilderObject::SetTimeScaleBase(TimeScale);
+	UQuickTweenBuilderObject::SetTimeScaleBase(timeScale);
 	return this;
 }
 

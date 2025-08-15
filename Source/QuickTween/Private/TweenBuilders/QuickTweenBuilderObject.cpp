@@ -4,83 +4,82 @@
 #include "TweenBuilders/QuickTweenBuilderObject.h"
 
 #include "Tweens/QuickTweenBase.h"
+#include "Tweens/QuickTweenSequence.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenBuilder, Log, All);
 
-UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetLoopsBase(int32 Loops)
+void UQuickTweenBuilderObject::Initialize(UObject* inObject)
 {
-	if (UQuickTweenBase* LastTween = Tweens.Last())
+	Target = inObject;
+	Sequence = NewObject<UQuickTweenSequence>();
+}
+
+UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetLoopTypeBase(ELoopType loopType)
+{
+	const int32 numTweens = Sequence->GetNumTweens();
+	if (numTweens == 0)
 	{
-		LastTween->SetLoops(Loops);
+		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tweens in the sequence to set loop type on."));
+		return this;
 	}
-	else
-	{
-		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tween to set loops on."));
-	}
+
+	UQuickTweenBase* tween = Sequence->GetTween(numTweens - 1);
+	tween->SetLoopType(loopType);
 	return this;
 }
 
-UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetLoopTypeBase(ELoopType LoopType)
+UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetEaseTypeBase(EEaseType easeType)
 {
-	if (UQuickTweenBase* LastTween = Tweens.Last())
+	const int32 numTweens = Sequence->GetNumTweens();
+	if (numTweens == 0)
 	{
-		LastTween->SetLoopType(LoopType);
+		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tweens in the sequence to set ease type on."));
+		return this;
 	}
-	else
-	{
-		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tween to set loops on."));
-	}
+
+	UQuickTweenBase* tween = Sequence->GetTween(numTweens - 1);
+	tween->SetEaseType(easeType);
 	return this;
 }
 
-UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetEaseTypeBase(EEaseType EaseType)
+UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetEaseCurveBase(UCurveFloat* easeCurve)
 {
-	if (UQuickTweenBase* LastTween = Tweens.Last())
+	const int32 numTweens = Sequence->GetNumTweens();
+	if (numTweens == 0)
 	{
-		LastTween->SetEaseType(EaseType);
+		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tweens in the sequence to set ease curve on."));
+		return this;
 	}
-	else
-	{
-		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tween to set loops on."));
-	}
+
+	UQuickTweenBase* tween = Sequence->GetTween(numTweens - 1);
+	tween->SetEaseCurve(easeCurve);
 	return this;
 }
 
-UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetEaseCurveBase(UCurveFloat* EaseCurve)
+UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetTimeScaleBase(float timeScale)
 {
-	if (UQuickTweenBase* LastTween = Tweens.Last())
+	const int32 numTweens = Sequence->GetNumTweens();
+	if (numTweens == 0)
 	{
-		LastTween->SetEaseCurve(EaseCurve);
+		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tweens in the sequence to set time scale on."));
+		return this;
 	}
-	else
-	{
-		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tween to set loops on."));
-	}
-	return this;
-}
 
-UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetTimeScaleBase(float TimeScale)
-{
-	if (UQuickTweenBase* LastTween = Tweens.Last())
-	{
-		LastTween->SetTimeScale(TimeScale);
-	}
-	else
-	{
-		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tween to set loops on."));
-	}
+	UQuickTweenBase* tween = Sequence->GetTween(numTweens - 1);
+	tween->SetTimeScale(timeScale);
 	return this;
 }
 
 UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetIsBackwardsBase(bool bIsBackwards)
 {
-	if (UQuickTweenBase* LastTween = Tweens.Last())
+	const int32 numTweens = Sequence->GetNumTweens();
+	if (numTweens == 0)
 	{
-		LastTween->SetIsBackwards(bIsBackwards);
+		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tweens in the sequence to set is backwards on."));
+		return this;
 	}
-	else
-	{
-		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tween to set loops on."));
-	}
+
+	UQuickTweenBase* tween = Sequence->GetTween(numTweens - 1);
+	tween->SetIsBackwards(bIsBackwards);
 	return this;
 }
