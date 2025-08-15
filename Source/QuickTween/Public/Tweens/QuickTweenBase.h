@@ -2,21 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "../Utils/EaseType.h"
+#include "../Utils/LoopType.h"
 #include "QuickTweenBase.generated.h"
 
-UENUM(BlueprintType)
-enum class ELoopType : uint8
-{
-	Restart UMETA(DisplayName = "Restart"),
-	PingPong UMETA(DisplayName = "Ping Pong"),
-};
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStart, UQuickTweenBase*, Tween);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdate, UQuickTweenBase*, Tween, float, Progress);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnComplete, UQuickTweenBase*, Tween);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilled, UQuickTweenBase*, Tween);
-
-#define INFINITE_LOOPS -1
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStartTween, UQuickTweenBase*, Tween);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateTween, UQuickTweenBase*, Tween, float, Progress);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompleteTween, UQuickTweenBase*, Tween);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledTween, UQuickTweenBase*, Tween);
 
 UCLASS(Blueprintable, BlueprintType, Abstract)
 class QUICKTWEEN_API UQuickTweenBase : public UObject
@@ -121,16 +113,16 @@ protected:
 	int32 GetCurrentLoop() const { return CurrentLoop; }
 
 	UPROPERTY(BlueprintAssignable)
-	FOnStart OnStart;
+	FOnStartTween OnStart;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnUpdate OnUpdate;
+	FOnUpdateTween OnUpdate;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnComplete OnComplete;
+	FOnCompleteTween OnComplete;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnKilled OnKilled;
+	FOnKilledTween OnKilled;
 
 	float ElapsedTime = 0.0f;
 

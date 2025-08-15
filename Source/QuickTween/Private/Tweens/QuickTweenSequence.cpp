@@ -2,39 +2,10 @@
 
 
 #include "Tweens/QuickTweenSequence.h"
-
 #include "Tweens/QuickTweenBase.h"
+#include "Utils/CommonValues.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenSequence, Log, All);
-
-UQuickTweenSequence* UQuickTweenSequence::Play()
-{
-	bIsPlaying = true;
-	return this;
-}
-
-UQuickTweenSequence* UQuickTweenSequence::Stop()
-{
-	bIsCompleted = true;
-	bIsPlaying = false;
-	for (FQuickTweenSequenceGroup& group : TweenGroups)
-	{
-		for (TWeakObjectPtr<UQuickTweenBase>& tween : group.Tweens)
-		{
-			if (tween.IsValid())
-			{
-				tween->Stop();
-			}
-		}
-	}
-	return this;
-}
-
-UQuickTweenSequence* UQuickTweenSequence::Pause()
-{
-	bIsPlaying = false;
-	return this;
-}
 
 UQuickTweenSequence* UQuickTweenSequence::Join(UQuickTweenBase* tween)
 {
@@ -69,15 +40,122 @@ UQuickTweenSequence* UQuickTweenSequence::Append(UQuickTweenBase* tween)
 	return this;
 }
 
+UQuickTweenSequence* UQuickTweenSequence::SetLoops(int32 loops)
+{
+	Loops = loops;
+	return this;
+}
+
+UQuickTweenSequence* UQuickTweenSequence::SetLoopType(ELoopType loopType)
+{
+	LoopType = loopType;
+	return this;
+}
+
+UQuickTweenSequence* UQuickTweenSequence::SetId(const FString& id)
+{
+	SequenceTweenId = id;
+	return this;
+}
+
+UQuickTweenSequence* UQuickTweenSequence::Play()
+{
+	bIsPlaying = true;
+	return this;
+}
+
+UQuickTweenSequence* UQuickTweenSequence::Pause()
+{
+	bIsPlaying = false;
+	return this;
+}
+
+UQuickTweenSequence* UQuickTweenSequence::Complete()
+{
+	bIsCompleted = true;
+	bIsPlaying = false;
+	ensureAlways(false, TEXT("Completing a sequence is not implemented yet. This should be handled by the caller."));
+	return this;
+}
+
+UQuickTweenSequence* UQuickTweenSequence::Restart()
+{
+	bIsPlaying = true;
+	bIsCompleted = false;
+	CurrentTweenGroupIndex = 0;
+
+	for (FQuickTweenSequenceGroup& group : TweenGroups)
+	{
+		for (TWeakObjectPtr<UQuickTweenBase>& tween : group.Tweens)
+		{
+			if (tween.IsValid())
+			{
+				tween->Restart();
+			}
+			else
+			{
+				UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid during restart. This should not happen."));
+			}
+		}
+	}
+
+	return this;
+}
+
+UQuickTweenSequence* UQuickTweenSequence::KillSequence()
+{
+	bIsPlaying = false;
+	bIsCompleted = true;
+	for (TWeakObjectPtr<UQuickTweenBase> tween : TweenGroups[CurrentTweenGroupIndex].Tweens)
+	{
+		tween->Stop();
+	}
+	CurrentTweenGroupIndex = 0;
+
+	ensureAlways(false, TEXT("Killing a sequence is not implemented yet. This should be handled by the caller."));
+
+	return this;
+}
+
+UQuickTweenSequence* UQuickTweenSequence::Reverse()
+{
+	bIsBackwards = !bIsBackwards;
+	return this;
+}
+
+UQuickTweenSequence* UQuickTweenSequence::TogglePause()
+{
+	if (bIsPlaying)
+	{
+		Pause();
+	}
+	else
+	{
+		Play();
+	}
+	return this;
+}
 
 void UQuickTweenSequence::Update(float deltaTime)
 {
-	if (!bIsPlaying || bIsCompleted)
+	if (GetIsCompleted() || !GetIsPlaying()) return;
+
+	ElapsedTime += deltaTime;
+
+	if (OnUpdate.IsBound())
 	{
+		OnUpdate.Broadcast(this);
+	}
+
+
+	if (Loops != INFINITE_LOOPS && CurrentLoop >= Loops)
+	{
+		Complete();
 		return;
 	}
 
-	const FQuickTweenSequenceGroup& currentGroup = TweenGroups[currentTweenIndex];
+
+	const FQuickTweenSequenceGroup& currentGroup = TweenGroups[CurrentTweenGroupIndex];
 	uint32 completedTweens = 0;
 	for (TWeakObjectPtr<UQuickTweenBase> tween : currentGroup.Tweens)
 	{
@@ -106,18 +184,86 @@ void UQuickTweenSequence::Update(float deltaTime)
 
 	if (completedTweens == currentGroup.Tweens.Num())
 	{
-		currentTweenIndex++;
-		if (currentTweenIndex >= TweenGroups.Num())
+		if (bIsBackwards)
 		{
-			Complete();
+			CurrentTweenGroupIndex--;
+		}else
+		{
+			CurrentTweenGroupIndex++;
+		}
+		if (CurrentTweenGroupIndex >= TweenGroups.Num() || CurrentTweenGroupIndex < 0)
+		{
+			switch (LoopType)
+			{
+			case ELoopType::Restart:
+				CurrentTweenGroupIndex = bIsBackwards ? TweenGroups.Num() - 1 : 0;
+				break;
+			case ELoopType::PingPong:
+				Reverse();
+				break;
+			default:
+				ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));
+			}
+			CurrentLoop++;
 		}
 	}
 }
 
-UQuickTweenSequence* UQuickTweenSequence::Complete()
+bool UQuickTweenSequence::GetIsPlaying() const
 {
-	Stop();
-	return this;
+	return bIsPlaying;
+}
+
+bool UQuickTweenSequence::GetIsCompleted() const
+{
+	return bIsCompleted;
+}
+
+float UQuickTweenSequence::GetDuration() const
+{
+	float totalDuration = 0.0f;
+	for (const FQuickTweenSequenceGroup& group : TweenGroups)
+	{
+		float groupMaxDuration = 0.0f;
+		for (const TWeakObjectPtr<UQuickTweenBase>& tween : group.Tweens)
+		{
+			if (tween.IsValid())
+			{
+				groupMaxDuration  = FMath::Max(groupMaxDuration, tween->GetDuration() * tween->GetLoops());
+			}
+			else
+			{
+				UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid. This should not happen."));
+			}
+		}
+		totalDuration += groupMaxDuration;
+	}
+	return totalDuration;
+}
+
+float UQuickTweenSequence::GetElapsedTime() const
+{
+	return ElapsedTime;
+}
+
+float UQuickTweenSequence::GetLoops() const
+{
+	return Loops;
+}
+
+float UQuickTweenSequence::GetCurrentLoop()
+{
+	return CurrentLoop;
+}
+
+ELoopType UQuickTweenSequence::GetLoopType() const
+{
+	return LoopType;
+}
+
+FString UQuickTweenSequence::GetId() const
+{
+	return SequenceTweenId;
 }
 
 int32 UQuickTweenSequence::GetNumTweens() const
