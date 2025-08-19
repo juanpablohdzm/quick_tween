@@ -14,4 +14,6 @@ public:
 
 private:
 	FTSTicker::FDelegateHandle TickDelegateHandler;
+
+	TArray<class IQuickTweenable*> QuickTweens;
 };

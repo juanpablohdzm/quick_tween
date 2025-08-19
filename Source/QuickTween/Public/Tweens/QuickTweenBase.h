@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "QuickTweenable.h"
 #include "../Utils/EaseType.h"
 #include "../Utils/LoopType.h"
 #include "Utils/Badge.h"
@@ -17,7 +18,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledTween, UQuickTweenBase*, Tw
  * Provides core tweening functionality, state, and events.
  */
 UCLASS(Blueprintable, BlueprintType, Abstract)
-class QUICKTWEEN_API UQuickTweenBase : public UObject
+class QUICKTWEEN_API UQuickTweenBase : public UObject, public IQuickTweenable
 {
 	GENERATED_BODY()
 public:
@@ -151,7 +152,13 @@ public:
 	 * @param deltaTime Time since last update.
 	 * @return True if the tween is still active, false if completed or killed.
 	 */
-	virtual bool Update(float deltaTime);
+	virtual void Update(float deltaTime) override;
+
+	/**
+	 * If this tween should be eliminated from the manager.
+	 * @return True if the tween is pending kill, false otherwise.
+	 */
+	virtual bool GetIsPendingKill() const override { return bIsPendingKill; }
 #pragma endregion
 
 #pragma region Tween State Queries
@@ -169,11 +176,11 @@ public:
 
 	/** Returns true if the tween is currently playing. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] bool GetIsPlaying() const { return bIsPlaying; }
+	[[nodiscard]] virtual bool GetIsPlaying() const override { return bIsPlaying; }
 
 	/** Returns true if the tween is completed. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] bool GetIsCompleted() const { return bIsCompleted; }
+	[[nodiscard]] virtual bool GetIsCompleted() const override { return bIsCompleted; }
 
 	/** Returns true if the tween is playing backwards. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
@@ -201,7 +208,7 @@ public:
 
 	/** Gets the current loop index (1-based). */
 	UFUNCTION(BlueprintCallable)
-	int32 GetCurrentLoop() const { return CurrentLoop; }
+	[[nodiscard]] int32 GetCurrentLoop() const { return CurrentLoop; }
 #pragma endregion
 
 protected:
@@ -258,4 +265,7 @@ private:
 
 	/** If this tween is part of a sequence */
 	bool bIsInSequence = false;
+
+	/** If this tween should be eliminated from the manager. */
+	bool bIsPendingKill = false;
 };

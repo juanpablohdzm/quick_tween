@@ -94,8 +94,11 @@ UQuickTweenSequence* UQuickTweenSequence::KillSequence()
 	}
 	CurrentTweenGroupIndex = 0;
 
-	ensureAlways(false, TEXT("Killing a sequence is not implemented yet. This should be handled by the caller."));
-
+	bIsPendingKill = true;
+	if (OnKilled.IsBound())
+	{
+		OnKilled.Broadcast(this);
+	}
 	return this;
 }
 
@@ -143,18 +146,11 @@ void UQuickTweenSequence::Update(float deltaTime)
 	{
 		if (tween.IsValid())
 		{
-			if (!tween->Update(deltaTime))
+			tween->Update(deltaTime);
+
+			if (tween->GetIsCompleted())
 			{
-				if (tween->GetIsCompleted())
-				{
-					completedTweens++;
-				}
-				else
-				{
-					UE_LOG(LogQuickTweenSequence, Warning, TEXT("Tween in sequence can not update but is not completed, considering paused.... pausing all sequence"));
-					Pause();
-					return;
-				}
+				completedTweens++;
 			}
 		}
 		else

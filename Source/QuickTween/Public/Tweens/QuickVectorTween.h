@@ -65,7 +65,7 @@ public:
 	 * @param deltaTime Time elapsed since the last update.
 	 * @return True if the tween is still active, false if it has completed.
 	 */
-	virtual bool Update(float deltaTime) override;
+	virtual void Update(float deltaTime) override;
 
 	/**
 	 * Completes the tween and applies the final value.

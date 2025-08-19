@@ -5,10 +5,12 @@
 
 #include "Utils/EaseFunctions.h"
 
-bool UQuickVectorTween::Update(float deltaTime)
+void UQuickVectorTween::Update(float deltaTime)
 {
 
-	if (!UQuickTweenBase::Update(deltaTime)) return false;
+	UQuickTweenBase::Update(deltaTime);
+
+	if (GetIsCompleted() || !GetIsPlaying()) return;
 
 	const float currentLoopElapsedTime = FMath::Fmod(ElapsedTime, GetDuration());
 	float progress = GetIsBackwards() ? 1.0f - (currentLoopElapsedTime / GetDuration()) : currentLoopElapsedTime / GetDuration();
@@ -19,8 +21,6 @@ bool UQuickVectorTween::Update(float deltaTime)
 	const FVector value = FEaseFunctions<FVector>::Ease(From, To, progress, GetEaseType());
 	SetterFunction(value);
 	SetProgress(progress);
-
-	return true;
 }
 
 UQuickTweenBase* UQuickVectorTween::Complete()

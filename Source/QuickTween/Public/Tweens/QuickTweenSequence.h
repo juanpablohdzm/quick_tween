@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "QuickTweenable.h"
 #include "UObject/Object.h"
 #include "../Utils/LoopType.h"
 #include "QuickTweenSequence.generated.h"
@@ -21,7 +22,7 @@ class UQuickTweenBase;
  * Supports looping, reversing, and querying sequence state.
  */
 UCLASS(BlueprintType)
-class QUICKTWEEN_API UQuickTweenSequence : public UObject
+class QUICKTWEEN_API UQuickTweenSequence : public UObject, public IQuickTweenable
 {
 	GENERATED_BODY()
 
@@ -123,7 +124,13 @@ public:
 	 * Updates the sequence by the given delta time.
 	 * @param deltaTime Time since last update.
 	 */
-	void Update(float deltaTime);
+	virtual void Update(float deltaTime) override;
+
+	/**
+	 * If this sequence should be eliminated from the manager.
+	 * @return True if the sequence is pending kill, false otherwise.
+	 */
+	virtual bool GetIsPendingKill() const override { return bIsPendingKill; }
 #pragma endregion
 
 
@@ -133,63 +140,63 @@ public:
 	 * @return True if playing, false otherwise.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	[[nodiscard]] bool GetIsPlaying() const { return bIsPlaying;}
+	[[nodiscard]] virtual bool GetIsPlaying() const override { return bIsPlaying;}
 
 	/**
 	 * Checks if the sequence has completed.
 	 * @return True if completed, false otherwise.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	bool GetIsCompleted() const { return bIsCompleted; }
+	[[nodiscard]] virtual bool GetIsCompleted() const override { return bIsCompleted; }
 
 	/**
 	 * Gets the total duration of the sequence.
 	 * @return Duration in seconds.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	float GetDuration() const;
+	[[nodiscard]] float GetDuration() const;
 
 	/**
 	 * Gets the elapsed time since the sequence started.
 	 * @return Elapsed time in seconds.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	float GetElapsedTime() const { return ElapsedTime; }
+	[[nodiscard]] float GetElapsedTime() const { return ElapsedTime; }
 
 	/**
 	 * Gets the number of loops set for the sequence.
 	 * @return Number of loops.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	float GetLoops() const { return Loops; }
+	[[nodiscard]] float GetLoops() const { return Loops; }
 
 	/**
 	 * Gets the current loop index.
 	 * @return Current loop number.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	float GetCurrentLoop() const { return CurrentLoop; }
+	[[nodiscard]] float GetCurrentLoop() const { return CurrentLoop; }
 
 	/**
 	 * Gets the loop type of the sequence.
 	 * @return The loop type.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	ELoopType GetLoopType() const { return LoopType; }
+	[[nodiscard]] ELoopType GetLoopType() const { return LoopType; }
 
 	/**
 	 * Gets the identifier of the sequence.
 	 * @return Sequence ID.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	FString GetId() const { return SequenceTweenId; }
+	[[nodiscard]] FString GetId() const { return SequenceTweenId; }
 
 	/**
 	 * Gets the number of tweens in the sequence.
 	 * @return Number of tweens.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	int32 GetNumTweens() const;
+	[[nodiscard]] int32 GetNumTweens() const;
 
 	/**
 	 * Gets the tween at the specified index.
@@ -197,7 +204,7 @@ public:
 	 * @return Pointer to the tween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	UQuickTweenBase* GetTween(int32 index) const;
+	[[nodiscard]] UQuickTweenBase* GetTween(int32 index) const;
 #pragma endregion
 
 #pragma region Delegates
@@ -260,5 +267,7 @@ private:
 
 	/** Index of the current tween group. */
 	int32 CurrentTweenGroupIndex = 0;
+
+	bool bIsPendingKill = false;
 
 };

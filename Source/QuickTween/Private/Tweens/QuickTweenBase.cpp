@@ -21,9 +21,9 @@ void UQuickTweenBase::Initialize(
 	TweenTag = tweenTag;
 }
 
-bool UQuickTweenBase::Update(float deltaTime)
+void UQuickTweenBase::Update(float deltaTime)
 {
-	if (GetIsCompleted() || !GetIsPlaying()) return false;
+	if (GetIsCompleted() || !GetIsPlaying()) return;
 
 	ElapsedTime += deltaTime * GetTimeScale();
 
@@ -37,7 +37,7 @@ bool UQuickTweenBase::Update(float deltaTime)
 		if (Loops != INFINITE_LOOPS && CurrentLoop >= Loops)
 		{
 			Complete();
-			return false;
+			return;
 		}
 
 		switch (LoopType)
@@ -53,11 +53,12 @@ bool UQuickTweenBase::Update(float deltaTime)
 		}
 		CurrentLoop++;
 	}
-	return true;
+	return;
 }
 
 UQuickTweenBase* UQuickTweenBase::Play()
 {
+	// TODO: Try to identify who is calling this in case the tween is in a sequence
 	bIsPlaying = true;
 	return this;
 }
@@ -119,5 +120,5 @@ UQuickTweenBase* UQuickTweenBase::Reset()
 
 void UQuickTweenBase::Kill()
 {
-	ensureAlwaysMsgf(false, TEXT("Kill() is not implemented in UQuickTweenBase. Please override this method in your derived class."));
+	bIsPendingKill = true;
 }
