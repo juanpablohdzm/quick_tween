@@ -40,24 +40,6 @@ UQuickTweenSequence* UQuickTweenSequence::Append(UQuickTweenBase* tween)
 	return this;
 }
 
-UQuickTweenSequence* UQuickTweenSequence::SetLoops(int32 loops)
-{
-	Loops = loops;
-	return this;
-}
-
-UQuickTweenSequence* UQuickTweenSequence::SetLoopType(ELoopType loopType)
-{
-	LoopType = loopType;
-	return this;
-}
-
-UQuickTweenSequence* UQuickTweenSequence::SetId(const FString& id)
-{
-	SequenceTweenId = id;
-	return this;
-}
-
 UQuickTweenSequence* UQuickTweenSequence::Play()
 {
 	bIsPlaying = true;
@@ -209,16 +191,6 @@ void UQuickTweenSequence::Update(float deltaTime)
 	}
 }
 
-bool UQuickTweenSequence::GetIsPlaying() const
-{
-	return bIsPlaying;
-}
-
-bool UQuickTweenSequence::GetIsCompleted() const
-{
-	return bIsCompleted;
-}
-
 float UQuickTweenSequence::GetDuration() const
 {
 	float totalDuration = 0.0f;
@@ -239,31 +211,6 @@ float UQuickTweenSequence::GetDuration() const
 		totalDuration += groupMaxDuration;
 	}
 	return totalDuration;
-}
-
-float UQuickTweenSequence::GetElapsedTime() const
-{
-	return ElapsedTime;
-}
-
-float UQuickTweenSequence::GetLoops() const
-{
-	return Loops;
-}
-
-float UQuickTweenSequence::GetCurrentLoop()
-{
-	return CurrentLoop;
-}
-
-ELoopType UQuickTweenSequence::GetLoopType() const
-{
-	return LoopType;
-}
-
-FString UQuickTweenSequence::GetId() const
-{
-	return SequenceTweenId;
 }
 
 int32 UQuickTweenSequence::GetNumTweens() const

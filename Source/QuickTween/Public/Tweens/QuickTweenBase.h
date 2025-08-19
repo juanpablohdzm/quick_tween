@@ -3,19 +3,36 @@
 #include "CoreMinimal.h"
 #include "../Utils/EaseType.h"
 #include "../Utils/LoopType.h"
+#include "Utils/Badge.h"
 #include "QuickTweenBase.generated.h"
 
+class UQuickTweenSequence;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStartTween, UQuickTweenBase*, Tween);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateTween, UQuickTweenBase*, Tween, float, Progress);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompleteTween, UQuickTweenBase*, Tween);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledTween, UQuickTweenBase*, Tween);
 
+/**
+ * Base class for all QuickTween tweens.
+ * Provides core tweening functionality, state, and events.
+ */
 UCLASS(Blueprintable, BlueprintType, Abstract)
 class QUICKTWEEN_API UQuickTweenBase : public UObject
 {
 	GENERATED_BODY()
 public:
 
+#pragma region Tween Creation
+	/**
+	 * Initializes the tween with the specified parameters.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Time scale multiplier.
+	 * @param easeType Type of easing to use.
+	 * @param easeCurve Optional custom curve for easing.
+	 * @param loops Number of loops (0 = infinite).
+	 * @param loopType Looping behavior.
+	 * @param tweenTag Optional tag for identification.
+	 */
 	void Initialize(
 		float duration,
 		float timeScale,
@@ -25,123 +42,220 @@ public:
 		ELoopType loopType,
 		const FString& tweenTag = FString());
 
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual bool Update(float deltaTime);
-
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual UQuickTweenBase* Play();
-
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual UQuickTweenBase* Pause();
-
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual UQuickTweenBase* Stop();
-
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual UQuickTweenBase* Reverse();
-
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual UQuickTweenBase* Restart();
-
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual UQuickTweenBase* Complete();
-
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual UQuickTweenBase* Reset();
-
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	virtual void Kill();
-
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] float GetDuration() const { return Duration;}
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	/** Sets the duration of the tween. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
 	UQuickTweenBase* SetDuration(float duration) { Duration = duration; return this; }
 
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] float GetProgress() const { return Progress; }
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	/** Sets the progress of the tween (0-1). */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
 	UQuickTweenBase* SetProgress(float progress) { Progress = progress; return this; }
 
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] float GetTimeScale() const { return TimeScale; }
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	UQuickTweenBase* SetTimeScale(float timeScale) { TimeScale = timeScale; return this; }
+	/** Sets the time scale of the tween. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
+    UQuickTweenBase* SetTimeScale(float timeScale) { TimeScale = timeScale; return this; }
 
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] bool GetIsPlaying() const { return bIsPlaying; }
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	UQuickTweenBase* SetIsPlaying(bool isPlaying) { bIsPlaying = isPlaying; return this; }
+    /** Sets whether the tween is currently playing. */
+    UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
+    UQuickTweenBase* SetIsPlaying(bool isPlaying) { bIsPlaying = isPlaying; return this; }
 
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] bool GetIsCompleted() const { return bIsCompleted; }
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	UQuickTweenBase* SetIsCompleted(bool isCompleted) { bIsCompleted = isCompleted; return this; }
+    /** Sets whether the tween is completed. */
+    UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
+    UQuickTweenBase* SetIsCompleted(bool isCompleted) { bIsCompleted = isCompleted; return this; }
 
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] bool GetIsBackwards() const { return bIsBackwards; }
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	UQuickTweenBase* SetIsBackwards(bool isBackwards) { bIsBackwards = isBackwards; return this; }
+    /** Sets whether the tween is playing backwards. */
+    UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
+    UQuickTweenBase* SetIsBackwards(bool isBackwards) { bIsBackwards = isBackwards; return this; }
 
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] EEaseType GetEaseType() const { return EaseType; }
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	/** Sets the ease type for the tween. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
 	UQuickTweenBase* SetEaseType(EEaseType easeType) { EaseType = easeType; return this;}
 
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] UCurveFloat* GetEaseCurve() const { return EaseCurve; }
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	/** Sets a custom ease curve for the tween. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
 	UQuickTweenBase* SetEaseCurve(UCurveFloat* easeCurve) { EaseCurve = easeCurve; return this; }
 
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] int32 GetLoops() const { return Loops; }
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	/** Sets the number of loops for the tween. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
 	UQuickTweenBase* SetLoops(int32 loops) { Loops = loops; return this;}
 
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] ELoopType GetLoopType() const { return LoopType; }
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	/** Sets the loop type for the tween. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
 	UQuickTweenBase* SetLoopType(ELoopType loopType){ LoopType = loopType; return this;}
 
+	/** Sets a tag for the tween. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
+	UQuickTweenBase* SetTweenTag(const FString& tag) { TweenTag = tag; return this; }
+
+	/** Sets whether this tween is part of a sequence. */
+	UQuickTweenBase* SetIsInSequence(Badge<UQuickTweenSequence> badge, bool bInSequence) { bIsInSequence = bInSequence; return this; }
+#pragma endregion
+
+#pragma region Tween Control
+	/**
+	 * Starts or resumes the tween.
+	 * @return This tween instance.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
+	virtual UQuickTweenBase* Play();
+
+	/**
+	 * Pauses the tween.
+	 * @return This tween instance.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
+	virtual UQuickTweenBase* Pause();
+
+	/**
+	 * Stops the tween and resets its progress.
+	 * @return This tween instance.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
+	virtual UQuickTweenBase* Stop();
+
+	/**
+	 * Reverses the direction of the tween.
+	 * @return This tween instance.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
+	virtual UQuickTweenBase* Reverse();
+
+	/**
+	 * Restarts the tween from the beginning.
+	 * @return This tween instance.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
+	virtual UQuickTweenBase* Restart();
+
+	/**
+	 * Completes the tween immediately.
+	 * @return This tween instance.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
+	virtual UQuickTweenBase* Complete();
+
+	/**
+	 * Resets the tween to its initial state.
+	 * @return This tween instance.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
+	virtual UQuickTweenBase* Reset();
+
+	/**
+	 * Kills the tween, stopping all updates and events.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
+	virtual void Kill();
+
+	/**
+	 * Updates the tween by the given delta time.
+	 * @param deltaTime Time since last update.
+	 * @return True if the tween is still active, false if completed or killed.
+	 */
+	virtual bool Update(float deltaTime);
+#pragma endregion
+
+#pragma region Tween State Queries
+	/** Gets the duration of the tween. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] float GetDuration() const { return Duration;}
+
+	/** Gets the current progress of the tween (0-1). */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] float GetProgress() const { return Progress; }
+
+	/** Gets the time scale of the tween. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] float GetTimeScale() const { return TimeScale; }
+
+	/** Returns true if the tween is currently playing. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] bool GetIsPlaying() const { return bIsPlaying; }
+
+	/** Returns true if the tween is completed. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] bool GetIsCompleted() const { return bIsCompleted; }
+
+	/** Returns true if the tween is playing backwards. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] bool GetIsBackwards() const { return bIsBackwards; }
+
+	/** Gets the ease type of the tween. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] EEaseType GetEaseType() const { return EaseType; }
+
+	/** Gets the custom ease curve of the tween, if any. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] UCurveFloat* GetEaseCurve() const { return EaseCurve; }
+
+	/** Gets the number of loops for the tween. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] int32 GetLoops() const { return Loops; }
+
+	/** Gets the loop type of the tween. */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] ELoopType GetLoopType() const { return LoopType; }
+
+	/** Gets the tag assigned to the tween. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] FString GetTweenTag() const { return TweenTag; }
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	UQuickTweenBase* SetTweenTag(const FString& tag) { TweenTag = tag; return this; }
+
+	/** Gets the current loop index (1-based). */
+	UFUNCTION(BlueprintCallable)
+	int32 GetCurrentLoop() const { return CurrentLoop; }
+#pragma endregion
 
 protected:
 
-	UFUNCTION(BlueprintCallable)
-	int32 GetCurrentLoop() const { return CurrentLoop; }
-
+	/** Event triggered when the tween starts. */
 	UPROPERTY(BlueprintAssignable)
 	FOnStartTween OnStart;
 
+	/** Event triggered when the tween updates. */
 	UPROPERTY(BlueprintAssignable)
 	FOnUpdateTween OnUpdate;
 
+	/** Event triggered when the tween completes. */
 	UPROPERTY(BlueprintAssignable)
 	FOnCompleteTween OnComplete;
 
+	/** Event triggered when the tween is killed. */
 	UPROPERTY(BlueprintAssignable)
 	FOnKilledTween OnKilled;
 
+	/** Time elapsed since the tween started. */
 	float ElapsedTime = 0.0f;
 
 private:
+	/** Duration of the tween in seconds. */
 	float Duration = 0.0f;
+	/** Current progress of the tween (0-1). */
 	float Progress = 0.0f;
+	/** Time scale multiplier. */
 	float TimeScale = 1.0f;
 
+	/** Whether the tween is currently playing. */
 	bool bIsPlaying = false;
+	/** Whether the tween is completed. */
 	bool bIsCompleted = false;
+	/** Whether the tween is playing backwards. */
 	bool bIsBackwards = false;
 
+	/** Easing type for the tween. */
 	EEaseType EaseType = EEaseType::Linear;
+	/** Custom curve for easing, if any. */
 	UPROPERTY(Transient)
 	UCurveFloat* EaseCurve = nullptr;
 
+	/** Current loop index (1-based). */
 	int32 CurrentLoop = 1;
+	/** Number of loops (0 = infinite). */
 	int32 Loops = 0;
+	/** Looping behavior. */
 	ELoopType LoopType = ELoopType::Restart;
 
+	/** Optional tag for identifying the tween. */
 	FString TweenTag;
+
+	/** If this tween is part of a sequence */
+	bool bIsInSequence = false;
 };

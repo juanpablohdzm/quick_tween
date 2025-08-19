@@ -9,12 +9,30 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
+/**
+ * Tween class for interpolating between two FVector values over time.
+ * Inherits from UQuickTweenBase and provides vector-specific tweening functionality.
+ */
 class QUICKTWEEN_API UQuickVectorTween : public UQuickTweenBase
 {
 	GENERATED_BODY()
 public:
 
+	/**
+	 * Initializes the vector tween with the specified parameters.
+	 *
+	 * @param from The starting FVector value.
+	 * @param to The target FVector value.
+	 * @param setterFunction Function to apply the interpolated value.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Multiplier for the tween's speed.
+	 * @param easeType Type of easing to apply.
+	 * @param easeCurve Optional custom curve for easing.
+	 * @param loops Number of times to loop the tween.
+	 * @param loopType Type of looping behavior.
+	 * @param tweenTag Optional tag for identifying the tween.
+	 */
 	void Initialize(
 		const FVector& from,
 		const FVector& to,
@@ -41,11 +59,28 @@ public:
 
 	}
 
+	/**
+	 * Updates the tween by the given delta time.
+	 *
+	 * @param deltaTime Time elapsed since the last update.
+	 * @return True if the tween is still active, false if it has completed.
+	 */
 	virtual bool Update(float deltaTime) override;
+
+	/**
+	 * Completes the tween and applies the final value.
+	 *
+	 * @return Pointer to the completed tween base.
+	 */
 	virtual UQuickTweenBase* Complete() override;
 
 private:
+	/** Starting FVector value. */
 	FVector From;
+
+	/** Target FVector value. */
 	FVector To;
+
+	/** Function to set the interpolated FVector value. */
 	TFunction<void(const FVector&)> SetterFunction;
 };

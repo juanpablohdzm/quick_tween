@@ -14,8 +14,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompleteTweenSequence, UQuickTwee
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledTweenSequence, UQuickTweenSequence*, TweenSequence);
 
 class UQuickTweenBase;
+
 /**
- * 
+ * UQuickTweenSequence manages a sequence of tween animations.
+ * Allows joining, appending, and controlling multiple tweens as a group.
+ * Supports looping, reversing, and querying sequence state.
  */
 UCLASS(BlueprintType)
 class QUICKTWEEN_API UQuickTweenSequence : public UObject
@@ -25,118 +28,237 @@ class QUICKTWEEN_API UQuickTweenSequence : public UObject
 public:
 
 #pragma region Sequence Creation
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Joins a tween to the current group, allowing them to run in parallel.
+	 * @param tween The tween to join.
+	 * @return Reference to this sequence.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
 	UQuickTweenSequence* Join(UQuickTweenBase* tween);
 
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Appends a tween to the sequence, running after previous tweens complete.
+	 * @param tween The tween to append.
+	 * @return Reference to this sequence.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
 	UQuickTweenSequence* Append(UQuickTweenBase* tween);
 
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenSequence* SetLoops(int32 loops = 1);
+	/**
+	 * Sets the number of loops for the sequence.
+	 * @param loops Number of loops (default is 1).
+	 * @return Reference to this sequence.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
+	UQuickTweenSequence* SetLoops(int32 loops = 1) { Loops = loops; return this; };
 
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenSequence* SetLoopType(ELoopType loopType = ELoopType::Restart);
+	/**
+	 * Sets the loop type for the sequence.
+	 * @param loopType The loop type (default is Restart).
+	 * @return Reference to this sequence.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
+	UQuickTweenSequence* SetLoopType(ELoopType loopType = ELoopType::Restart) { LoopType = loopType; return this; };
 
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenSequence* SetId(const FString& id);
+	/**
+	 * Sets an identifier for the sequence.
+	 * @param id The sequence ID.
+	 * @return Reference to this sequence.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
+	UQuickTweenSequence* SetId(const FString& id) { SequenceTweenId = id; return this; };
 #pragma endregion
 
 #pragma region Sequence Control
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Starts playing the sequence.
+	 * @return Reference to this sequence.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
 	UQuickTweenSequence* Play();
 
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Pauses the sequence.
+	 * @return Reference to this sequence.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
 	UQuickTweenSequence* Pause();
 
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Completes the sequence immediately.
+	 * @return Reference to this sequence.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
 	UQuickTweenSequence* Complete();
 
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Restarts the sequence from the beginning.
+	 * @return Reference to this sequence.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
 	UQuickTweenSequence* Restart();
 
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Kills the sequence and all its tweens.
+	 * @return Reference to this sequence.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
 	UQuickTweenSequence* KillSequence();
 
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Reverses the direction of the sequence.
+	 * @return Reference to this sequence.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
 	UQuickTweenSequence* Reverse();
 
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Toggles the pause state of the sequence.
+	 * @return Reference to this sequence.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
 	UQuickTweenSequence* TogglePause();
 
+	/**
+	 * Updates the sequence by the given delta time.
+	 * @param deltaTime Time since last update.
+	 */
 	void Update(float deltaTime);
 #pragma endregion
 
 
 #pragma region Sequence State Queries
-	UFUNCTION(BlueprintCallable)
-	bool GetIsPlaying() const;
+	/**
+	 * Checks if the sequence is currently playing.
+	 * @return True if playing, false otherwise.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
+	[[nodiscard]] bool GetIsPlaying() const { return bIsPlaying;}
 
-	UFUNCTION(BlueprintCallable)
-	bool GetIsCompleted() const;
+	/**
+	 * Checks if the sequence has completed.
+	 * @return True if completed, false otherwise.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
+	bool GetIsCompleted() const { return bIsCompleted; }
 
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Gets the total duration of the sequence.
+	 * @return Duration in seconds.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
 	float GetDuration() const;
 
-	UFUNCTION(BlueprintCallable)
-	float GetElapsedTime() const;
+	/**
+	 * Gets the elapsed time since the sequence started.
+	 * @return Elapsed time in seconds.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
+	float GetElapsedTime() const { return ElapsedTime; }
 
-	UFUNCTION(BlueprintCallable)
-	float GetLoops() const;
+	/**
+	 * Gets the number of loops set for the sequence.
+	 * @return Number of loops.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
+	float GetLoops() const { return Loops; }
 
-	UFUNCTION(BlueprintCallable)
-	float GetCurrentLoop();
+	/**
+	 * Gets the current loop index.
+	 * @return Current loop number.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
+	float GetCurrentLoop() const { return CurrentLoop; }
 
+	/**
+	 * Gets the loop type of the sequence.
+	 * @return The loop type.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
+	ELoopType GetLoopType() const { return LoopType; }
 
-	UFUNCTION(BlueprintCallable)
-	ELoopType GetLoopType() const;
+	/**
+	 * Gets the identifier of the sequence.
+	 * @return Sequence ID.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
+	FString GetId() const { return SequenceTweenId; }
 
-	UFUNCTION(BlueprintCallable)
-	FString GetId() const;
-
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Gets the number of tweens in the sequence.
+	 * @return Number of tweens.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
 	int32 GetNumTweens() const;
 
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Gets the tween at the specified index.
+	 * @param index Index of the tween.
+	 * @return Pointer to the tween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
 	UQuickTweenBase* GetTween(int32 index) const;
 #pragma endregion
 
 #pragma region Delegates
+	/** Called when the sequence starts. */
 	UPROPERTY(BlueprintAssignable)
 	FOnStartTweenSequence OnStart;
 
+	/** Called when the sequence updates. */
 	UPROPERTY(BlueprintAssignable)
 	FOnUpdateTweenSequence OnUpdate;
 
+	/** Called when the sequence completes. */
 	UPROPERTY(BlueprintAssignable)
 	FOnCompleteTweenSequence OnComplete;
 
+	/** Called when the sequence is killed. */
 	UPROPERTY(BlueprintAssignable)
 	FOnKilledTweenSequence OnKilled;
 #pragma endregion
 
 private:
 
+	/**
+	 * Represents a group of tweens that run in parallel.
+	 */
 	struct FQuickTweenSequenceGroup
 	{
 		TArray<TWeakObjectPtr<UQuickTweenBase>> Tweens;
 	};
 
-
+	/** Array of tween groups in the sequence. */
 	TArray<FQuickTweenSequenceGroup> TweenGroups;
 
+	/** Elapsed time since the sequence started. */
 	float ElapsedTime = 0.0f;
+
+	/** Progress of the sequence (0.0 to 1.0). */
 	float Progress = 0.0f;
 
+	/** Whether the sequence is currently playing. */
 	bool bIsPlaying = false;
+
+	/** Whether the sequence has completed. */
 	bool bIsCompleted = false;
+
+	/** Whether the sequence is playing backwards. */
 	bool bIsBackwards = false;
 
+	/** Current loop index. */
 	int32 CurrentLoop = 1;
+
+	/** Total number of loops. */
 	int32 Loops = 0;
+
+	/** Loop type for the sequence. */
 	ELoopType LoopType = ELoopType::Restart;
 
+	/** Identifier for the sequence. */
 	FString SequenceTweenId;
 
+	/** Index of the current tween group. */
 	int32 CurrentTweenGroupIndex = 0;
 
 };
