@@ -72,7 +72,8 @@ UQuickTweenSequence* UQuickTweenSequence::Restart()
 		{
 			if (tween.IsValid())
 			{
-				tween->Restart();
+				Badge<UQuickTweenSequence> badge;
+				tween->Restart(&badge);
 			}
 			else
 			{
@@ -90,7 +91,8 @@ UQuickTweenSequence* UQuickTweenSequence::KillSequence()
 	bIsCompleted = true;
 	for (TWeakObjectPtr<UQuickTweenBase> tween : TweenGroups[CurrentTweenGroupIndex].Tweens)
 	{
-		tween->Stop();
+		Badge<UQuickTweenSequence> badge;
+		tween->Stop(&badge);
 	}
 	CurrentTweenGroupIndex = 0;
 

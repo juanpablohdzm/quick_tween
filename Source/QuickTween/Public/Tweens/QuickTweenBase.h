@@ -100,11 +100,26 @@ public:
 	virtual UQuickTweenBase* Play();
 
 	/**
+	 * Starts or resumes the tween from a sequence.
+	 * @param badge Badge pointer to allow internal calls from sequences.
+	 * @return This tween instance.
+	 */
+	virtual UQuickTweenBase* Play(Badge<UQuickTweenSequence>* badge = nullptr);
+
+	/**
 	 * Pauses the tween.
 	 * @return This tween instance.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
 	virtual UQuickTweenBase* Pause();
+
+	/**
+	 *
+	 * Pauses the tween from a sequence.
+	 * @param badge Bagde pointer to allow internal calls from sequences.
+	 * @return This tween instance.
+	 */
+	virtual UQuickTweenBase* Pause(Badge<UQuickTweenSequence>* badge = nullptr);
 
 	/**
 	 * Stops the tween and resets its progress.
@@ -114,11 +129,25 @@ public:
 	virtual UQuickTweenBase* Stop();
 
 	/**
+	 * Stops the tween from a sequence and resets its progress.
+	 * @param badge Badge pointer to allow internal calls from sequences.
+	 * @return This tween instance.
+	 */
+	virtual UQuickTweenBase* Stop(Badge<UQuickTweenSequence>* badge = nullptr);
+
+	/**
 	 * Reverses the direction of the tween.
 	 * @return This tween instance.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
 	virtual UQuickTweenBase* Reverse();
+
+	/**
+	 * Reverses the direction of the tween from a sequence.
+	 * @param badge
+	 * @return
+	 */
+	virtual UQuickTweenBase* Reverse(Badge<UQuickTweenSequence>* badge = nullptr);
 
 	/**
 	 * Restarts the tween from the beginning.
@@ -128,11 +157,26 @@ public:
 	virtual UQuickTweenBase* Restart();
 
 	/**
+	 *
+	 * Restarts the tween from a sequence.
+	 * @param badge Badge pointer to allow internal calls from sequences.
+	 * @return This tween instance.
+	 */
+	virtual UQuickTweenBase* Restart(Badge<UQuickTweenSequence>* badge = nullptr);
+
+	/**
 	 * Completes the tween immediately.
 	 * @return This tween instance.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
 	virtual UQuickTweenBase* Complete();
+
+	/**
+	 * Completes the tween immediately from a sequence.
+	 * @param badge Badge pointer to allow internal calls from sequences.
+	 * @return This tween instance.
+	 */
+	virtual UQuickTweenBase* Complete(Badge<UQuickTweenSequence>* badge = nullptr);
 
 	/**
 	 * Resets the tween to its initial state.
@@ -141,11 +185,25 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
 	virtual UQuickTweenBase* Reset();
 
+
+	/**
+	 * Resets the tween to its initial state from a sequence.
+	 * @param badge Badge pointer to allow internal calls from sequences.
+	 * @return This tween instance.
+	 */
+	virtual UQuickTweenBase* Reset(Badge<UQuickTweenSequence>* badge = nullptr);
+
 	/**
 	 * Kills the tween, stopping all updates and events.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
 	virtual void Kill();
+
+	/**
+	 * Kills the tween from a sequence, stopping all updates and events.
+	 * @param badge Badge pointer to allow internal calls from sequences.
+	 */
+	virtual void Kill(Badge<UQuickTweenSequence>* badge = nullptr);
 
 	/**
 	 * Updates the tween by the given delta time.

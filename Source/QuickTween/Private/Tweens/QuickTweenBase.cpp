@@ -58,34 +58,68 @@ void UQuickTweenBase::Update(float deltaTime)
 
 UQuickTweenBase* UQuickTweenBase::Play()
 {
-	// TODO: Try to identify who is calling this in case the tween is in a sequence
+	return Play(nullptr);
+}
+
+UQuickTweenBase* UQuickTweenBase::Play(Badge<UQuickTweenSequence>* badge)
+{
+	if (bIsInSequence && !badge) return this;
+
 	bIsPlaying = true;
 	return this;
 }
 
 UQuickTweenBase* UQuickTweenBase::Pause()
 {
+	return Pause(nullptr);
+}
+
+UQuickTweenBase* UQuickTweenBase::Pause(Badge<UQuickTweenSequence>* badge)
+{
+	if (bIsInSequence && !badge) return this;
+
 	bIsPlaying = false;
 	return this;
 }
 
 UQuickTweenBase* UQuickTweenBase::Stop()
 {
+	return Stop(nullptr);
+}
+
+UQuickTweenBase* UQuickTweenBase::Stop(Badge<UQuickTweenSequence>* badge)
+{
+	if (bIsInSequence && !badge) return this;
+
 	bIsPlaying = false;
 	bIsCompleted = true;
-	Restart();
+	Restart(badge);
 	CurrentLoop = 1;
 	return this;
 }
 
 UQuickTweenBase* UQuickTweenBase::Reverse()
 {
+	return Reverse(nullptr);
+}
+
+UQuickTweenBase* UQuickTweenBase::Reverse(Badge<UQuickTweenSequence>* badge)
+{
+	if (bIsInSequence && !badge) return this;
+
 	bIsBackwards = !bIsBackwards;
 	return this;
 }
 
 UQuickTweenBase* UQuickTweenBase::Restart()
 {
+	return Restart(nullptr);
+}
+
+UQuickTweenBase* UQuickTweenBase::Restart(Badge<UQuickTweenSequence>* badge)
+{
+	if (bIsInSequence && !badge) return this;
+
 	ElapsedTime = bIsBackwards ? Duration : 0.0f;
 	Progress = bIsBackwards ? 1.0f : 0.0f;
 	return this;
@@ -93,7 +127,14 @@ UQuickTweenBase* UQuickTweenBase::Restart()
 
 UQuickTweenBase* UQuickTweenBase::Complete()
 {
-	Stop();
+	return Complete(nullptr);
+}
+
+UQuickTweenBase* UQuickTweenBase::Complete(Badge<UQuickTweenSequence>* badge)
+{
+	if (bIsInSequence && !badge) return this;
+
+	Stop(badge);
 	if (OnComplete.IsBound())
 	{
 		OnComplete.Broadcast(this);
@@ -103,6 +144,13 @@ UQuickTweenBase* UQuickTweenBase::Complete()
 
 UQuickTweenBase* UQuickTweenBase::Reset()
 {
+	return Reset(nullptr);
+}
+
+UQuickTweenBase* UQuickTweenBase::Reset(Badge<UQuickTweenSequence>* badge)
+{
+	if (bIsInSequence && !badge) return this;
+
 	ElapsedTime = 0.0f;
 	Progress = 0.0f;
 	Duration = 0.0f;
@@ -120,5 +168,12 @@ UQuickTweenBase* UQuickTweenBase::Reset()
 
 void UQuickTweenBase::Kill()
 {
+	Kill(nullptr);
+}
+
+void UQuickTweenBase::Kill(Badge<UQuickTweenSequence>* badge)
+{
+	if (bIsInSequence && !badge) return;
+
 	bIsPendingKill = true;
 }
