@@ -7,7 +7,7 @@
 void UQuickTweenManager::OnWorldBeginPlay(UWorld& inWorld)
 {
 	Super::OnWorldBeginPlay(inWorld);
-	TickDelegateHandler = FTSTicker::AddTicker(FTickerDelegate::CreateUObject(this, &UQuickTweenManager::Tick), 0.0f);
+	TickDelegateHandler = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UQuickTweenManager::Tick), 0.0f);
 }
 
 bool UQuickTweenManager::Tick(float deltaTime)

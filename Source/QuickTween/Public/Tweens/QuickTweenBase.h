@@ -104,7 +104,7 @@ public:
 	 * @param badge Badge pointer to allow internal calls from sequences.
 	 * @return This tween instance.
 	 */
-	virtual UQuickTweenBase* Play(Badge<UQuickTweenSequence>* badge = nullptr);
+	virtual UQuickTweenBase* Play(Badge<UQuickTweenSequence>* badge);
 
 	/**
 	 * Pauses the tween.
@@ -119,7 +119,7 @@ public:
 	 * @param badge Bagde pointer to allow internal calls from sequences.
 	 * @return This tween instance.
 	 */
-	virtual UQuickTweenBase* Pause(Badge<UQuickTweenSequence>* badge = nullptr);
+	virtual UQuickTweenBase* Pause(Badge<UQuickTweenSequence>* badge);
 
 	/**
 	 * Stops the tween and resets its progress.
@@ -133,7 +133,7 @@ public:
 	 * @param badge Badge pointer to allow internal calls from sequences.
 	 * @return This tween instance.
 	 */
-	virtual UQuickTweenBase* Stop(Badge<UQuickTweenSequence>* badge = nullptr);
+	virtual UQuickTweenBase* Stop(Badge<UQuickTweenSequence>* badge);
 
 	/**
 	 * Reverses the direction of the tween.
@@ -147,7 +147,7 @@ public:
 	 * @param badge
 	 * @return
 	 */
-	virtual UQuickTweenBase* Reverse(Badge<UQuickTweenSequence>* badge = nullptr);
+	virtual UQuickTweenBase* Reverse(Badge<UQuickTweenSequence>* badge);
 
 	/**
 	 * Restarts the tween from the beginning.
@@ -162,7 +162,7 @@ public:
 	 * @param badge Badge pointer to allow internal calls from sequences.
 	 * @return This tween instance.
 	 */
-	virtual UQuickTweenBase* Restart(Badge<UQuickTweenSequence>* badge = nullptr);
+	virtual UQuickTweenBase* Restart(Badge<UQuickTweenSequence>* badge);
 
 	/**
 	 * Completes the tween immediately.
@@ -176,7 +176,7 @@ public:
 	 * @param badge Badge pointer to allow internal calls from sequences.
 	 * @return This tween instance.
 	 */
-	virtual UQuickTweenBase* Complete(Badge<UQuickTweenSequence>* badge = nullptr);
+	virtual UQuickTweenBase* Complete(Badge<UQuickTweenSequence>* badge);
 
 	/**
 	 * Resets the tween to its initial state.
@@ -191,7 +191,7 @@ public:
 	 * @param badge Badge pointer to allow internal calls from sequences.
 	 * @return This tween instance.
 	 */
-	virtual UQuickTweenBase* Reset(Badge<UQuickTweenSequence>* badge = nullptr);
+	virtual UQuickTweenBase* Reset(Badge<UQuickTweenSequence>* badge);
 
 	/**
 	 * Kills the tween, stopping all updates and events.
@@ -203,7 +203,7 @@ public:
 	 * Kills the tween from a sequence, stopping all updates and events.
 	 * @param badge Badge pointer to allow internal calls from sequences.
 	 */
-	virtual void Kill(Badge<UQuickTweenSequence>* badge = nullptr);
+	virtual void Kill(Badge<UQuickTweenSequence>* badge);
 
 	/**
 	 * Updates the tween by the given delta time.
@@ -211,6 +211,13 @@ public:
 	 * @return True if the tween is still active, false if completed or killed.
 	 */
 	virtual void Update(float deltaTime) override;
+
+	/**
+	 * Updates the tween by the given delta time from a sequence.
+	 * @param deltaTime Time since last update.
+	 * @param badge Badge pointer to allow internal calls from sequences.
+	 */
+	virtual void Update(float deltaTime, Badge<UQuickTweenSequence>* badge);
 
 	/**
 	 * If this tween should be eliminated from the manager.

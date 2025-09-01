@@ -14,6 +14,12 @@ void UQuickTweenBuilderObject::Initialize(UObject* inObject)
 	Sequence = NewObject<UQuickTweenSequence>();
 }
 
+UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetLoopsBase(int32 loops)
+{
+	Sequence->SetLoops(loops);
+	return this;
+}
+
 UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetLoopTypeBase(ELoopType loopType)
 {
 	const int32 numTweens = Sequence->GetNumTweens();

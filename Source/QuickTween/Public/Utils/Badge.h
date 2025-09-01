@@ -1,8 +1,9 @@
 ﻿#pragma once
 
 template <typename T>
-class Badge<T>
+class Badge
 {
+private:
 	friend T;
 	Badge() = default;
 };

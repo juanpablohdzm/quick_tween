@@ -20,7 +20,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "QuickTween")
 	static UQuickTweenBuilderSceneComponent* CreateQuickTweenBuilderSceneComp(USceneComponent* InTarget);
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "QuickTween")
-	static UQuickTweenBuilderCameraComponent* CreateQuickTweenBuilderCameraComp(UCameraComponent* InTarget);
+	static UQuickTweenBuilderCameraComponent* CreateQuickTweenBuilderCameraComp(class UCameraComponent* InTarget);
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "QuickTween")
 	static UQuickTweenBuilderMaterial* CreateQuickTweenBuilderMaterial(UMaterialInstanceDynamic* InTarget);
 

@@ -23,6 +23,11 @@ void UQuickTweenBase::Initialize(
 
 void UQuickTweenBase::Update(float deltaTime)
 {
+	Update(deltaTime, nullptr);
+}
+
+void UQuickTweenBase::Update(float deltaTime, Badge<UQuickTweenSequence>* badge)
+{
 	if (GetIsCompleted() || !GetIsPlaying()) return;
 
 	ElapsedTime += deltaTime * GetTimeScale();
@@ -36,7 +41,7 @@ void UQuickTweenBase::Update(float deltaTime)
 	{
 		if (Loops != INFINITE_LOOPS && CurrentLoop >= Loops)
 		{
-			Complete();
+			Complete(badge);
 			return;
 		}
 
@@ -46,7 +51,7 @@ void UQuickTweenBase::Update(float deltaTime)
 			// Nothing to do here, just continue to the next loop
 			break;
 		case ELoopType::PingPong:
-			Reverse();
+			Reverse(badge);
 			break;
 		default:
 			ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));

@@ -7,7 +7,6 @@
 
 void UQuickVectorTween::Update(float deltaTime)
 {
-
 	UQuickTweenBase::Update(deltaTime);
 
 	if (GetIsCompleted() || !GetIsPlaying()) return;

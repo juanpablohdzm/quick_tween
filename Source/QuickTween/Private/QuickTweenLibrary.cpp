@@ -3,6 +3,7 @@
 
 #include "QuickTweenLibrary.h"
 
+#include "Camera/CameraComponent.h"
 #include "TweenBuilders/QuickTweenBuilderCameraComponent.h"
 #include "TweenBuilders/QuickTweenBuilderMaterial.h"
 #include "TweenBuilders/QuickTweenBuilderSceneComponent.h"

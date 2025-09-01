@@ -56,7 +56,7 @@ UQuickTweenSequence* UQuickTweenSequence::Complete()
 {
 	bIsCompleted = true;
 	bIsPlaying = false;
-	ensureAlways(false, TEXT("Completing a sequence is not implemented yet. This should be handled by the caller."));
+	ensureAlwaysMsgf(false, TEXT("Completing a sequence is not implemented yet. This should be handled by the caller."));
 	return this;
 }
 
@@ -148,7 +148,8 @@ void UQuickTweenSequence::Update(float deltaTime)
 	{
 		if (tween.IsValid())
 		{
-			tween->Update(deltaTime);
+			Badge<UQuickTweenSequence> badge;
+			tween->Update(deltaTime, &badge);
 
 			if (tween->GetIsCompleted())
 			{
@@ -223,7 +224,7 @@ int32 UQuickTweenSequence::GetNumTweens() const
 
 UQuickTweenBase* UQuickTweenSequence::GetTween(int32 index) const
 {
-	uint32 currentTweenIndex = 0;
+	int32 currentTweenIndex = 0;
 	for (const FQuickTweenSequenceGroup& group : TweenGroups)
 	{
 		if (index < currentTweenIndex + group.Tweens.Num())
