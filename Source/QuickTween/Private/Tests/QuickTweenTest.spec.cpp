@@ -135,7 +135,7 @@ void AutomationSpec::Define()
 
 			for (int i = 0; i < 100; ++i)
 			{
-				vectorTween->Update(0.05f); 
+				vectorTween->Update(0.05f);
 			}
 
 			TestNearlyEqual("Final value should be close to final target", currentValue, to, 10.0f);

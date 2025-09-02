@@ -20,14 +20,15 @@ void UQuickVectorTween::Update(float deltaTime)
 	const FVector value = FEaseFunctions<FVector>::Ease(From, To, progress, GetEaseType());
 	SetterFunction(value);
 	SetProgress(progress);
+
 }
 
-UQuickTweenBase* UQuickVectorTween::Complete()
+UQuickTweenBase* UQuickVectorTween::Complete(Badge<UQuickTweenSequence>* badge)
 {
 	bool useFrom = false;
 	if (GetLoopType() == ELoopType::PingPong) {
 	    useFrom = (GetLoops() % 2 == 0);
 	}
 	SetterFunction(useFrom ? From : To);
-	return Super::Complete();
+	return Super::Complete(badge);
 }

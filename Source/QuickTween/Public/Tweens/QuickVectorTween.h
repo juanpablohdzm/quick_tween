@@ -68,11 +68,12 @@ public:
 	virtual void Update(float deltaTime) override;
 
 	/**
-	 * Completes the tween and applies the final value.
+	 * Completes the tween from a sequence context.
 	 *
+	 * @param badge Badge pointer to allow internal calls from sequences.
 	 * @return Pointer to the completed tween base.
 	 */
-	virtual UQuickTweenBase* Complete() override;
+	virtual UQuickTweenBase* Complete(Badge<UQuickTweenSequence>* badge) override;
 
 private:
 	/** Starting FVector value. */
