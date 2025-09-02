@@ -257,7 +257,7 @@ private:
 	int32 CurrentLoop = 1;
 
 	/** Total number of loops. */
-	int32 Loops = 0;
+	int32 Loops = -1;
 
 	/** Loop type for the sequence. */
 	ELoopType LoopType = ELoopType::Restart;

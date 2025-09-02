@@ -54,11 +54,55 @@ UQuickTweenSequence* UQuickTweenSequence::Pause()
 
 UQuickTweenSequence* UQuickTweenSequence::Complete()
 {
+	if (bIsCompleted || bIsPendingKill)
+	{
+		return this;
+	}
+
+	const bool bEndsAtEndByLoop =
+		(LoopType != ELoopType::PingPong) || ((Loops % 2) == 1);
+	const bool bCompleteToEnd = bIsBackwards ? false : bEndsAtEndByLoop;
+
+	bIsPlaying   = false;
 	bIsCompleted = true;
-	bIsPlaying = false;
-	ensureAlwaysMsgf(false, TEXT("Completing a sequence is not implemented yet. This should be handled by the caller."));
+
+	ElapsedTime = GetDuration();
+	Progress    = 1.0f;
+	CurrentLoop = Loops;
+	CurrentTweenGroupIndex = TweenGroups.Num() > 0 ? TweenGroups.Num() - 1 : 0;
+
+	for (int32 GroupIdx = 0; GroupIdx < TweenGroups.Num(); ++GroupIdx)
+	{
+		for (TWeakObjectPtr<UQuickTweenBase>& WeakTween : TweenGroups[GroupIdx].Tweens)
+		{
+			if (!WeakTween.IsValid())
+			{
+				UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Complete()"));
+				continue;
+			}
+
+			if (bCompleteToEnd)
+			{
+				Badge<UQuickTweenSequence> Badge;
+				WeakTween->Complete(&Badge);
+			}
+			else
+			{
+				WeakTween->Reverse();
+				{
+					Badge<UQuickTweenSequence> Badge;
+					WeakTween->Complete(&Badge);
+				}
+				WeakTween->Reverse();
+			}
+		}
+	}
+
+	OnComplete.Broadcast(this);
+
 	return this;
 }
+
 
 UQuickTweenSequence* UQuickTweenSequence::Restart()
 {
@@ -135,10 +179,13 @@ void UQuickTweenSequence::Update(float deltaTime)
 	}
 
 
-	if (Loops != INFINITE_LOOPS && CurrentLoop >= Loops)
+	if (ElapsedTime >= (GetDuration() * CurrentLoop))
 	{
-		Complete();
-		return;
+		if (Loops != INFINITE_LOOPS && CurrentLoop >= Loops)
+		{
+			Complete();
+			return;
+		}
 	}
 
 

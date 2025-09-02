@@ -1,230 +1,226 @@
-﻿#include "Misc/AutomationTest.h"
+﻿// QuickVectorTween.Spec.cpp
+
+#include "Misc/AutomationTest.h"
 #include "Tweens/QuickVectorTween.h"
+#include "Utils/LoopType.h"
 
-BEGIN_DEFINE_SPEC(AutomationSpec, "Gameplay.QuickTween", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
-UQuickVectorTween* vectorTween;
-END_DEFINE_SPEC(AutomationSpec)
+BEGIN_DEFINE_SPEC(QuickVectorTweenSpec, "Gameplay.QuickTween.Vector", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+UQuickVectorTween* Tween;
+END_DEFINE_SPEC(QuickVectorTweenSpec)
 
-void AutomationSpec::Define()
+void QuickVectorTweenSpec::Define()
 {
-	Describe("QuickTween Automation Tests Vector", [this]()
+	Describe("QuickTween Automation Tests - Vector", [this]()
 	{
 		BeforeEach([this]()
 		{
-			vectorTween = NewObject<UQuickVectorTween>();
-		});
-
-		It("Should initialize and update a vector tween", [this]()
-		{
-			FVector from(0, 0, 0);
-			FVector to(100, 100, 100);
-			FVector currentValue;
-			vectorTween->Initialize(from, to, [this, &currentValue](const FVector& value) mutable
-			{
-				currentValue = value;
-			}, 1.0f);
-
-			vectorTween->Play();
-			// Simulate an update
-			vectorTween->Update(0.5f); // Simulate 60 FPS
-
-			// Check if the tween has been updated correctly
-			TestTrue("Tween should have progressed", vectorTween->GetProgress() > 0.0f);
-			TestNearlyEqual("Current value should be close to halfway",currentValue, FVector(50, 50, 50), 10.0f);
-		});
-
-
-		It("Should initialize and not update a vector tween if not playing", [this]()
-		{
-			FVector from(0, 0, 0);
-			FVector to(100, 100, 100);
-			vectorTween->Initialize(from, to, [this](const FVector& value)
-			{
-
-			}, 1.0f);
-
-			// Simulate an update
-			vectorTween->Update(0.5f);
-
-			// Check if the tween has been updated correctly
-			TestFalse("Tween should have not progressed", vectorTween->GetProgress() > 0.0f);
-		});
-
-		It("Should handle simple ease from beginning to end", [this]()
-		{
-			FVector from(0, 0, 0);
-			FVector to(100, 100, 100);
-			FVector currentValue;
-			vectorTween->Initialize(from, to, [this, &currentValue](const FVector& value) mutable
-			{
-				// This is where you would normally set the value on a target
-				currentValue = value;
-			}, 1.0f, 1.0f, EEaseType::Linear);
-
-			vectorTween->Play();
-			for (int i = 0; i < 100; ++i)
-			{
-				vectorTween->Update(0.1f); // Simulate 60 FPS
-			}
-
-			TestTrue("Tween should have reached the end", vectorTween->GetIsCompleted());
-			TestNearlyEqual("Final value should be close to target", currentValue, to, 10.0f);
-		});
-
-		It("Should not update after end", [this]()
-		{
-			FVector from(0, 0, 0);
-			FVector to(100, 100, 100);
-			FVector currentValue;
-			vectorTween->Initialize(from, to, [this, &currentValue](const FVector& value) mutable
-			{
-				// This is where you would normally set the value on a target
-				currentValue = value;
-			}, 1.0f, 1.0f, EEaseType::Linear);
-
-			vectorTween->Play();
-			for (int i = 0; i < 100; ++i)
-			{
-				vectorTween->Update(0.1f); // Simulate 60 FPS
-			}
-
-			TestTrue("Tween should have reached the end", vectorTween->GetIsCompleted());
-			TestNearlyEqual("Final value should be close to target", currentValue, to, 10.0f);
-
-			for (int i = 0; i < 60; ++i)
-			{
-				vectorTween->Update(0.1f);
-			}
-
-			TestFalse("Tween should not update after completion", vectorTween->GetProgress() >= 1.0f);
-			TestNearlyEqual("Final value should still be close to target", currentValue, to, 10.0f);
-		});
-
-		It("Should handle slow time scaling correctly", [this]()
-		{
-			FVector from(0, 0, 0);
-			FVector to(100, 100, 100);
-			FVector currentValue;
-			vectorTween->Initialize(from, to, [this, &currentValue](const FVector& value) mutable
-			{
-				currentValue = value;
-			}, 1.0f, 0.5f, EEaseType::Linear);
-
-			vectorTween->Play();
-			vectorTween->Update(1.0f);
-
-			TestNearlyEqual("Final value should be close to middle target", currentValue, to / 2.0f, 2.0f);
-			TestFalse("Tween should not be completed yet", vectorTween->GetIsCompleted());
-
-			vectorTween->Update(1.0f);
-
-			TestTrue("Tween should have reached the end after time scaling", vectorTween->GetIsCompleted());
-		});
-
-		It("Should handle fast time scaling correctly", [this]()
-		{
-			FVector from(0, 0, 0);
-			FVector to(100, 100, 100);
-			FVector currentValue;
-			vectorTween->Initialize(from, to, [this, &currentValue](const FVector& value) mutable
-			{
-				currentValue = value;
-			}, 1.0f, 2.0f, EEaseType::Linear);
-
-			vectorTween->Play();
-
-			for (int i = 0; i < 100; ++i)
-			{
-				vectorTween->Update(0.05f);
-			}
-
-			TestNearlyEqual("Final value should be close to final target", currentValue, to, 10.0f);
-			TestTrue("Tween should be completed", vectorTween->GetIsCompleted());
-
-		});
-
-
-		It("Should handle looping restart correctly", [this]()
-		{
-			FVector from(0, 0, 0);
-			FVector to(100, 100, 100);
-			FVector currentValue;
-			int8_t loopsAmount = 2;
-			vectorTween->Initialize(from, to, [this, &currentValue](const FVector& value) mutable
-			{
-				currentValue = value;
-			},
-			1.0f,
-			1.0f,
-			EEaseType::Linear,
-			nullptr,
-			loopsAmount,
-			ELoopType::Restart);
-
-			// First loop
-			vectorTween->Play();
-			TestNearlyEqual("Value should be close to initial target at start", currentValue, from, 10.0f);
-			vectorTween->Update(0.5f);
-			TestNearlyEqual("Value should be close to halfway target", currentValue, FVector(50, 50, 50), 10.0f);
-			vectorTween->Update(0.49f);
-			TestNearlyEqual("Value should be close to final target after first loop", currentValue, to, 10.0f);
-			TestFalse("Tween should not be completed after first loop", vectorTween->GetIsCompleted());
-
-			vectorTween->Update(0.02f);
-			// Second loop starts
-			TestNearlyEqual("Value should be close to initial target", currentValue, from, 10.0f);
-			vectorTween->Update(1.2f);
-			TestNearlyEqual("Value should be at target after second loop", currentValue, to, 10.0f);
-
-			TestTrue("Tween should be completed after all loops", vectorTween->GetIsCompleted());
-		});
-
-		It("Should handle looping ping-pong correctly", [this]()
-		{
-			FVector from(0, 0, 0);
-			FVector to(100, 100, 100);
-			FVector currentValue;
-			int8_t loopsAmount = 2;
-			vectorTween->Initialize(from, to, [this, &currentValue](const FVector& value) mutable
-			{
-				UE_LOG(LogTemp, Log, TEXT("Current Value: %s"), *value.ToString());
-				currentValue = value;
-			},
-			1.0f,
-			1.0f,
-			EEaseType::Linear,
-			nullptr,
-			loopsAmount,
-			ELoopType::PingPong);
-
-			// First forward loop
-			vectorTween->Play();
-			TestNearlyEqual("Value should be close to initial target at start", currentValue, from, 10.0f);
-			vectorTween->Update(0.5f);
-			TestNearlyEqual("Value should be close to halfway target", currentValue, FVector(50, 50, 50), 10.0f);
-			vectorTween->Update(0.49f);
-			TestNearlyEqual("Value should be close to final target after first forward loop", currentValue, to, 10.0f);
-			TestFalse("Tween should not be completed after first forward loop", vectorTween->GetIsCompleted());
-
-			// First backward loop
-			vectorTween->Update(0.02f);
-			TestNearlyEqual("Value should be close to final target at start of backward loop", currentValue, to, 10.0f);
-			vectorTween->Update(0.48f);
-			TestNearlyEqual("Value should be close to halfway target on backward", currentValue, FVector(50, 50, 50), 10.0f);
-			vectorTween->Update(1.0f);
-			TestNearlyEqual("Value should be close to initial target after first backward loop", currentValue, from, 10.0f);
-
-			TestTrue("Tween should be completed after all ping-pong loops", vectorTween->GetIsCompleted());
+			Tween = NewObject<UQuickVectorTween>(GetTransientPackage());
+			Tween->AddToRoot(); // GC safety in tests
 		});
 
 		AfterEach([this]()
 		{
-			// Clean up the vectorTween object
-			if (vectorTween)
+			if (Tween)
 			{
-				vectorTween->ConditionalBeginDestroy();
-				vectorTween = nullptr;
+				Tween->RemoveFromRoot();
+				Tween->ConditionalBeginDestroy();
+				Tween = nullptr;
 			}
+		});
+
+		It("Initializes and does not update unless playing", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100);
+			int32 UpdateCalls = 0;
+
+			Tween->Initialize(From, To, [&UpdateCalls](const FVector&){ ++UpdateCalls; }, 1.0f);
+
+			// No Play() yet
+			Tween->Update(0.5f);
+
+			TestEqual("Progress stays at 0 when not playing", Tween->GetProgress(), 0.0f);
+			TestEqual("No callback invocations when not playing", UpdateCalls, 0);
+			TestFalse("Not completed", Tween->GetIsCompleted());
+		});
+
+		It("Plays and updates towards halfway", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
+
+			Tween->Initialize(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f);
+			Tween->Play();
+			Tween->Update(0.5f); // half the duration
+
+			TestTrue("Tween progressed", Tween->GetProgress() > 0.0f);
+			TestNearlyEqual("Value ~halfway", Current, FVector(50,50,50), 5.0f);
+			TestFalse("Not completed at halfway", Tween->GetIsCompleted());
+		});
+
+		It("Clamps at the end and does not change afterwards", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
+
+			Tween->Initialize(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f, 1.0f, EEaseType::Linear);
+			Tween->Play();
+
+			Tween->Update(1.1f); // overshoot to ensure finish
+
+			TestTrue("Completed after overshoot", Tween->GetIsCompleted());
+			TestNearlyEqual("Value clamped to target", Current, To, 1.0f);
+
+			const FVector EndValue = Current;
+
+			// Further updates should not move anything
+			Tween->Update(0.5f);
+			TestTrue("Value unchanged after completion", Current.Equals(EndValue, 1e-3f));
+		});
+
+		It("Handles slow time scaling (0.5x) correctly", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
+
+			Tween->Initialize(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f, 0.5f, EEaseType::Linear);
+			Tween->Play();
+
+			Tween->Update(1.0f); // effective progress 0.5
+			TestNearlyEqual("~middle at 1s with 0.5x", Current, To/2.0f, 2.0f);
+			TestFalse("Not completed yet", Tween->GetIsCompleted());
+
+			Tween->Update(1.0f); // reach end
+			TestTrue("Completed after total 2s", Tween->GetIsCompleted());
+			TestNearlyEqual("At target", Current, To, 1.0f);
+		});
+
+		It("Handles fast time scaling (2x) correctly", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
+
+			Tween->Initialize(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f, 2.0f, EEaseType::Linear);
+			Tween->Play();
+
+			// 0.5s at 2x => finish
+			Tween->Update(0.5f);
+			TestTrue("Completed", Tween->GetIsCompleted());
+			TestNearlyEqual("At target", Current, To, 1.0f);
+		});
+
+		It("Does not progress when TimeScale is zero", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
+			int32 Calls = 0;
+
+			Tween->Initialize(From, To, [&Current, &Calls](const FVector& v){ ++Calls; Current = v; }, 1.0f, 0.0f, EEaseType::Linear);
+			Tween->Play();
+
+			Tween->Update(1.0f);
+
+			TestEqual("Progress remains 0", Tween->GetProgress(), 0.0f);
+			TestTrue("Value unchanged", Current.Equals(From, 1e-3f));
+			TestFalse("Not completed", Tween->GetIsCompleted());
+		});
+
+		It("Zero duration completes immediately", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
+			int32 Calls = 0;
+
+			Tween->Initialize(From, To, [&Current, &Calls](const FVector& v){ ++Calls; Current = v; }, 0.0f, 1.0f, EEaseType::Linear);
+			Tween->Play();
+			Tween->Update(0.0f); // tick once
+
+			TestTrue("Completed instantly", Tween->GetIsCompleted());
+			TestNearlyEqual("Value at target", Current, To, 1.0f);
+			TestTrue("Callback fired at least once", Calls >= 1);
+		});
+
+		It("Single large delta clamps to end (overshoot)", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
+
+			Tween->Initialize(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f);
+			Tween->Play();
+			Tween->Update(5.0f);
+
+			TestTrue("Completed", Tween->GetIsCompleted());
+			TestNearlyEqual("Value clamped to target", Current, To, 1.0f);
+		});
+
+		It("Many tiny updates accumulate to completion and progress is monotonic", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
+
+			Tween->Initialize(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f, 1.0f, EEaseType::Linear);
+			Tween->Play();
+
+			float lastProgress = 0.0f;
+			for (int i = 0; i < 200; ++i) // total dt 1.0
+			{
+				Tween->Update(0.005f);
+				const float p = Tween->GetProgress();
+				TestTrue("Progress is non-decreasing", p + 1e-6f >= lastProgress);
+				lastProgress = p;
+			}
+			Tween->Update(0.01f); // ensure overshoot
+
+			TestNearlyEqual("Value at target", Current, To, 1.0f);
+			TestTrue("Completed after accumulation", Tween->GetIsCompleted());
+		});
+
+		It("Loops with Restart work (2 loops)", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
+			int8_t LoopsAmount = 2;
+
+			Tween->Initialize(
+				From, To,
+				[&Current](const FVector& v){ Current = v; },
+				1.0f, 1.0f, EEaseType::Linear,
+				nullptr, LoopsAmount, ELoopType::Restart);
+
+			// Loop 1
+			Tween->Play();
+			TestNearlyEqual("Start at From", Current, From, 1.0f);
+			Tween->Update(0.5f);
+			TestNearlyEqual("~halfway in loop 1", Current, FVector(50,50,50), 10.0f);
+			Tween->Update(0.49f);
+			TestNearlyEqual("At To after loop 1", Current, To, 2.0f);
+			TestFalse("Not completed after first loop", Tween->GetIsCompleted());
+
+			// Loop 2 (restart)
+			Tween->Update(0.01f); // advance to next loop
+			TestNearlyEqual("Restarted to From", Current, From, 10.0f);
+			Tween->Update(1.0f);
+			TestNearlyEqual("At To after loop 2", Current, To, 2.0f);
+
+			TestTrue("Completed after all loops", Tween->GetIsCompleted());
+		});
+
+		It("Loops with PingPong work (forward then backward)", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
+			int8_t LoopsAmount = 2;
+
+			Tween->Initialize(
+				From, To,
+				[&Current](const FVector& v){ Current = v; },
+				1.0f, 1.0f, EEaseType::Linear,
+				nullptr, LoopsAmount, ELoopType::PingPong);
+
+			// Forward
+			Tween->Play();
+			Tween->Update(0.5f);
+			TestNearlyEqual("~halfway forward", Current, FVector(50,50,50), 10.0f);
+			Tween->Update(0.5f);
+			TestNearlyEqual("Reached To", Current, To, 2.0f);
+			TestFalse("Not completed at mid ping-pong", Tween->GetIsCompleted());
+
+			// Backward
+			Tween->Update(0.5f);
+			TestNearlyEqual("~halfway backward", Current, FVector(50,50,50), 10.0f);
+			Tween->Update(0.49f);
+			TestNearlyEqual("Returned to From", Current, From, 2.0f);
+			Tween->Update(1.f); // ensure overshoot
+			TestTrue("Completed after ping-pong loops", Tween->GetIsCompleted());
 		});
 	});
 }

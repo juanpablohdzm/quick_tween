@@ -320,8 +320,8 @@ private:
 
 	/** Current loop index (1-based). */
 	int32 CurrentLoop = 1;
-	/** Number of loops (0 = infinite). */
-	int32 Loops = 0;
+	/** Number of loops (-1 = infinite). */
+	int32 Loops = -1;
 	/** Looping behavior. */
 	ELoopType LoopType = ELoopType::Restart;
 
