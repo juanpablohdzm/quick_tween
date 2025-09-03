@@ -5,9 +5,9 @@
 
 #include "Utils/EaseFunctions.h"
 
-void UQuickVectorTween::Update(float deltaTime)
+void UQuickVectorTween::Update(float deltaTime, Badge<UQuickTweenSequence>* badge)
 {
-	UQuickTweenBase::Update(deltaTime);
+	UQuickTweenBase::Update(deltaTime, badge);
 
 	if (GetIsCompleted() || !GetIsPlaying()) return;
 
@@ -20,7 +20,6 @@ void UQuickVectorTween::Update(float deltaTime)
 	const FVector value = FEaseFunctions<FVector>::Ease(From, To, progress, GetEaseType());
 	SetterFunction(value);
 	SetProgress(progress);
-
 }
 
 UQuickTweenBase* UQuickVectorTween::Complete(Badge<UQuickTweenSequence>* badge)

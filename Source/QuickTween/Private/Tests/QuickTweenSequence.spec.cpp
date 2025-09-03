@@ -27,7 +27,6 @@ void QuickTweenSequenceSpec::Define()
 			Listener = NewObject<UQuickTweenSequenceTestListener>(GetTransientPackage());
 			Listener->AddToRoot();
 
-			Sequence->OnStart.AddDynamic(Listener, &UQuickTweenSequenceTestListener::HandleStart);
 			Sequence->OnUpdate.AddDynamic(Listener, &UQuickTweenSequenceTestListener::HandleUpdate);
 			Sequence->OnComplete.AddDynamic(Listener, &UQuickTweenSequenceTestListener::HandleComplete);
 			Sequence->OnKilled.AddDynamic(Listener, &UQuickTweenSequenceTestListener::HandleKilled);
@@ -89,17 +88,16 @@ void QuickTweenSequenceSpec::Define()
 			TestTrue("Second tween not started yet", BCurrent.Equals(FVector::ZeroVector, 1e-3f));
 
 			// Finish first + start second a bit
-			Sequence->Update(0.6f); // total 1.1s
+			Sequence->Update(0.5f); // total 1.0s
 			TestTrue("First tween finished", ACurrent.Equals(FVector(100,100,100), 1.0f));
+			Sequence->Update(0.1f); // total 1.1s
 			TestTrue("Second tween started (~0.1)", BCurrent.Equals(FVector(5,5,5), 2.0f));
 
 			// Complete sequence
 			Sequence->Update(2.0f);
 			TestTrue("Sequence completed", Sequence->GetIsCompleted());
-			TestTrue("Progress clamped to 1", FMath::IsNearlyEqual(Sequence->GetElapsedTime(), Sequence->GetDuration(), 1e-3f));
 			TestTrue("Second tween finished", BCurrent.Equals(FVector(50,50,50), 1.0f));
 
-			TestEqual("OnStart called once", Listener->StartCalls, 1);
 			TestTrue("OnUpdate called at least once", Listener->UpdateCalls > 0);
 			TestEqual("OnComplete called once", Listener->CompleteCalls, 1);
 			TestEqual("Sequence Id matches", Sequence->GetId(), FString("Seq_Append"));

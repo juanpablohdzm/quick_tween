@@ -60,12 +60,15 @@ public:
 	}
 
 	/**
-	 * Updates the tween by the given delta time.
+	 * Updates the tween's progress based on the elapsed time.
 	 *
 	 * @param deltaTime Time elapsed since the last update.
-	 * @return True if the tween is still active, false if it has completed.
+	 * @param badge Badge pointer to allow internal calls from sequences.
 	 */
-	virtual void Update(float deltaTime) override;
+	virtual void Update(float deltaTime, Badge<UQuickTweenSequence>* badge) override;
+
+	/** Expose base class Update for external calls without badge. */
+	using UQuickTweenBase::Update;
 
 	/**
 	 * Completes the tween from a sequence context.
@@ -74,6 +77,9 @@ public:
 	 * @return Pointer to the completed tween base.
 	 */
 	virtual UQuickTweenBase* Complete(Badge<UQuickTweenSequence>* badge) override;
+
+	/** Expose base class Complete for external calls without badge. */
+	using UQuickTweenBase::Complete;
 
 private:
 	/** Starting FVector value. */

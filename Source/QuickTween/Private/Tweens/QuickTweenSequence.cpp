@@ -42,13 +42,51 @@ UQuickTweenSequence* UQuickTweenSequence::Append(UQuickTweenBase* tween)
 
 UQuickTweenSequence* UQuickTweenSequence::Play()
 {
+	if (bIsCompleted || bIsPendingKill)
+	{
+		return this;
+	}
+
 	bIsPlaying = true;
+	for (auto [Tweens] : TweenGroups)
+	{
+		for (TWeakObjectPtr<UQuickTweenBase>& WeakTween : Tweens)
+		{
+			if (!WeakTween.IsValid())
+			{
+				UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Play()"));
+				continue;
+			}
+
+			Badge<UQuickTweenSequence> badge;
+			WeakTween->Play(&badge);
+		}
+	}
 	return this;
 }
 
 UQuickTweenSequence* UQuickTweenSequence::Pause()
 {
+	if (bIsCompleted || bIsPendingKill)
+	{
+		return this;
+	}
+
 	bIsPlaying = false;
+	for (auto [Tweens] : TweenGroups)
+	{
+		for (TWeakObjectPtr<UQuickTweenBase>& WeakTween : Tweens)
+		{
+			if (!WeakTween.IsValid())
+			{
+				UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Pause()"));
+				continue;
+			}
+
+			Badge<UQuickTweenSequence> badge;
+			WeakTween->Pause(&badge);
+		}
+	}
 	return this;
 }
 
@@ -133,10 +171,13 @@ UQuickTweenSequence* UQuickTweenSequence::KillSequence()
 {
 	bIsPlaying = false;
 	bIsCompleted = true;
-	for (TWeakObjectPtr<UQuickTweenBase> tween : TweenGroups[CurrentTweenGroupIndex].Tweens)
+	if (CurrentTweenGroupIndex < TweenGroups.Num() && CurrentTweenGroupIndex >= 0)
 	{
-		Badge<UQuickTweenSequence> badge;
-		tween->Stop(&badge);
+		for (TWeakObjectPtr<UQuickTweenBase> tween : TweenGroups[CurrentTweenGroupIndex].Tweens)
+		{
+			Badge<UQuickTweenSequence> badge;
+			tween->Stop(&badge);
+		}
 	}
 	CurrentTweenGroupIndex = 0;
 
@@ -189,28 +230,34 @@ void UQuickTweenSequence::Update(float deltaTime)
 	}
 
 
-	const FQuickTweenSequenceGroup& currentGroup = TweenGroups[CurrentTweenGroupIndex];
-	uint32 completedTweens = 0;
-	for (TWeakObjectPtr<UQuickTweenBase> tween : currentGroup.Tweens)
-	{
-		if (tween.IsValid())
-		{
-			Badge<UQuickTweenSequence> badge;
-			tween->Update(deltaTime, &badge);
+	bool bShouldCompleteLoop = CurrentTweenGroupIndex >= TweenGroups.Num() || CurrentTweenGroupIndex < 0;
 
-			if (tween->GetIsCompleted())
+	if (!bShouldCompleteLoop)
+	{
+		const FQuickTweenSequenceGroup& currentGroup = TweenGroups[CurrentTweenGroupIndex];
+		uint32 completedTweens = 0;
+		for (TWeakObjectPtr<UQuickTweenBase> tween : currentGroup.Tweens)
+		{
+			if (tween.IsValid())
 			{
+				Badge<UQuickTweenSequence> badge;
+				tween->Update(deltaTime, &badge);
+
+				if (tween->GetIsCompleted())
+				{
+					completedTweens++;
+				}
+			}
+			else
+			{
+				UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid. This should not happen. Considering it as completed."));
 				completedTweens++;
 			}
 		}
-		else
-		{
-			UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid. This should not happen. Considering it as completed."));
-			completedTweens++;
-		}
+		bShouldCompleteLoop = completedTweens == currentGroup.Tweens.Num();
 	}
 
-	if (completedTweens == currentGroup.Tweens.Num())
+	if (bShouldCompleteLoop)
 	{
 		if (bIsBackwards)
 		{

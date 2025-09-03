@@ -6,6 +6,7 @@ class QUICKTWEEN_API IQuickTweenable
 {
 public:
 	virtual ~IQuickTweenable() = default;
+
 	virtual void Update(float deltaTime);
 
 	virtual bool GetIsPlaying() const;

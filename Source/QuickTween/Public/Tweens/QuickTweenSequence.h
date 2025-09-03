@@ -9,7 +9,6 @@
 #include "QuickTweenSequence.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStartTweenSequence, UQuickTweenSequence*, TweenSequence);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateTweenSequence, UQuickTweenSequence*, TweenSequence);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompleteTweenSequence, UQuickTweenSequence*, TweenSequence);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledTweenSequence, UQuickTweenSequence*, TweenSequence);
@@ -208,9 +207,6 @@ public:
 #pragma endregion
 
 #pragma region Delegates
-	/** Called when the sequence starts. */
-	UPROPERTY(BlueprintAssignable)
-	FOnStartTweenSequence OnStart;
 
 	/** Called when the sequence updates. */
 	UPROPERTY(BlueprintAssignable)
