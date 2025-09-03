@@ -202,6 +202,7 @@ void QuickTweenSequenceSpec::Define()
 
 			Sequence->Restart();
 			TestEqual("Elapsed time reset", Sequence->GetElapsedTime(), 0.0f);
+			Sequence->Update(0.0f); // tick once to apply initial value
 			TestTrue("Value reset", Current.Equals(FVector::ZeroVector, 1.0f));
 			TestFalse("Not completed after restart", Sequence->GetIsCompleted());
 
@@ -225,7 +226,8 @@ void QuickTweenSequenceSpec::Define()
 			Sequence->Update(0.99f);
 			TestFalse("Not completed yet (end of loop 1)", Sequence->GetIsCompleted());
 
-			Sequence->Update(0.02f); // cross into loop 2
+			Sequence->Update(0.01f); // cross into loop 2
+			Sequence->Update(0.01f); // tick once to apply reset value
 			TestTrue("Value reset at loop restart", Current.Equals(FVector::ZeroVector, 10.0f));
 			TestEqual("CurrentLoop moved to 2", Sequence->GetCurrentLoop(), 2.0f);
 

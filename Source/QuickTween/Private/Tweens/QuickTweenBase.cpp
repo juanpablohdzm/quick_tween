@@ -136,7 +136,7 @@ UQuickTweenBase* UQuickTweenBase::Restart(Badge<UQuickTweenSequence>* badge)
 	if (bIsInSequence && !badge) return this;
 
 	bIsCompleted = false;
-	bIsPlaying   = false;
+	bIsPlaying   = true;
 
 	ElapsedTime = bIsBackwards ? Duration : 0.0f;
 	Progress    = bIsBackwards ? 1.0f     : 0.0f;

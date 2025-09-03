@@ -48,18 +48,18 @@ UQuickTweenSequence* UQuickTweenSequence::Play()
 	}
 
 	bIsPlaying = true;
-	for (auto [Tweens] : TweenGroups)
+	for (auto [tweens] : TweenGroups)
 	{
-		for (TWeakObjectPtr<UQuickTweenBase>& WeakTween : Tweens)
+		for (TWeakObjectPtr<UQuickTweenBase>& weakTween : tweens)
 		{
-			if (!WeakTween.IsValid())
+			if (!weakTween.IsValid())
 			{
 				UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Play()"));
 				continue;
 			}
 
 			Badge<UQuickTweenSequence> badge;
-			WeakTween->Play(&badge);
+			weakTween->Play(&badge);
 		}
 	}
 	return this;
@@ -73,18 +73,18 @@ UQuickTweenSequence* UQuickTweenSequence::Pause()
 	}
 
 	bIsPlaying = false;
-	for (auto [Tweens] : TweenGroups)
+	for (auto [tweens] : TweenGroups)
 	{
-		for (TWeakObjectPtr<UQuickTweenBase>& WeakTween : Tweens)
+		for (TWeakObjectPtr<UQuickTweenBase>& weakTween : tweens)
 		{
-			if (!WeakTween.IsValid())
+			if (!weakTween.IsValid())
 			{
 				UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Pause()"));
 				continue;
 			}
 
 			Badge<UQuickTweenSequence> badge;
-			WeakTween->Pause(&badge);
+			weakTween->Pause(&badge);
 		}
 	}
 	return this;
@@ -109,11 +109,11 @@ UQuickTweenSequence* UQuickTweenSequence::Complete()
 	CurrentLoop = Loops;
 	CurrentTweenGroupIndex = TweenGroups.Num() > 0 ? TweenGroups.Num() - 1 : 0;
 
-	for (int32 GroupIdx = 0; GroupIdx < TweenGroups.Num(); ++GroupIdx)
+	for (int32 groupIdx = 0; groupIdx < TweenGroups.Num(); ++groupIdx)
 	{
-		for (TWeakObjectPtr<UQuickTweenBase>& WeakTween : TweenGroups[GroupIdx].Tweens)
+		for (TWeakObjectPtr<UQuickTweenBase>& weakTween : TweenGroups[groupIdx].Tweens)
 		{
-			if (!WeakTween.IsValid())
+			if (!weakTween.IsValid())
 			{
 				UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Complete()"));
 				continue;
@@ -122,16 +122,14 @@ UQuickTweenSequence* UQuickTweenSequence::Complete()
 			if (bCompleteToEnd)
 			{
 				Badge<UQuickTweenSequence> Badge;
-				WeakTween->Complete(&Badge);
+				weakTween->Complete(&Badge);
 			}
 			else
 			{
-				WeakTween->Reverse();
-				{
-					Badge<UQuickTweenSequence> Badge;
-					WeakTween->Complete(&Badge);
-				}
-				WeakTween->Reverse();
+				weakTween->Reverse();
+				Badge<UQuickTweenSequence> Badge;
+				weakTween->Complete(&Badge);
+				weakTween->Reverse();
 			}
 		}
 	}
@@ -144,8 +142,13 @@ UQuickTweenSequence* UQuickTweenSequence::Complete()
 
 UQuickTweenSequence* UQuickTweenSequence::Restart()
 {
-	bIsPlaying = true;
+	bIsPlaying   = true;
 	bIsCompleted = false;
+
+	ElapsedTime = bIsBackwards ? GetDuration() : 0.0f;
+	Progress    = bIsBackwards ? 1.0f     : 0.0f;
+
+	CurrentLoop = 1;
 	CurrentTweenGroupIndex = 0;
 
 	for (FQuickTweenSequenceGroup& group : TweenGroups)
@@ -171,6 +174,7 @@ UQuickTweenSequence* UQuickTweenSequence::KillSequence()
 {
 	bIsPlaying = false;
 	bIsCompleted = true;
+
 	if (CurrentTweenGroupIndex < TweenGroups.Num() && CurrentTweenGroupIndex >= 0)
 	{
 		for (TWeakObjectPtr<UQuickTweenBase> tween : TweenGroups[CurrentTweenGroupIndex].Tweens)
@@ -272,6 +276,21 @@ void UQuickTweenSequence::Update(float deltaTime)
 			{
 			case ELoopType::Restart:
 				CurrentTweenGroupIndex = bIsBackwards ? TweenGroups.Num() - 1 : 0;
+				for (auto [tweens] : TweenGroups)
+				{
+					for (TWeakObjectPtr<UQuickTweenBase> tween : tweens)
+					{
+						if (tween.IsValid())
+						{
+							Badge<UQuickTweenSequence> badge;
+							tween->Restart(&badge);
+						}
+						else
+						{
+							UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid. This should not happen."));
+						}
+					}
+				}
 				break;
 			case ELoopType::PingPong:
 				Reverse();
