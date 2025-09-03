@@ -121,8 +121,6 @@ UQuickTweenBase* UQuickTweenBase::Reverse(Badge<UQuickTweenSequence>* badge)
 
 	bIsBackwards = !bIsBackwards;
 
-	ElapsedTime = Duration - ElapsedTime;
-	Progress    = 1.0f - Progress;
 	return this;
 }
 
@@ -138,8 +136,8 @@ UQuickTweenBase* UQuickTweenBase::Restart(Badge<UQuickTweenSequence>* badge)
 	bIsCompleted = false;
 	bIsPlaying   = true;
 
-	ElapsedTime = bIsBackwards ? Duration : 0.0f;
-	Progress    = bIsBackwards ? 1.0f     : 0.0f;
+	ElapsedTime = 0.0f;
+	Progress    = 0.0f;
 	return this;
 }
 

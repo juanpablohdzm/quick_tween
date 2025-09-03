@@ -24,10 +24,6 @@ void UQuickVectorTween::Update(float deltaTime, Badge<UQuickTweenSequence>* badg
 
 UQuickTweenBase* UQuickVectorTween::Complete(Badge<UQuickTweenSequence>* badge)
 {
-	bool useFrom = false;
-	if (GetLoopType() == ELoopType::PingPong) {
-	    useFrom = (GetLoops() % 2 == 0);
-	}
-	SetterFunction(useFrom ? From : To);
+	SetterFunction(GetIsBackwards() ? From : To);
 	return Super::Complete(badge);
 }
