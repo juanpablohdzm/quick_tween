@@ -295,6 +295,7 @@ void UQuickTweenSequence::Update(float deltaTime)
 				break;
 			case ELoopType::PingPong:
 				CurrentTweenGroupIndex = bIsBackwards ? TweenGroups.Num() - 1 : 0;
+				Reverse();
 				for (auto [tweens] : TweenGroups)
 				{
 					for (TWeakObjectPtr<UQuickTweenBase> tween : tweens)
@@ -310,7 +311,6 @@ void UQuickTweenSequence::Update(float deltaTime)
 						}
 					}
 				}
-				Reverse();
 				break;
 			default:
 				ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));

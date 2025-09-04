@@ -210,8 +210,9 @@ void QuickVectorTweenSpec::Define()
 			Tween->Play();
 			Tween->Update(0.5f);
 			TestNearlyEqual("~halfway forward", Current, FVector(50,50,50), 10.0f);
-			Tween->Update(0.5f);
+			Tween->Update(0.49f);
 			TestNearlyEqual("Reached To", Current, To, 2.0f);
+			Tween->Update(0.01f); // advance to next loop
 			TestFalse("Not completed at mid ping-pong", Tween->GetIsCompleted());
 
 			// Backward

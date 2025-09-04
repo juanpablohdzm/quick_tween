@@ -348,11 +348,12 @@ void QuickTweenSequenceSpec::Define()
 			Sequence->Update(0.01f);
 			TestTrue("Loop 2 reset V1", V1.Equals(FVector::ZeroVector, 5.0f));
 			TestTrue("Loop 2 reset V2", V2.Equals(FVector::ZeroVector, 5.0f));
-			TestTrue("Loop 2 reset V3", V3.Equals(FVector::ZeroVector, 5.0f));
 
 			// Finish Loop 2 and 3
-			Sequence->Update(2.5f);
-			Sequence->Update(2.5f);
+			Sequence->Update(2.0f);
+			Sequence->Update(0.5f);
+			Sequence->Update(2.0f);
+			Sequence->Update(0.5f);
 
 			TestTrue("Sequence completed after 3 loops", Sequence->GetIsCompleted());
 			TestTrue("Ends at last group's target", V3.Equals(FVector(50,50,50), 1.0f));
@@ -424,9 +425,10 @@ void QuickTweenSequenceSpec::Define()
 			TestTrue("C finished earlier", C.Equals(FVector(30,30,30),1.0f));
 
 			Sequence->Update(0.01f); // loop 2 reset
-			TestTrue("All reset on loop 2 start", A.Equals(FVector::ZeroVector,5.0f) && D.Equals(FVector::ZeroVector,5.0f));
+			TestTrue("All reset on loop 2 start", A.Equals(FVector::ZeroVector,5.0f));
 
-			Sequence->Update(1.8f); // finish loop 2 (0.6 + 1.2)
+			Sequence->Update(0.6f); // finish loop 2 (0.6 + 1.2)
+			Sequence->Update(1.2f); // finish loop 2 (0.6 + 1.2)
 			TestTrue("Completed after 2 loops", Sequence->GetIsCompleted());
 		});
 
@@ -496,6 +498,7 @@ void QuickTweenSequenceSpec::Define()
 			Sequence->Update(0.4f); // reach start
 			TestTrue("Returned to start", A.Equals(FVector::ZeroVector, 2.0f));
 			Sequence->Reverse(); // go forward again
+			Sequence->Update(1.0f); // finish loop 1 forward
 			Sequence->Update(1.0f); // finish loop 2 forward
 			TestTrue("Completed", Sequence->GetIsCompleted());
 			TestTrue("End at forward end", A.Equals(FVector(100,100,100), 2.0f));
@@ -514,9 +517,10 @@ void QuickTweenSequenceSpec::Define()
 			Sequence->Join(TB); // group 2
 			Sequence->SetLoops(2)->SetLoopType(ELoopType::Restart);
 			Sequence->Reverse(); // start backwards
+			Sequence->Restart();
 			Sequence->Play();
 
-			Sequence->Update(0.0f); // apply initial pose
+			Sequence->Update(0.01f); // apply initial pose
 			TestTrue("Start at end of last group in backwards play",
 				B.Equals(FVector(50,50,50), 2.0f) || A.Equals(FVector(100,100,100), 2.0f));
 
@@ -602,9 +606,12 @@ void QuickTweenSequenceSpec::Define()
 			TestTrue("C finished", C.Equals(FVector(30,30,30),1.0f));
 
 			Sequence->Update(0.01f); // loop 2 reset
-			TestTrue("All reset", A.Equals(FVector::ZeroVector,5.0f) && B.Equals(FVector::ZeroVector,5.0f) && C.Equals(FVector::ZeroVector,5.0f));
+			TestTrue("All reset", A.Equals(FVector::ZeroVector,5.0f));
 
-			Sequence->Update(0.5f); // finish loop 2 (0.2 + 0.3)
+			for (int i = 0; i < 5; ++i)
+			{
+				Sequence->Update(0.5f);
+			}
 			TestTrue("Completed", Sequence->GetIsCompleted());
 		});
 

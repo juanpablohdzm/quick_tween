@@ -30,14 +30,24 @@ void UQuickTweenBase::Update(float deltaTime, Badge<UQuickTweenSequence>* badge)
 {
 	if (GetIsCompleted() || !GetIsPlaying()) return;
 
-	ElapsedTime += deltaTime * GetTimeScale();
+	ElapsedTime = !bIsBackwards?  ElapsedTime + deltaTime * GetTimeScale() : ElapsedTime - deltaTime * GetTimeScale();
 
 	if (OnUpdate.IsBound())
 	{
 		OnUpdate.Broadcast(this, Progress);
 	}
 
-	if (ElapsedTime >= (GetDuration() * GetCurrentLoop()))
+	bool shouldCompleteLoop;
+	if (LoopType == ELoopType::PingPong)
+	{
+		shouldCompleteLoop = !bIsBackwards ? ElapsedTime >= GetDuration() : ElapsedTime <= 0.0f;
+	}
+	else
+	{
+		shouldCompleteLoop = !bIsBackwards ? ElapsedTime >= GetDuration() * GetCurrentLoop() : ElapsedTime <= -(GetDuration() * (GetCurrentLoop() - 1));
+	}
+
+	if (shouldCompleteLoop)
 	{
 		if (Loops != INFINITE_LOOPS && CurrentLoop >= Loops)
 		{
@@ -47,14 +57,14 @@ void UQuickTweenBase::Update(float deltaTime, Badge<UQuickTweenSequence>* badge)
 
 		switch (LoopType)
 		{
-		case ELoopType::Restart:
-			// Nothing to do here, just continue to the next loop
-			break;
-		case ELoopType::PingPong:
-			bIsBackwards = !bIsBackwards;
-			break;
-		default:
-			ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));
+			case ELoopType::Restart:
+				// Nothing to do here, just continue to the next loop
+				break;
+			case ELoopType::PingPong:
+				bIsBackwards = !bIsBackwards;
+				break;
+			default:
+				ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));
 		}
 		CurrentLoop++;
 	}
@@ -136,8 +146,8 @@ UQuickTweenBase* UQuickTweenBase::Restart(Badge<UQuickTweenSequence>* badge)
 	bIsCompleted = false;
 	bIsPlaying   = true;
 
-	ElapsedTime = 0.0f;
-	Progress    = 0.0f;
+	ElapsedTime = bIsBackwards ? Duration : 0.0f;
+	Progress    = bIsBackwards ? 1.0f     : 0.0f;
 	return this;
 }
 

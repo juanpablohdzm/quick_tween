@@ -12,7 +12,7 @@ void UQuickVectorTween::Update(float deltaTime, Badge<UQuickTweenSequence>* badg
 	if (GetIsCompleted() || !GetIsPlaying()) return;
 
 	const float currentLoopElapsedTime = FMath::Fmod(ElapsedTime, GetDuration());
-	float progress = GetIsBackwards() ? 1.0f - (currentLoopElapsedTime / GetDuration()) : currentLoopElapsedTime / GetDuration();
+	float progress = FMath::Abs(currentLoopElapsedTime / GetDuration());
 	if (UCurveFloat* curve = GetEaseCurve())
 	{
 		progress = curve->GetFloatValue(progress);
