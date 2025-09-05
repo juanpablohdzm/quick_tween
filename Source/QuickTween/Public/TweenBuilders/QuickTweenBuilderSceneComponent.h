@@ -4,10 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "TweenBuilders/QuickTweenBuilderObject.h"
+#include "Utils/EaseType.h"
 #include "QuickTweenBuilderSceneComponent.generated.h"
 
-enum class EEaseType : uint8;
-enum class ELoopType : uint8;
 /**
  * 
  */
@@ -18,35 +17,52 @@ class UQuickTweenBuilderSceneComponent : public UQuickTweenBuilderObject
 public:
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* MoveTo(FVector to, float duration, const FString& tweenTag = "");
+	UQuickTweenBuilderSceneComponent* MoveTo(
+		FVector to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* RotateTo(FRotator to, float duration, bool bUseShortestPath = true, const FString& tweenTag = "");
+	UQuickTweenBuilderSceneComponent* RotateTo(
+		FRotator to,
+		bool bUseShortestPath = true,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* RotateToQuat(FQuat to, float duration, bool bUseShortestPath = true, const FString& tweenTag = "");
+	UQuickTweenBuilderSceneComponent* RotateToQuat(
+		FQuat to,
+		bool bUseShortestPath = true,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* ScaleTo(FVector to, float duration, const FString& tweenTag = "");
+	UQuickTweenBuilderSceneComponent* ScaleTo(
+		FVector to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* LookAt(FVector forward, float duration, bool bUseShortestPath = true, FVector up = FVector::UpVector, const FString& tweenTag = "");
+	UQuickTweenBuilderSceneComponent* LookAt(
+		FVector forward,
+		bool bUseShortestPath = true,
+		FVector up = FVector::UpVector,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* SetLoops(int32 loops);
+	UQuickTweenBuilderSceneComponent* Append();
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* SetLoopType(ELoopType loopType);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* SetEaseType(EEaseType easeType);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* SetEaseCurve(UCurveFloat* easeCurve);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* SetTimeScale(float timeScale);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* SetIsBackwards(bool bIsBackwards);
+	UQuickTweenBuilderSceneComponent* Join();
 };

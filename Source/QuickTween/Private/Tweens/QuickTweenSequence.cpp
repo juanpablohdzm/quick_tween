@@ -2,10 +2,31 @@
 
 
 #include "Tweens/QuickTweenSequence.h"
+
+#include "QuickTweenManager.h"
 #include "Tweens/QuickTweenBase.h"
 #include "Utils/CommonValues.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenSequence, Log, All);
+
+
+UQuickTweenSequence* UQuickTweenSequence::SetUp(int32 loops, ELoopType loopType, const FString& id, const UObject* worldContextObject)
+{
+	Loops           = loops;
+	LoopType        = loopType;
+	SequenceTweenId = id;
+
+	UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject);
+	if (!manager)
+	{
+		UE_LOG(LogQuickTweenSequence, Log, TEXT("Failed to get QuickTweenManager for QuickTweenSequence. Tweens will not be updated."));
+	}
+	else
+	{
+		manager->AddTween(this, Badge<UQuickTweenSequence>());
+	}
+	return this;
+}
 
 UQuickTweenSequence* UQuickTweenSequence::Join(UQuickTweenBase* tween)
 {
@@ -15,6 +36,12 @@ UQuickTweenSequence* UQuickTweenSequence::Join(UQuickTweenBase* tween)
 		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Joining a tween with infinite loops is not allowed. Please set a finite number of loops."));
 		return this;
 	}
+
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(this))
+	{
+		manager->RemoveTween(tween, Badge<UQuickTweenSequence>());
+	}
+	tween->SetIsInSequence(Badge<UQuickTweenSequence>(), true);
 
 	FQuickTweenSequenceGroup group;
 	group.Tweens.Add(tween);
@@ -35,6 +62,13 @@ UQuickTweenSequence* UQuickTweenSequence::Append(UQuickTweenBase* tween)
 	{
 		return Join(tween);
 	}
+
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(this))
+	{
+		manager->RemoveTween(tween, Badge<UQuickTweenSequence>());
+	}
+	tween->SetIsInSequence(Badge<UQuickTweenSequence>(), true);
+
 	FQuickTweenSequenceGroup& lastGroup = TweenGroups.Last();
 	lastGroup.Tweens.Add(tween);
 	return this;

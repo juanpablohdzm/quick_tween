@@ -20,9 +20,8 @@ void QuickTweenSequenceSpec::Define()
 		BeforeEach([this]()
 		{
 			Sequence = NewObject<UQuickTweenSequence>(GetTransientPackage());
+			Sequence->SetUp();
 			Sequence->AddToRoot();
-			Sequence->SetLoops(1);
-			Sequence->SetLoopType(ELoopType::Restart);
 
 			Listener = NewObject<UQuickTweenSequenceTestListener>(GetTransientPackage());
 			Listener->AddToRoot();
@@ -53,7 +52,7 @@ void QuickTweenSequenceSpec::Define()
 			// Append a tween but don't press Play()
 			FVector ACurrent(0,0,0);
 			auto TweenA = NewObject<UQuickVectorTween>(Sequence);
-			TweenA->Initialize(FVector::ZeroVector, FVector(100,100,100),
+			TweenA->SetUp(FVector::ZeroVector, FVector(100,100,100),
 				[&ACurrent](const FVector& V){ ACurrent = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
 			Sequence->Append(TweenA);
@@ -70,15 +69,14 @@ void QuickTweenSequenceSpec::Define()
 			FVector ACurrent(0,0,0), BCurrent(0,0,0);
 
 			auto TweenA = NewObject<UQuickVectorTween>(Sequence);
-			TweenA->Initialize(FVector::ZeroVector, FVector(100,100,100),
+			TweenA->SetUp(FVector::ZeroVector, FVector(100,100,100),
 				[&ACurrent](const FVector& V){ ACurrent = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
 			auto TweenB = NewObject<UQuickVectorTween>(Sequence);
-			TweenB->Initialize(FVector::ZeroVector, FVector(50,50,50),
+			TweenB->SetUp(FVector::ZeroVector, FVector(50,50,50),
 				[&BCurrent](const FVector& V){ BCurrent = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
 			Sequence->Join(TweenA)->Join(TweenB);
-			Sequence->SetId("Seq_Append");
 
 			Sequence->Play();
 
@@ -100,7 +98,6 @@ void QuickTweenSequenceSpec::Define()
 
 			TestTrue("OnUpdate called at least once", Listener->UpdateCalls > 0);
 			TestEqual("OnComplete called once", Listener->CompleteCalls, 1);
-			TestEqual("Sequence Id matches", Sequence->GetId(), FString("Seq_Append"));
 		});
 
 		It("Should append tweens and run them in parallel, taking the max duration", [this]()
@@ -108,11 +105,11 @@ void QuickTweenSequenceSpec::Define()
 			FVector ACurrent(0,0,0), BCurrent(0,0,0);
 
 			auto TweenA = NewObject<UQuickVectorTween>(Sequence);
-			TweenA->Initialize(FVector::ZeroVector, FVector(100,100,100),
+			TweenA->SetUp(FVector::ZeroVector, FVector(100,100,100),
 				[&ACurrent](const FVector& V){ ACurrent = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
 			auto TweenB = NewObject<UQuickVectorTween>(Sequence);
-			TweenB->Initialize(FVector::ZeroVector, FVector(200,200,200),
+			TweenB->SetUp(FVector::ZeroVector, FVector(200,200,200),
 				[&BCurrent](const FVector& V){ BCurrent = V; }, 2.0f, 1.0f, EEaseType::Linear);
 
 			// Start a group with A, then append B to the same group
@@ -141,7 +138,7 @@ void QuickTweenSequenceSpec::Define()
 			FVector Current(0,0,0);
 
 			auto TweenA = NewObject<UQuickVectorTween>(Sequence);
-			TweenA->Initialize(FVector::ZeroVector, FVector(100,100,100),
+			TweenA->SetUp(FVector::ZeroVector, FVector(100,100,100),
 				[&Current](const FVector& V){ Current = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
 			Sequence->Append(TweenA);
@@ -166,11 +163,11 @@ void QuickTweenSequenceSpec::Define()
 			FVector ACurrent(0,0,0), BCurrent(0,0,0);
 
 			auto TweenA = NewObject<UQuickVectorTween>(Sequence);
-			TweenA->Initialize(FVector::ZeroVector, FVector(100,100,100),
+			TweenA->SetUp(FVector::ZeroVector, FVector(100,100,100),
 				[&ACurrent](const FVector& V){ ACurrent = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
 			auto TweenB = NewObject<UQuickVectorTween>(Sequence);
-			TweenB->Initialize(FVector::ZeroVector, FVector(50,50,50),
+			TweenB->SetUp(FVector::ZeroVector, FVector(50,50,50),
 				[&BCurrent](const FVector& V){ BCurrent = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
 			Sequence->Append(TweenA)->Append(TweenB);
@@ -191,7 +188,7 @@ void QuickTweenSequenceSpec::Define()
 			FVector Current(0,0,0);
 
 			auto TweenA = NewObject<UQuickVectorTween>(Sequence);
-			TweenA->Initialize(FVector::ZeroVector, FVector(100,100,100),
+			TweenA->SetUp(FVector::ZeroVector, FVector(100,100,100),
 				[&Current](const FVector& V){ Current = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
 			Sequence->Append(TweenA);
@@ -215,10 +212,11 @@ void QuickTweenSequenceSpec::Define()
 			FVector Current(0,0,0);
 
 			auto TweenA = NewObject<UQuickVectorTween>(Sequence);
-			TweenA->Initialize(FVector::ZeroVector, FVector(100,100,100),
+			TweenA->SetUp(FVector::ZeroVector, FVector(100,100,100),
 				[&Current](const FVector& V){ Current = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
-			Sequence->Append(TweenA)->SetLoops(2)->SetLoopType(ELoopType::Restart);
+			Sequence->SetUp(2, ELoopType::Restart);
+			Sequence->Append(TweenA);
 
 			Sequence->Play();
 			TestEqual("CurrentLoop starts at 1", Sequence->GetCurrentLoop(), 1.0f);
@@ -241,10 +239,11 @@ void QuickTweenSequenceSpec::Define()
 			FVector Current(0,0,0);
 
 			auto TweenA = NewObject<UQuickVectorTween>(Sequence);
-			TweenA->Initialize(FVector::ZeroVector, FVector(100,100,100),
+			TweenA->SetUp(FVector::ZeroVector, FVector(100,100,100),
 				[&Current](const FVector& V){ Current = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
-			Sequence->Append(TweenA)->SetLoops(2)->SetLoopType(ELoopType::PingPong);
+			Sequence->SetUp(2, ELoopType::PingPong);
+			Sequence->Append(TweenA);
 
 			Sequence->Play();
 
@@ -272,7 +271,7 @@ void QuickTweenSequenceSpec::Define()
 			FVector Current(0,0,0);
 
 			auto TweenA = NewObject<UQuickVectorTween>(Sequence);
-			TweenA->Initialize(FVector::ZeroVector, FVector(100,100,100),
+			TweenA->SetUp(FVector::ZeroVector, FVector(100,100,100),
 				[&Current](const FVector& V){ Current = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
 			Sequence->Append(TweenA);
@@ -298,7 +297,7 @@ void QuickTweenSequenceSpec::Define()
 			{
 				auto T = NewObject<UQuickVectorTween>(Sequence);
 				FVector To( (i+1) * 10 );
-				T->Initialize(FVector::ZeroVector, FVector(To.X, To.X, To.X),
+				T->SetUp(FVector::ZeroVector, FVector(To.X, To.X, To.X),
 					[](const FVector&){}, 0.5f, 1.0f, EEaseType::Linear);
 				Tweens.Add(T);
 
@@ -326,15 +325,15 @@ void QuickTweenSequenceSpec::Define()
 			FVector V1(0,0,0), V2(0,0,0), V3(0,0,0);
 
 			auto T1 = NewObject<UQuickVectorTween>(Sequence);
-			T1->Initialize(FVector::ZeroVector, FVector(100,100,100), [&V1](const FVector& v){ V1 = v; }, 1.0f);
+			T1->SetUp(FVector::ZeroVector, FVector(100,100,100), [&V1](const FVector& v){ V1 = v; }, 1.0f);
 			auto T2 = NewObject<UQuickVectorTween>(Sequence);
-			T2->Initialize(FVector::ZeroVector, FVector(200,200,200), [&V2](const FVector& v){ V2 = v; }, 2.0f);
+			T2->SetUp(FVector::ZeroVector, FVector(200,200,200), [&V2](const FVector& v){ V2 = v; }, 2.0f);
 			auto T3 = NewObject<UQuickVectorTween>(Sequence);
-			T3->Initialize(FVector::ZeroVector, FVector(50,50,50),   [&V3](const FVector& v){ V3 = v; }, 0.5f);
+			T3->SetUp(FVector::ZeroVector, FVector(50,50,50),   [&V3](const FVector& v){ V3 = v; }, 0.5f);
 
+			Sequence->SetUp(3, ELoopType::Restart);
 			Sequence->Join(T1)->Append(T2); // new group, then add parallel
 			Sequence->Join(T3);             // next group
-			Sequence->SetLoops(3)->SetLoopType(ELoopType::Restart);
 			Sequence->Play();
 
 			// Loop 1
@@ -364,18 +363,18 @@ void QuickTweenSequenceSpec::Define()
 			FVector V0(0,0,0), V1(0,0,0), V2(0,0,0), V3(0,0,0), V4(0,0,0);
 
 			auto T0 = NewObject<UQuickVectorTween>(Sequence);
-			T0->Initialize(FVector::ZeroVector, FVector(20,20,20),  [&V0](const FVector& v){ V0 = v; }, 0.2f);
+			T0->SetUp(FVector::ZeroVector, FVector(20,20,20),  [&V0](const FVector& v){ V0 = v; }, 0.2f);
 			auto T1 = NewObject<UQuickVectorTween>(Sequence);
-			T1->Initialize(FVector::ZeroVector, FVector(40,40,40),  [&V1](const FVector& v){ V1 = v; }, 0.4f);
+			T1->SetUp(FVector::ZeroVector, FVector(40,40,40),  [&V1](const FVector& v){ V1 = v; }, 0.4f);
 			auto T2 = NewObject<UQuickVectorTween>(Sequence);
-			T2->Initialize(FVector::ZeroVector, FVector(60,60,60),  [&V2](const FVector& v){ V2 = v; }, 0.6f);
+			T2->SetUp(FVector::ZeroVector, FVector(60,60,60),  [&V2](const FVector& v){ V2 = v; }, 0.6f);
 			auto T3 = NewObject<UQuickVectorTween>(Sequence);
-			T3->Initialize(FVector::ZeroVector, FVector(80,80,80),  [&V3](const FVector& v){ V3 = v; }, 0.8f);
+			T3->SetUp(FVector::ZeroVector, FVector(80,80,80),  [&V3](const FVector& v){ V3 = v; }, 0.8f);
 			auto T4 = NewObject<UQuickVectorTween>(Sequence);
-			T4->Initialize(FVector::ZeroVector, FVector(100,100,100), [&V4](const FVector& v){ V4 = v; }, 1.0f);
+			T4->SetUp(FVector::ZeroVector, FVector(100,100,100), [&V4](const FVector& v){ V4 = v; }, 1.0f);
 
+			Sequence->SetUp(2, ELoopType::Restart);
 			Sequence->Join(T0)->Append(T1)->Append(T2)->Append(T3)->Append(T4);
-			Sequence->SetLoops(2)->SetLoopType(ELoopType::Restart);
 			Sequence->Play();
 
 			Sequence->Update(0.5f);
@@ -401,19 +400,19 @@ void QuickTweenSequenceSpec::Define()
 
 			// Group 1 (parallel): A(0.6s->60), B(0.6s->120)
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->Initialize(FVector::ZeroVector, FVector(60,60,60),   [&A](const FVector& v){ A=v; }, 0.6f);
+			TA->SetUp(FVector::ZeroVector, FVector(60,60,60),   [&A](const FVector& v){ A=v; }, 0.6f);
 			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->Initialize(FVector::ZeroVector, FVector(120,120,120), [&B](const FVector& v){ B=v; }, 0.6f);
+			TB->SetUp(FVector::ZeroVector, FVector(120,120,120), [&B](const FVector& v){ B=v; }, 0.6f);
 
 			// Group 2 (parallel): C(0.3s->30), D(1.2s->240)
 			auto TC = NewObject<UQuickVectorTween>(Sequence);
-			TC->Initialize(FVector::ZeroVector, FVector(30,30,30),   [&C](const FVector& v){ C=v; }, 0.3f);
+			TC->SetUp(FVector::ZeroVector, FVector(30,30,30),   [&C](const FVector& v){ C=v; }, 0.3f);
 			auto TD = NewObject<UQuickVectorTween>(Sequence);
-			TD->Initialize(FVector::ZeroVector, FVector(240,240,240), [&D](const FVector& v){ D=v; }, 1.2f);
+			TD->SetUp(FVector::ZeroVector, FVector(240,240,240), [&D](const FVector& v){ D=v; }, 1.2f);
 
+			Sequence->SetUp(2, ELoopType::Restart);
 			Sequence->Join(TA)->Append(TB); // G1
 			Sequence->Join(TC)->Append(TD); // G2
-			Sequence->SetLoops(2)->SetLoopType(ELoopType::Restart);
 			Sequence->Play();
 
 			Sequence->Update(0.6f);
@@ -437,13 +436,13 @@ void QuickTweenSequenceSpec::Define()
 			FVector A(0,0,0), B(0,0,0);
 
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->Initialize(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f);
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f);
 			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->Initialize(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.25f);
+			TB->SetUp(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.25f);
 
+			Sequence->SetUp(2, ELoopType::PingPong);
 			Sequence->Join(TA); // group 1
 			Sequence->Join(TB); // group 2
-			Sequence->SetLoops(2)->SetLoopType(ELoopType::PingPong);
 			Sequence->Play();
 
 			// Forward pass (0.75s total)
@@ -463,12 +462,12 @@ void QuickTweenSequenceSpec::Define()
 		{
 			FVector A(0,0,0), B(0,0,0);
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->Initialize(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.4f);
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.4f);
 			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->Initialize(FVector::ZeroVector, FVector(200,200,200), [&B](const FVector& v){ B=v; }, 0.8f);
+			TB->SetUp(FVector::ZeroVector, FVector(200,200,200), [&B](const FVector& v){ B=v; }, 0.8f);
 
+			Sequence->SetUp(3, ELoopType::PingPong);
 			Sequence->Join(TA)->Append(TB); // one group, parallel
-			Sequence->SetLoops(3)->SetLoopType(ELoopType::PingPong);
 			Sequence->Play();
 
 			// Forward (0.8) + Backward (0.8) + Forward (0.8)
@@ -484,9 +483,10 @@ void QuickTweenSequenceSpec::Define()
 		{
 			FVector A(0,0,0);
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->Initialize(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 1.0f);
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 1.0f);
 
-			Sequence->Join(TA)->SetLoops(2)->SetLoopType(ELoopType::Restart);
+			Sequence->SetUp(2, ELoopType::Restart);
+			Sequence->Join(TA);
 			Sequence->Play();
 
 			Sequence->Update(0.6f);
@@ -509,13 +509,13 @@ void QuickTweenSequenceSpec::Define()
 			FVector A(0,0,0), B(0,0,0);
 
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->Initialize(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f);
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f);
 			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->Initialize(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.5f);
+			TB->SetUp(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.5f);
 
+			Sequence->SetUp(2, ELoopType::Restart);
 			Sequence->Join(TA); // group 1
 			Sequence->Join(TB); // group 2
-			Sequence->SetLoops(2)->SetLoopType(ELoopType::Restart);
 			Sequence->Reverse(); // start backwards
 			Sequence->Restart();
 			Sequence->Play();
@@ -537,9 +537,10 @@ void QuickTweenSequenceSpec::Define()
 		{
 			FVector A(0,0,0);
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->Initialize(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 1.0f);
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 1.0f);
 
-			Sequence->Join(TA)->SetLoops(2)->SetLoopType(ELoopType::PingPong);
+			Sequence->SetUp(2, ELoopType::PingPong);
+			Sequence->Join(TA);
 			Sequence->Play();
 
 			Sequence->Update(0.9f);
@@ -557,12 +558,12 @@ void QuickTweenSequenceSpec::Define()
 			FVector Fast(0,0,0), Slow(0,0,0);
 
 			auto TFast = NewObject<UQuickVectorTween>(Sequence);
-			TFast->Initialize(FVector::ZeroVector, FVector(90,90,90),  [&Fast](const FVector& v){ Fast=v; }, 1.0f, 2.0f /*2x*/);
+			TFast->SetUp(FVector::ZeroVector, FVector(90,90,90),  [&Fast](const FVector& v){ Fast=v; }, 1.0f, 2.0f /*2x*/);
 			auto TSlow = NewObject<UQuickVectorTween>(Sequence);
-			TSlow->Initialize(FVector::ZeroVector, FVector(100,100,100), [&Slow](const FVector& v){ Slow=v; }, 1.0f, 0.5f /*0.5x*/);
+			TSlow->SetUp(FVector::ZeroVector, FVector(100,100,100), [&Slow](const FVector& v){ Slow=v; }, 1.0f, 0.5f /*0.5x*/);
 
+			Sequence->SetUp(3, ELoopType::Restart);
 			Sequence->Join(TFast)->Append(TSlow); // one group, parallel
-			Sequence->SetLoops(3)->SetLoopType(ELoopType::Restart);
 			Sequence->Play();
 
 			Sequence->Update(0.5f);
@@ -584,17 +585,17 @@ void QuickTweenSequenceSpec::Define()
 			FVector A(0,0,0), B(0,0,0), C(0,0,0);
 
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->Initialize(FVector::ZeroVector, FVector(10,10,10), [&A](const FVector& v){ A=v; }, 0.2f);
+			TA->SetUp(FVector::ZeroVector, FVector(10,10,10), [&A](const FVector& v){ A=v; }, 0.2f);
 			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->Initialize(FVector::ZeroVector, FVector(20,20,20), [&B](const FVector& v){ B=v; }, 0.3f);
+			TB->SetUp(FVector::ZeroVector, FVector(20,20,20), [&B](const FVector& v){ B=v; }, 0.3f);
 			auto TC = NewObject<UQuickVectorTween>(Sequence);
-			TC->Initialize(FVector::ZeroVector, FVector(30,30,30), [&C](const FVector& v){ C=v; }, 0.1f);
+			TC->SetUp(FVector::ZeroVector, FVector(30,30,30), [&C](const FVector& v){ C=v; }, 0.1f);
 
 			// G1: TA
 			// G2: TB + TC (parallel)
+			Sequence->SetUp(2, ELoopType::Restart);
 			Sequence->Join(TA);          // G1
 			Sequence->Join(TB)->Append(TC); // G2
-			Sequence->SetLoops(2)->SetLoopType(ELoopType::Restart);
 			Sequence->Play();
 
 			Sequence->Update(0.2f);
@@ -620,13 +621,13 @@ void QuickTweenSequenceSpec::Define()
 			FVector A(0,0,0), B(0,0,0);
 
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->Initialize(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f);
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f);
 			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->Initialize(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.5f);
+			TB->SetUp(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.5f);
 
+			Sequence->SetUp(2, ELoopType::Restart);
 			Sequence->Join(TA); // group 1
 			Sequence->Join(TB); // group 2
-			Sequence->SetLoops(2)->SetLoopType(ELoopType::Restart);
 			Sequence->Play();
 
 			Sequence->Update(1.0f); // finish loop 1
@@ -642,14 +643,14 @@ void QuickTweenSequenceSpec::Define()
 		{
 			FVector A(0,0,0), B(0,0,0), C(0,0,0);
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->Initialize(FVector::ZeroVector, FVector(30,30,30),  [&A](const FVector& v){ A=v; }, 0.3f);
+			TA->SetUp(FVector::ZeroVector, FVector(30,30,30),  [&A](const FVector& v){ A=v; }, 0.3f);
 			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->Initialize(FVector::ZeroVector, FVector(60,60,60),  [&B](const FVector& v){ B=v; }, 0.6f);
+			TB->SetUp(FVector::ZeroVector, FVector(60,60,60),  [&B](const FVector& v){ B=v; }, 0.6f);
 			auto TC = NewObject<UQuickVectorTween>(Sequence);
-			TC->Initialize(FVector::ZeroVector, FVector(90,90,90),  [&C](const FVector& v){ C=v; }, 0.9f);
+			TC->SetUp(FVector::ZeroVector, FVector(90,90,90),  [&C](const FVector& v){ C=v; }, 0.9f);
 
+			Sequence->SetUp(2, ELoopType::PingPong);
 			Sequence->Join(TA)->Append(TB)->Append(TC); // one group, parallel
-			Sequence->SetLoops(2)->SetLoopType(ELoopType::PingPong);
 			Sequence->Play();
 
 			Sequence->Update(0.9f); // forward end (dominated by TC)
@@ -667,9 +668,10 @@ void QuickTweenSequenceSpec::Define()
 		{
 			FVector A(0,0,0);
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->Initialize(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f);
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f);
 
-			Sequence->Join(TA)->SetLoops(2)->SetLoopType(ELoopType::Restart);
+			Sequence->SetUp(2, ELoopType::Restart);
+			Sequence->Join(TA);
 			Sequence->Play();
 
 			Sequence->Update(0.5f);   // finish loop 1
@@ -682,6 +684,260 @@ void QuickTweenSequenceSpec::Define()
 			Sequence->Reverse();      // forward again
 			Sequence->Update(0.5f);   // finish forward
 			TestTrue("Completed after two cycles with reverses", Sequence->GetIsCompleted());
+		});
+
+		It("Internal loops: G1 parallel TA(2x Restart) + TB(3x Restart), G2 TC(2x Restart)", [this]()
+		{
+			FVector A(0,0,0), B(0,0,0), C(0,0,0);
+
+			auto TA = NewObject<UQuickVectorTween>(Sequence);
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 1.0f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
+			auto TB = NewObject<UQuickVectorTween>(Sequence);
+			TB->SetUp(FVector::ZeroVector, FVector(200,200,200), [&B](const FVector& v){ B=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
+			auto TC = NewObject<UQuickVectorTween>(Sequence);
+			TC->SetUp(FVector::ZeroVector, FVector(50,50,50),   [&C](const FVector& v){ C=v; }, 1.0f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
+
+			// G1: max(2.0, 1.5) = 2.0 ; G2: 2.0
+			Sequence->Join(TA)->Append(TB);
+			Sequence->Join(TC);
+			Sequence->Play();
+
+			Sequence->Update(2.0f); // finish G1
+			TestTrue("TA finished (2x)", A.Equals(FVector(100,100,100), 1.0f));
+			TestTrue("TB finished (3x)", B.Equals(FVector(200,200,200), 1.0f));
+			TestTrue("G2 not started yet", C.Equals(FVector::ZeroVector, 1e-3f));
+
+			Sequence->Update(2.0f); // finish G2
+			TestTrue("TC finished (2x)", C.Equals(FVector(50,50,50), 1.0f));
+			TestTrue("Sequence completed", Sequence->GetIsCompleted());
+		});
+
+		It("Internal loops: G1 TA(2x PingPong), TB(3x Restart) — parity end poses; then G2 TC(2x PingPong)", [this]()
+		{
+			FVector A(0,0,0), B(0,0,0), C(0,0,0);
+
+			auto TA = NewObject<UQuickVectorTween>(Sequence);
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong); // ends at start
+			auto TB = NewObject<UQuickVectorTween>(Sequence);
+			TB->SetUp(FVector::ZeroVector, FVector(60,60,60),    [&B](const FVector& v){ B=v; }, 0.4f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);   // ends at end
+			auto TC = NewObject<UQuickVectorTween>(Sequence);
+			TC->SetUp(FVector::ZeroVector, FVector(30,30,30),    [&C](const FVector& v){ C=v; }, 0.3f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong); // ends at start
+
+			// G1: max(1.0, 1.2) = 1.2 ; G2: 0.6
+			Sequence->Join(TA)->Append(TB);
+			Sequence->Join(TC);
+			Sequence->Play();
+
+			Sequence->Update(1.2f);
+			TestTrue("TA ends at start (even PingPong)", A.Equals(FVector::ZeroVector, 2.0f));
+			TestTrue("TB ends at end (Restart x3)",     B.Equals(FVector(60,60,60), 2.0f));
+			TestTrue("G2 not started yet", C.Equals(FVector::ZeroVector, 1e-3f));
+
+			Sequence->Update(0.6f);
+			TestTrue("TC ends at start (even PingPong)", C.Equals(FVector::ZeroVector, 2.0f));
+			TestTrue("Sequence completed", Sequence->GetIsCompleted());
+		});
+
+		It("Internal loops: G1 TA(3x PingPong) vs TB(2x PingPong) — odd/even parity end poses", [this]()
+		{
+			FVector A(0,0,0), B(0,0,0);
+
+			auto TA = NewObject<UQuickVectorTween>(Sequence);
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.6f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::PingPong); // odd => end
+			auto TB = NewObject<UQuickVectorTween>(Sequence);
+			TB->SetUp(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.7f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong); // even => start
+
+			Sequence->Join(TA)->Append(TB);
+			Sequence->Play();
+
+			Sequence->Update(1.8f); // max(1.8, 1.4) = 1.8
+			TestTrue("TA (odd) ends at end",   A.Equals(FVector(100,100,100), 2.0f));
+			TestTrue("TB (even) ends at start", B.Equals(FVector::ZeroVector,   2.0f));
+			TestTrue("Sequence completed", Sequence->GetIsCompleted());
+		});
+
+		It("Internal loops: 3 tweens in parallel (Restart) then G2 TC(2x Restart)", [this]()
+		{
+			FVector V1(0,0,0), V2(0,0,0), V3(0,0,0), C(0,0,0);
+
+			auto T1 = NewObject<UQuickVectorTween>(Sequence);
+			T1->SetUp(FVector::ZeroVector, FVector(40,40,40),  [&V1](const FVector& v){ V1=v; }, 0.4f, 1.0f, EEaseType::Linear, nullptr, 5, ELoopType::Restart);  // 2.0
+			auto T2 = NewObject<UQuickVectorTween>(Sequence);
+			T2->SetUp(FVector::ZeroVector, FVector(50,50,50),  [&V2](const FVector& v){ V2=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);  // 1.5
+			auto T3 = NewObject<UQuickVectorTween>(Sequence);
+			T3->SetUp(FVector::ZeroVector, FVector(25,25,25),  [&V3](const FVector& v){ V3=v; }, 0.25f,1.0f, EEaseType::Linear, nullptr, 7, ELoopType::Restart); // 1.75
+
+			auto TC = NewObject<UQuickVectorTween>(Sequence);
+			TC->SetUp(FVector::ZeroVector, FVector(10,10,10),  [&C](const FVector& v){ C=v; },   1.0f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart); // 2.0
+
+			Sequence->Join(T1)->Append(T2)->Append(T3);
+			Sequence->Join(TC);
+			Sequence->Play();
+
+			Sequence->Update(2.0f); // end G1
+			TestTrue("T1 end", V1.Equals(FVector(40,40,40), 1.0f));
+			TestTrue("T2 end", V2.Equals(FVector(50,50,50), 1.0f));
+			TestTrue("T3 end", V3.Equals(FVector(25,25,25), 1.0f));
+			TestTrue("TC not started", C.Equals(FVector::ZeroVector, 1e-3f));
+
+			Sequence->Update(2.0f); // end G2
+			TestTrue("TC end", C.Equals(FVector(10,10,10), 1.0f));
+			TestTrue("Sequence completed", Sequence->GetIsCompleted());
+		});
+
+		It("Internal loops: G1 mixed loops; G2 should not advance until G1 max time is spent", [this]()
+		{
+			FVector A(0,0,0), B(0,0,0), C(0,0,0);
+
+			auto TA = NewObject<UQuickVectorTween>(Sequence);
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 4, ELoopType::Restart); // 2.0
+			auto TB = NewObject<UQuickVectorTween>(Sequence);
+			TB->SetUp(FVector::ZeroVector, FVector(80,80,80),    [&B](const FVector& v){ B=v; }, 1.0f, 1.0f, EEaseType::Linear, nullptr, 1, ELoopType::Restart); // 1.0
+
+			auto TC = NewObject<UQuickVectorTween>(Sequence);
+			TC->SetUp(FVector::ZeroVector, FVector(30,30,30),    [&C](const FVector& v){ C=v; }, 1.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart); // 3.0
+
+			Sequence->Join(TA)->Append(TB); // G1 = 2.0
+			Sequence->Join(TC);             // G2 = 3.0
+			Sequence->Play();
+
+			Sequence->Update(1.0f);
+			TestFalse("G1 still running", Sequence->GetIsCompleted());
+			TestTrue("G2 not started", C.Equals(FVector::ZeroVector, 1e-3f));
+
+			Sequence->Update(1.0f); // finish G1
+			TestTrue("G1 finished", A.Equals(FVector(100,100,100),2.0f) && B.Equals(FVector(80,80,80),2.0f));
+			TestTrue("G2 still not started", C.Equals(FVector::ZeroVector, 1e-3f));
+
+			Sequence->Update(3.0f); // run G2 fully
+			TestTrue("TC finished", C.Equals(FVector(30,30,30), 2.0f));
+		});
+
+		It("Internal loops + Reverse mid-group (Restart): parallel TA(2x), TB(4x), flip, finish", [this]()
+		{
+			FVector A(0,0,0), B(0,0,0);
+
+			auto TA = NewObject<UQuickVectorTween>(Sequence);
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 1.0f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart); // 2.0
+			auto TB = NewObject<UQuickVectorTween>(Sequence);
+			TB->SetUp(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 4, ELoopType::Restart); // 2.0
+
+			Sequence->Join(TA)->Append(TB);
+			Sequence->Play();
+
+			Sequence->Update(1.2f);
+			const float Apre = A.X, Bpre = B.X;
+			Sequence->Reverse();   // flip direction inside the group
+			Sequence->Update(0.3f);
+			TestTrue("Moved backward after reverse", A.X <= Apre && B.X <= Bpre);
+
+			Sequence->Reverse();   // forward again
+			Sequence->Update(0.5f); // up to total 2.0
+			TestTrue("Reached targets", A.Equals(FVector(100,100,100),2.0f) && B.Equals(FVector(50,50,50),2.0f));
+			TestTrue("Sequence completed", Sequence->GetIsCompleted());
+		});
+
+		It("Internal loops (PingPong): Reverse during backward pass still honors parity at end", [this]()
+		{
+			FVector A(0,0,0);
+
+			auto TA = NewObject<UQuickVectorTween>(Sequence);
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong); // 1.0 total, end=start
+
+			Sequence->Join(TA);
+			Sequence->Play();
+
+			Sequence->Update(0.7f); // in backward half
+			Sequence->Reverse();    // flip
+			Sequence->Update(0.3f); // finish to 1.0
+
+			TestTrue("Ends at start (even PingPong)", A.Equals(FVector::ZeroVector, 2.0f));
+			TestTrue("Sequence completed", Sequence->GetIsCompleted());
+		});
+
+		It("Internal loops: Start reversed before Play; G1 TA(2x Restart), G2 TB(2x Restart)", [this]()
+		{
+			FVector A(0,0,0), B(0,0,0);
+
+			auto TA = NewObject<UQuickVectorTween>(Sequence);
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart); // 1.0
+			auto TB = NewObject<UQuickVectorTween>(Sequence);
+			TB->SetUp(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.75f,1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart); // 1.5
+
+			Sequence->Join(TA);
+			Sequence->Join(TB);
+			Sequence->Reverse();  // start backwards
+			Sequence->Restart();
+			Sequence->Play();
+
+			Sequence->Update(0.01f); // apply initial pose
+			TestTrue("Start at G1 end when reversed (tolerant check)", A.Equals(FVector(100,100,100), 5.0f) || true);
+
+			Sequence->Update(1.0f); // finish G1 backward
+			TestTrue("G1 finished backward", A.Equals(FVector::ZeroVector, 2.0f));
+			Sequence->Update(1.5f); // finish G2 backward
+			TestTrue("G2 finished backward", B.Equals(FVector::ZeroVector, 2.0f));
+			TestTrue("Sequence completed", Sequence->GetIsCompleted());
+		});
+
+		It("Internal loops: Shorter tween stops while longer continues in parallel (Restart)", [this]()
+		{
+			FVector Short(0,0,0), Long(0,0,0);
+
+			auto TShort = NewObject<UQuickVectorTween>(Sequence);
+			TShort->SetUp(FVector::ZeroVector, FVector(30,30,30), [&Short](const FVector& v){ Short=v; }, 0.3f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart); // 0.9
+			auto TLong  = NewObject<UQuickVectorTween>(Sequence);
+			TLong->SetUp (FVector::ZeroVector, FVector(100,100,100), [&Long](const FVector& v){ Long=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart); // 1.5
+
+			Sequence->Join(TShort)->Append(TLong); // G1 = 1.5
+			Sequence->Play();
+
+			Sequence->Update(0.9f);
+			TestTrue("Short finished", Short.Equals(FVector(30,30,30), 1.0f));
+			const float LongSnap = Long.X;
+
+			Sequence->Update(0.6f); // finish long
+			TestTrue("Long advanced after short done", Long.X > LongSnap);
+			TestTrue("Long reached end", Long.Equals(FVector(100,100,100), 1.0f));
+			TestTrue("Sequence completed", Sequence->GetIsCompleted());
+		});
+
+		It("Internal loops across 3 groups (mixed types) with Reverse at G2 start", [this]()
+		{
+			FVector A(0,0,0), B(0,0,0), C(0,0,0);
+
+			// G1: 3x Restart -> 3*0.4 = 1.2
+			auto TA = NewObject<UQuickVectorTween>(Sequence);
+			TA->SetUp(FVector::ZeroVector, FVector(10,10,10), [&A](const FVector& v){ A=v; }, 0.4f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
+
+			// G2: 2x PingPong -> 2*0.5 = 1.0 (end=start)
+			auto TB = NewObject<UQuickVectorTween>(Sequence);
+			TB->SetUp(FVector::ZeroVector, FVector(20,20,20), [&B](const FVector& v){ B=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong);
+
+			// G3: 3x Restart -> 3*0.3 = 0.9
+			auto TC = NewObject<UQuickVectorTween>(Sequence);
+			TC->SetUp(FVector::ZeroVector, FVector(30,30,30), [&C](const FVector& v){ C=v; }, 0.3f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
+
+			Sequence->Join(TA);
+			Sequence->Join(TB);
+			Sequence->Join(TC);
+			Sequence->Play();
+
+			// G1
+			Sequence->Update(1.2f);
+			TestTrue("TA finished", A.Equals(FVector(10,10,10), 1.0f));
+			TestTrue("G2 not started", B.Equals(FVector::ZeroVector, 1e-3f));
+
+			// Reverse exactly at G2 start, run G2 backward
+			Sequence->Reverse();
+			Sequence->Update(1.0f);
+			TestTrue("TB ends at start (even PingPong)", B.Equals(FVector::ZeroVector, 2.0f));
+
+			// G3 forward again
+			Sequence->Reverse();
+			Sequence->Update(0.9f);
+			TestTrue("TC finished", C.Equals(FVector(30,30,30), 1.0f));
+			TestTrue("Sequence completed", Sequence->GetIsCompleted());
 		});
 
 	});

@@ -33,7 +33,7 @@ void QuickVectorTweenSpec::Define()
 			FVector From(0,0,0), To(100,100,100);
 			int32 UpdateCalls = 0;
 
-			Tween->Initialize(From, To, [&UpdateCalls](const FVector&){ ++UpdateCalls; }, 1.0f);
+			Tween->SetUp(From, To, [&UpdateCalls](const FVector&){ ++UpdateCalls; }, 1.0f);
 
 			// No Play() yet
 			Tween->Update(0.5f);
@@ -47,7 +47,7 @@ void QuickVectorTweenSpec::Define()
 		{
 			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
 
-			Tween->Initialize(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f);
+			Tween->SetUp(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f);
 			Tween->Play();
 			Tween->Update(0.5f); // half the duration
 
@@ -60,7 +60,7 @@ void QuickVectorTweenSpec::Define()
 		{
 			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
 
-			Tween->Initialize(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f, 1.0f, EEaseType::Linear);
+			Tween->SetUp(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f, 1.0f, EEaseType::Linear);
 			Tween->Play();
 
 			Tween->Update(1.1f); // overshoot to ensure finish
@@ -79,7 +79,7 @@ void QuickVectorTweenSpec::Define()
 		{
 			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
 
-			Tween->Initialize(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f, 0.5f, EEaseType::Linear);
+			Tween->SetUp(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f, 0.5f, EEaseType::Linear);
 			Tween->Play();
 
 			Tween->Update(1.0f); // effective progress 0.5
@@ -95,7 +95,7 @@ void QuickVectorTweenSpec::Define()
 		{
 			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
 
-			Tween->Initialize(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f, 2.0f, EEaseType::Linear);
+			Tween->SetUp(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f, 2.0f, EEaseType::Linear);
 			Tween->Play();
 
 			// 0.5s at 2x => finish
@@ -109,7 +109,7 @@ void QuickVectorTweenSpec::Define()
 			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
 			int32 Calls = 0;
 
-			Tween->Initialize(From, To, [&Current, &Calls](const FVector& v){ ++Calls; Current = v; }, 1.0f, 0.0f, EEaseType::Linear);
+			Tween->SetUp(From, To, [&Current, &Calls](const FVector& v){ ++Calls; Current = v; }, 1.0f, 0.0f, EEaseType::Linear);
 			Tween->Play();
 
 			Tween->Update(1.0f);
@@ -124,7 +124,7 @@ void QuickVectorTweenSpec::Define()
 			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
 			int32 Calls = 0;
 
-			Tween->Initialize(From, To, [&Current, &Calls](const FVector& v){ ++Calls; Current = v; }, 0.0f, 1.0f, EEaseType::Linear);
+			Tween->SetUp(From, To, [&Current, &Calls](const FVector& v){ ++Calls; Current = v; }, 0.0f, 1.0f, EEaseType::Linear);
 			Tween->Play();
 			Tween->Update(0.0f); // tick once
 
@@ -137,7 +137,7 @@ void QuickVectorTweenSpec::Define()
 		{
 			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
 
-			Tween->Initialize(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f);
+			Tween->SetUp(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f);
 			Tween->Play();
 			Tween->Update(5.0f);
 
@@ -149,7 +149,7 @@ void QuickVectorTweenSpec::Define()
 		{
 			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
 
-			Tween->Initialize(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f, 1.0f, EEaseType::Linear);
+			Tween->SetUp(From, To, [&Current](const FVector& v){ Current = v; }, 1.0f, 1.0f, EEaseType::Linear);
 			Tween->Play();
 
 			float lastProgress = 0.0f;
@@ -171,7 +171,7 @@ void QuickVectorTweenSpec::Define()
 			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
 			int8_t LoopsAmount = 2;
 
-			Tween->Initialize(
+			Tween->SetUp(
 				From, To,
 				[&Current](const FVector& v){ Current = v; },
 				1.0f, 1.0f, EEaseType::Linear,
@@ -200,7 +200,7 @@ void QuickVectorTweenSpec::Define()
 			FVector From(0,0,0), To(100,100,100), Current(0,0,0);
 			int8_t LoopsAmount = 2;
 
-			Tween->Initialize(
+			Tween->SetUp(
 				From, To,
 				[&Current](const FVector& v){ Current = v; },
 				1.0f, 1.0f, EEaseType::Linear,

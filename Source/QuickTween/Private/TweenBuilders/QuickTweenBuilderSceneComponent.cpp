@@ -4,74 +4,95 @@
 #include "TweenBuilders/QuickTweenBuilderSceneComponent.h"
 
 #include "TweenBuilders/QuickTweenBuilderObject.h"
+#include "Tweens/QuickTweenSequence.h"
+#include "Tweens/QuickVectorTween.h"
 
-
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::MoveTo(FVector to, float duration,
-                                                                           const FString& tweenTag)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::MoveTo(
+	FVector to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve)
 {
+	USceneComponent* sceneComp = Cast<USceneComponent>(Target);
+	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
+	tween->SetUp(
+		sceneComp->GetRelativeLocation(),
+		to,
+		[sceneComp](const FVector& v) { sceneComp->SetRelativeLocation(v); },
+		duration,
+		timeScale,
+		easeType,
+		easeCurve
+	);
+
 	if (bIsAppend)
 	{
-
+		Sequence->Append(tween);
+	}
+	else
+	{
+		Sequence->Join(tween);
 	}
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateTo(FRotator to, float duration,
-                                                                             bool bUseShortestPath, const FString& tweenTag)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateTo(FRotator to, bool bUseShortestPath,
+	float duration, float timeScale, EEaseType easeType, UCurveFloat* easeCurve)
 {
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateToQuat(FQuat to, float duration,
-	bool bUseShortestPath, const FString& tweenTag)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateToQuat(FQuat to, bool bUseShortestPath,
+	float duration, float timeScale, EEaseType easeType, UCurveFloat* easeCurve)
 {
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::ScaleTo(FVector to, float duration,
-	const FString& tweenTag)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::ScaleTo(
+	FVector to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve)
+{
+	USceneComponent* sceneComp = Cast<USceneComponent>(Target);
+	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
+	tween->SetUp(
+		sceneComp->GetRelativeScale3D(),
+		to,
+		[sceneComp](const FVector& v) { sceneComp->SetRelativeScale3D(v); },
+		duration,
+		timeScale,
+		easeType,
+		easeCurve
+	);
+
+	if (bIsAppend)
+	{
+		Sequence->Append(tween);
+	}
+	else
+	{
+		Sequence->Join(tween);
+	}
+	return this;
+}
+
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::LookAt(FVector forward, bool bUseShortestPath,
+	FVector up, float duration, float timeScale, EEaseType easeType, UCurveFloat* easeCurve)
 {
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::LookAt(FVector forward, float duration,
-	bool bUseShortestPath, FVector up, const FString& tweenTag)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::Append()
 {
+	UQuickTweenBuilderObject::AppendBase();
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetLoops(int32 loops)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::Join()
 {
-	UQuickTweenBuilderObject::SetLoopsBase(loops);
-	return this;
-}
-
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetLoopType(ELoopType loopType)
-{
-	UQuickTweenBuilderObject::SetLoopTypeBase(loopType);
-	return this;
-}
-
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetEaseType(EEaseType easeType)
-{
-	UQuickTweenBuilderObject::SetEaseTypeBase(easeType);
-	return this;
-}
-
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetEaseCurve(UCurveFloat* easeCurve)
-{
-	UQuickTweenBuilderObject::SetEaseCurveBase(easeCurve);
-	return this;
-}
-
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetTimeScale(float timeScale)
-{
-	UQuickTweenBuilderObject::SetTimeScaleBase(timeScale);
-	return this;
-}
-
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::SetIsBackwards(bool bIsBackwards)
-{
-	UQuickTweenBuilderObject::SetIsBackwardsBase(bIsBackwards);
+	UQuickTweenBuilderObject::JoinBase();
 	return this;
 }

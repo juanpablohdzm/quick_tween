@@ -29,6 +29,20 @@ public:
 
 #pragma region Sequence Creation
 	/**
+	 * Set up the sequence with optional looping parameters.
+	 * @param loops Number of times to loop the sequence (-1 = infinite).
+	 * @param loopType Type of looping behavior.
+	 * @param id Optional identifier for the sequence.
+	 * @param worldContextObject Context object for world access.
+	 * @return Reference to this sequence.
+	 */
+	UQuickTweenSequence* SetUp(
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& id = FString(),
+		const UObject* worldContextObject = nullptr);
+
+	/**
 	 * Joins a tween to the current group, allowing them to run in parallel.
 	 * @param tween The tween to join.
 	 * @return Reference to this sequence.
@@ -44,32 +58,10 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
 	UQuickTweenSequence* Append(UQuickTweenBase* tween);
 
-	/**
-	 * Sets the number of loops for the sequence.
-	 * @param loops Number of loops (default is 1).
-	 * @return Reference to this sequence.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
-	UQuickTweenSequence* SetLoops(int32 loops = 1) { Loops = loops; return this; };
-
-	/**
-	 * Sets the loop type for the sequence.
-	 * @param loopType The loop type (default is Restart).
-	 * @return Reference to this sequence.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
-	UQuickTweenSequence* SetLoopType(ELoopType loopType = ELoopType::Restart) { LoopType = loopType; return this; };
-
-	/**
-	 * Sets an identifier for the sequence.
-	 * @param id The sequence ID.
-	 * @return Reference to this sequence.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
-	UQuickTweenSequence* SetId(const FString& id) { SequenceTweenId = id; return this; };
 #pragma endregion
 
 #pragma region Sequence Control
+public:
 	/**
 	 * Starts playing the sequence.
 	 * @return Reference to this sequence.
@@ -134,6 +126,7 @@ public:
 
 
 #pragma region Sequence State Queries
+public:
 	/**
 	 * Checks if the sequence is currently playing.
 	 * @return True if playing, false otherwise.
@@ -207,7 +200,7 @@ public:
 #pragma endregion
 
 #pragma region Delegates
-
+public:
 	/** Called when the sequence updates. */
 	UPROPERTY(BlueprintAssignable)
 	FOnUpdateTweenSequence OnUpdate;

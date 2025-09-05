@@ -20,7 +20,7 @@ class QUICKTWEEN_API UQuickVectorTween : public UQuickTweenBase
 public:
 
 	/**
-	 * Initializes the vector tween with the specified parameters.
+	 * Set up the vector tween with the specified parameters.
 	 *
 	 * @param from The starting FVector value.
 	 * @param to The target FVector value.
@@ -32,8 +32,9 @@ public:
 	 * @param loops Number of times to loop the tween.
 	 * @param loopType Type of looping behavior.
 	 * @param tweenTag Optional tag for identifying the tween.
+	 * @param worldContextObject Context object for world access.
 	 */
-	void Initialize(
+	void SetUp(
 		const FVector& from,
 		const FVector& to,
 		TFunction<void(const FVector&)> setterFunction,
@@ -43,19 +44,21 @@ public:
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		const FString& tweenTag = FString())
+		const FString& tweenTag = FString(),
+		const UObject* worldContextObject = nullptr)
 	{
 		From = from;
 		To = to;
 		SetterFunction = setterFunction;
-		UQuickTweenBase::Initialize(
+		UQuickTweenBase::SetUp(
 			duration,
 			timeScale,
 			easeType,
 			easeCurve,
 			loops,
 			loopType,
-			tweenTag);
+			tweenTag,
+			worldContextObject);
 
 	}
 

@@ -1,16 +1,20 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 #include "Tweens/QuickTweenBase.h"
 
+#include "QuickTweenManager.h"
 #include "Utils/CommonValues.h"
 
-void UQuickTweenBase::Initialize(
+DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenBase, Log, All);
+
+void UQuickTweenBase::SetUp(
 	float duration,
 	float timeScale,
 	EEaseType easeType,
 	UCurveFloat* easeCurve,
 	int32 loops,
 	ELoopType loopType,
-	const FString& tweenTag)
+	const FString& tweenTag,
+	const UObject* worldContextObject)
 {
 	Duration = duration;
 	TimeScale = timeScale;
@@ -19,6 +23,16 @@ void UQuickTweenBase::Initialize(
 	Loops = loops;
 	LoopType = loopType;
 	TweenTag = tweenTag;
+
+	UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject);
+	if (!manager)
+	{
+		UE_LOG(LogQuickTweenBase, Log, TEXT("Failed to get QuickTweenManager for QuickTweenBase. Tweens will not be updated."));
+	}
+	else
+	{
+		manager->AddTween(this, Badge<UQuickTweenBase>());
+	}
 }
 
 void UQuickTweenBase::Update(float deltaTime)

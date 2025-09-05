@@ -14,78 +14,24 @@ void UQuickTweenBuilderObject::Initialize(UObject* inObject)
 	Sequence = NewObject<UQuickTweenSequence>();
 }
 
-UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetLoopsBase(int32 loops)
+UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetUp(
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	const UObject* worldContextObject)
 {
-	Sequence->SetLoops(loops);
+	Sequence->SetUp(loops, loopType, tweenTag, worldContextObject);
 	return this;
 }
 
-UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetLoopTypeBase(ELoopType loopType)
+UQuickTweenBuilderObject* UQuickTweenBuilderObject::AppendBase()
 {
-	const int32 numTweens = Sequence->GetNumTweens();
-	if (numTweens == 0)
-	{
-		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tweens in the sequence to set loop type on."));
-		return this;
-	}
-
-	UQuickTweenBase* tween = Sequence->GetTween(numTweens - 1);
-	tween->SetLoopType(loopType);
+	bIsAppend = true;
 	return this;
 }
 
-UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetEaseTypeBase(EEaseType easeType)
+UQuickTweenBuilderObject* UQuickTweenBuilderObject::JoinBase()
 {
-	const int32 numTweens = Sequence->GetNumTweens();
-	if (numTweens == 0)
-	{
-		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tweens in the sequence to set ease type on."));
-		return this;
-	}
-
-	UQuickTweenBase* tween = Sequence->GetTween(numTweens - 1);
-	tween->SetEaseType(easeType);
-	return this;
-}
-
-UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetEaseCurveBase(UCurveFloat* easeCurve)
-{
-	const int32 numTweens = Sequence->GetNumTweens();
-	if (numTweens == 0)
-	{
-		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tweens in the sequence to set ease curve on."));
-		return this;
-	}
-
-	UQuickTweenBase* tween = Sequence->GetTween(numTweens - 1);
-	tween->SetEaseCurve(easeCurve);
-	return this;
-}
-
-UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetTimeScaleBase(float timeScale)
-{
-	const int32 numTweens = Sequence->GetNumTweens();
-	if (numTweens == 0)
-	{
-		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tweens in the sequence to set time scale on."));
-		return this;
-	}
-
-	UQuickTweenBase* tween = Sequence->GetTween(numTweens - 1);
-	tween->SetTimeScale(timeScale);
-	return this;
-}
-
-UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetIsBackwardsBase(bool bIsBackwards)
-{
-	const int32 numTweens = Sequence->GetNumTweens();
-	if (numTweens == 0)
-	{
-		UE_LOG(LogQuickTweenBuilder, Warning, TEXT("No tweens in the sequence to set is backwards on."));
-		return this;
-	}
-
-	UQuickTweenBase* tween = Sequence->GetTween(numTweens - 1);
-	tween->SetIsBackwards(bIsBackwards);
+	bIsAppend = false;
 	return this;
 }

@@ -35,22 +35,4 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	UQuickTweenBuilderCameraComponent* LookAt(FVector Forward, float duration, bool bUseShortestPath = true, FVector up = FVector::UpVector, const FString& tweenTag = "");
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderCameraComponent* SetLoops(int32 loops);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderCameraComponent* SetLoopType(ELoopType loopType);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderCameraComponent* SetEaseType(EEaseType easeType);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderCameraComponent* SetEaseCurve(UCurveFloat* easeCurve);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderCameraComponent* SetTimeScale(float timeScale);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderCameraComponent* SetIsBackwards(bool bIsBackwards);
 };

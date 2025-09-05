@@ -3,11 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Tweens/QuickTweenSequence.h"
 #include "QuickTweenBuilderObject.generated.h"
 
 class UQuickTweenSequence;
-enum class EEaseType : uint8;
-enum class ELoopType : uint8;
 class UQuickTweenBase;
 /**
  * 
@@ -20,25 +19,24 @@ public:
 	virtual void Initialize(UObject* inObject);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderObject* SetLoopsBase(int32 loops);
+	UQuickTweenBuilderObject* SetUp(
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		const UObject* worldContextObject = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderObject* SetLoopTypeBase(ELoopType loopType);
+	UQuickTweenBuilderObject* AppendBase();
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderObject* SetEaseTypeBase(EEaseType easeType);
+	UQuickTweenBuilderObject* JoinBase();
 
 	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderObject* SetEaseCurveBase(UCurveFloat* easeCurve);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderObject* SetTimeScaleBase(float timeScale);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderObject* SetIsBackwardsBase(bool bIsBackwards);
-
-	UFUNCTION(BlueprintCallable)
-	virtual UQuickTweenSequence* Build() { return Sequence; }
+	virtual UQuickTweenSequence* Build()
+	{
+		Sequence->Play();
+		return Sequence;
+	}
 
 protected:
 	UPROPERTY(Transient)

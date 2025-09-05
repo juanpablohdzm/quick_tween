@@ -25,21 +25,4 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UQuickTweenBuilderMaterial* ColorParameterTo(FName parameterName, FColor To, float duration, const FString& tweenTag = "");
 
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderMaterial* SetLoops(int32 loops);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderMaterial* SetLoopType(ELoopType loopType);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderMaterial* SetEaseType(EEaseType easeType);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderMaterial* SetEaseCurve(UCurveFloat* easeCurve);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderMaterial* SetTimeScale(float timeScale);
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderMaterial* SetIsBackwards(bool bIsBackwards);
 };

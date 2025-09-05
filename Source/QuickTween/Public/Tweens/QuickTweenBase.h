@@ -22,10 +22,9 @@ class QUICKTWEEN_API UQuickTweenBase : public UObject, public IQuickTweenable
 {
 	GENERATED_BODY()
 public:
-
 #pragma region Tween Creation
 	/**
-	 * Initializes the tween with the specified parameters.
+	 * Set up the tween with the specified parameters.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Time scale multiplier.
 	 * @param easeType Type of easing to use.
@@ -33,65 +32,29 @@ public:
 	 * @param loops Number of loops (0 = infinite).
 	 * @param loopType Looping behavior.
 	 * @param tweenTag Optional tag for identification.
+	 * @param worldContextObject Context object for world access.
 	 */
-	void Initialize(
+	void SetUp(
 		float duration,
 		float timeScale,
 		EEaseType easeType,
 		UCurveFloat* easeCurve,
 		int32 loops,
 		ELoopType loopType,
-		const FString& tweenTag = FString());
-
-	/** Sets the duration of the tween. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
-	UQuickTweenBase* SetDuration(float duration) { Duration = duration; return this; }
-
-	/** Sets the progress of the tween (0-1). */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
-	UQuickTweenBase* SetProgress(float progress) { Progress = progress; return this; }
-
-	/** Sets the time scale of the tween. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
-    UQuickTweenBase* SetTimeScale(float timeScale) { TimeScale = timeScale; return this; }
-
-    /** Sets whether the tween is currently playing. */
-    UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
-    UQuickTweenBase* SetIsPlaying(bool isPlaying) { bIsPlaying = isPlaying; return this; }
-
-    /** Sets whether the tween is completed. */
-    UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
-    UQuickTweenBase* SetIsCompleted(bool isCompleted) { bIsCompleted = isCompleted; return this; }
-
-    /** Sets whether the tween is playing backwards. */
-    UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
-    UQuickTweenBase* SetIsBackwards(bool isBackwards) { bIsBackwards = isBackwards; return this; }
-
-	/** Sets the ease type for the tween. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
-	UQuickTweenBase* SetEaseType(EEaseType easeType) { EaseType = easeType; return this;}
-
-	/** Sets a custom ease curve for the tween. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
-	UQuickTweenBase* SetEaseCurve(UCurveFloat* easeCurve) { EaseCurve = easeCurve; return this; }
-
-	/** Sets the number of loops for the tween. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
-	UQuickTweenBase* SetLoops(int32 loops) { Loops = loops; return this;}
-
-	/** Sets the loop type for the tween. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
-	UQuickTweenBase* SetLoopType(ELoopType loopType){ LoopType = loopType; return this;}
-
-	/** Sets a tag for the tween. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Creation")
-	UQuickTweenBase* SetTweenTag(const FString& tag) { TweenTag = tag; return this; }
+		const FString& tweenTag = FString(),
+		const UObject* worldContextObject = nullptr);
 
 	/** Sets whether this tween is part of a sequence. */
 	UQuickTweenBase* SetIsInSequence(Badge<UQuickTweenSequence> badge, bool bInSequence) { bIsInSequence = bInSequence; return this; }
+
+protected:
+	/** Sets the progress of the tween (0-1). */
+	UQuickTweenBase* SetProgress(float progress) { Progress = progress; return this; }
+
 #pragma endregion
 
 #pragma region Tween Control
+public:
 	/**
 	 * Starts or resumes the tween.
 	 * @return This tween instance.
@@ -227,6 +190,7 @@ public:
 #pragma endregion
 
 #pragma region Tween State Queries
+public:
 	/** Gets the duration of the tween. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] float GetDuration() const { return Duration;}

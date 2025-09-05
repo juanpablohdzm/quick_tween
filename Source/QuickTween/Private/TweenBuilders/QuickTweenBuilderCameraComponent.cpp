@@ -45,39 +45,3 @@ UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::LookAt(FVe
 {
 	return this;
 }
-
-UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::SetLoops(int32 loops)
-{
-	UQuickTweenBuilderObject::SetLoopsBase(loops);
-	return this;
-}
-
-UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::SetLoopType(ELoopType loopType)
-{
-	UQuickTweenBuilderObject::SetLoopTypeBase(loopType);
-	return this;
-}
-
-UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::SetEaseType(EEaseType easeType)
-{
-	UQuickTweenBuilderObject::SetEaseTypeBase(easeType);
-	return this;
-}
-
-UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::SetEaseCurve(UCurveFloat* easeCurve)
-{
-	UQuickTweenBuilderObject::SetEaseCurveBase(easeCurve);
-	return this;
-}
-
-UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::SetTimeScale(float timeScale)
-{
-	UQuickTweenBuilderObject::SetTimeScaleBase(timeScale);
-	return this;
-}
-
-UQuickTweenBuilderCameraComponent* UQuickTweenBuilderCameraComponent::SetIsBackwards(bool bIsBackwards)
-{
-	UQuickTweenBuilderObject::SetIsBackwardsBase(bIsBackwards);
-	return this;
-}
