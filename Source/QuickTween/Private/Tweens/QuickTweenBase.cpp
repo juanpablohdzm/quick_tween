@@ -59,7 +59,7 @@ void UQuickTweenBase::Update_Restart(float deltaTime, Badge<UQuickTweenSequence>
 	else
 	{
 		const float mod = FMath::Fmod(ElapsedTime, GetDuration());
-		const uint32 loop = ElapsedTime / GetDuration();
+		const int32 loop = ElapsedTime / GetDuration();
 		CurrentLoop = loop + 1;
 		shouldComplete = loop <= 0 && FMath::IsNearlyZero(mod);
 	}

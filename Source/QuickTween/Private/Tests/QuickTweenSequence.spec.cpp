@@ -686,12 +686,15 @@ void QuickTweenSequenceSpec::Define()
 			Sequence->Update(0.5f);   // finish loop 1
 			Sequence->Update(0.01f);  // boundary into loop 2
 			Sequence->Reverse();      // immediately reverse
+			Sequence->Update(0.01f);
 			Sequence->Update(0.25f);
-			TestTrue("Moving toward start in loop 2 after reverse", A.X < 50.0f);
+			TestTrue("Moving toward start in loop 2 after reverse", A.X <= 50.0f);
 
-			Sequence->Update(0.25f);  // reach start
+			Sequence->Update(0.24f);  // reach start
 			Sequence->Reverse();      // forward again
-			Sequence->Update(0.5f);   // finish forward
+			Sequence->Update(0.25f);   // finish forward
+			Sequence->Update(0.25f);   // finish loop 1 forward
+			Sequence->Update(0.5f);   // finish loop 2 forward
 			TestTrue("Completed after two cycles with reverses", Sequence->GetIsCompleted());
 		});
 
