@@ -40,49 +40,106 @@ void UQuickTweenBase::Update(float deltaTime)
 	Update(deltaTime, nullptr);
 }
 
-void UQuickTweenBase::Update(float deltaTime, Badge<UQuickTweenSequence>* badge)
+void UQuickTweenBase::Update_Restart(float deltaTime, Badge<UQuickTweenSequence>* badge)
 {
-	if (GetIsCompleted() || !GetIsPlaying()) return;
-
-	ElapsedTime = !bIsBackwards?  ElapsedTime + deltaTime * GetTimeScale() : ElapsedTime - deltaTime * GetTimeScale();
+	ElapsedTime = !bIsReversed ?  ElapsedTime + deltaTime * GetTimeScale() : ElapsedTime - deltaTime * GetTimeScale();
 
 	if (OnUpdate.IsBound())
 	{
 		OnUpdate.Broadcast(this, Progress);
 	}
 
-	bool shouldCompleteLoop;
-	if (LoopType == ELoopType::PingPong)
+
+	bool shouldComplete = false;
+	if (!bIsReversed)
 	{
-		shouldCompleteLoop = !bIsBackwards ? ElapsedTime >= GetDuration() : ElapsedTime <= 0.0f;
+		CurrentLoop = (ElapsedTime / GetDuration()) + 1;
+		shouldComplete = CurrentLoop > Loops;
 	}
 	else
 	{
-		shouldCompleteLoop = !bIsBackwards ? ElapsedTime >= GetDuration() * GetCurrentLoop() : ElapsedTime <= -(GetDuration() * (GetCurrentLoop() - 1));
+		const float mod = FMath::Fmod(ElapsedTime, GetDuration());
+		const uint32 loop = ElapsedTime / GetDuration();
+		CurrentLoop = loop + 1;
+		shouldComplete = loop <= 0 && FMath::IsNearlyZero(mod);
+	}
+
+	if (Loops != INFINITE_LOOPS && shouldComplete)
+	{
+		Complete(badge);
+	}
+}
+
+void UQuickTweenBase::Update_PingPong(float deltaTime, Badge<UQuickTweenSequence>* badge)
+{
+	/*
+	 * !backwards & !reversed = to end
+	 *  backwards & reversed = to end
+	 * !backwards & reversed = to beginning
+	 * !backwards & reversed = to beginning
+	 *
+	 * */
+	const bool isGoingForward = bIsBackwards == bIsReversed;
+
+	bool shouldCompleteLoop = false;
+	if (isGoingForward)
+	{
+		ElapsedTime += deltaTime * GetTimeScale();
+		if (ElapsedTime >= GetDuration())
+		{
+			shouldCompleteLoop = true;
+			ElapsedTime = GetDuration() - (ElapsedTime - GetDuration());
+		}
+	}
+	else
+	{
+		ElapsedTime -= deltaTime * GetTimeScale();
+		if (ElapsedTime <= 0.0f)
+		{
+			shouldCompleteLoop = true;
+			ElapsedTime = -ElapsedTime;
+		}
+	}
+
+	if (OnUpdate.IsBound())
+	{
+		OnUpdate.Broadcast(this, Progress);
 	}
 
 	if (shouldCompleteLoop)
 	{
-		if (Loops != INFINITE_LOOPS && CurrentLoop >= Loops)
+		if (Loops != INFINITE_LOOPS && (!bIsReversed && CurrentLoop >= Loops || bIsReversed && (CurrentLoop - 1) <= 0))
 		{
 			Complete(badge);
 			return;
 		}
 
-		switch (LoopType)
-		{
-			case ELoopType::Restart:
-				// Nothing to do here, just continue to the next loop
-				break;
-			case ELoopType::PingPong:
-				bIsBackwards = !bIsBackwards;
-				break;
-			default:
-				ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));
-		}
-		CurrentLoop++;
+		bIsBackwards = !bIsReversed;
+		CurrentLoop = !bIsReversed ? CurrentLoop + 1 : CurrentLoop - 1;
 	}
-	return;
+}
+
+void UQuickTweenBase::Update(float deltaTime, Badge<UQuickTweenSequence>* badge)
+{
+	if (GetIsCompleted() || !GetIsPlaying()) return;
+
+	if (FMath::IsNearlyZero(GetDuration()))
+	{
+		Complete(badge);
+		return;
+	}
+
+	switch (LoopType)
+	{
+		case ELoopType::Restart:
+			Update_Restart(deltaTime, badge);
+			break;
+		case ELoopType::PingPong:
+			Update_PingPong(deltaTime, badge);
+			break;
+		default:
+			ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));
+	}
 }
 
 UQuickTweenBase* UQuickTweenBase::Play()
@@ -143,7 +200,7 @@ UQuickTweenBase* UQuickTweenBase::Reverse(Badge<UQuickTweenSequence>* badge)
 {
 	if (bIsInSequence && !badge) return this;
 
-	bIsBackwards = !bIsBackwards;
+	bIsReversed = !bIsReversed;
 
 	return this;
 }
@@ -160,8 +217,8 @@ UQuickTweenBase* UQuickTweenBase::Restart(Badge<UQuickTweenSequence>* badge)
 	bIsCompleted = false;
 	bIsPlaying   = true;
 
-	ElapsedTime = bIsBackwards ? Duration : 0.0f;
-	Progress    = bIsBackwards ? 1.0f     : 0.0f;
+	ElapsedTime = bIsReversed ? Duration : 0.0f;
+	Progress    = bIsReversed ? 1.0f     : 0.0f;
 	return this;
 }
 
@@ -175,8 +232,7 @@ UQuickTweenBase* UQuickTweenBase::Complete(Badge<UQuickTweenSequence>* badge)
 	if (bIsInSequence && !badge) return this;
 	if (bIsCompleted) return this;
 
-	const bool endsAtEndByLoop = (LoopType != ELoopType::PingPong) || ((Loops % 2) == 1);
-	const bool toEnd = bIsBackwards ? false : endsAtEndByLoop;
+	const bool toEnd = bIsReversed == bIsBackwards;
 
 	bIsPlaying   = false;
 	bIsCompleted = true;
@@ -207,6 +263,7 @@ UQuickTweenBase* UQuickTweenBase::Reset(Badge<UQuickTweenSequence>* badge)
 	bIsPlaying  = false;
 	bIsCompleted= false;
 	bIsBackwards= false;
+	bIsReversed = false;
 	EaseType    = EEaseType::Linear;
 	EaseCurve   = nullptr;
 	Loops       = 0;

@@ -240,7 +240,7 @@ private:
 	bool bIsCompleted = false;
 
 	/** Whether the sequence is playing backwards. */
-	bool bIsBackwards = false;
+	bool bIsReversed = false;
 
 	/** Current loop index. */
 	int32 CurrentLoop = 1;

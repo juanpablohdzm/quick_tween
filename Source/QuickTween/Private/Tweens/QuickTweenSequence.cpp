@@ -166,11 +166,11 @@ UQuickTweenSequence* UQuickTweenSequence::Restart()
 	bIsPlaying   = true;
 	bIsCompleted = false;
 
-	ElapsedTime = bIsBackwards ? GetDuration() : 0.0f;
-	Progress    = bIsBackwards ? 1.0f     : 0.0f;
+	ElapsedTime = bIsReversed ? GetDuration() : 0.0f;
+	Progress    = bIsReversed ? 1.0f     : 0.0f;
 
-	CurrentLoop = 1;
-	CurrentTweenGroupIndex = 0;
+	CurrentLoop = bIsReversed ? Loops : 1;
+	CurrentTweenGroupIndex = bIsReversed ? TweenGroups.Num() - 1 : 0;
 
 	for (FQuickTweenSequenceGroup& group : TweenGroups)
 	{
@@ -216,7 +216,7 @@ UQuickTweenSequence* UQuickTweenSequence::KillSequence()
 
 UQuickTweenSequence* UQuickTweenSequence::Reverse()
 {
-	bIsBackwards = !bIsBackwards;
+	bIsReversed = !bIsReversed;
 	for (auto [tweens] : TweenGroups)
 	{
 		for (TWeakObjectPtr<UQuickTweenBase>& weakTween : tweens)
@@ -251,7 +251,7 @@ void UQuickTweenSequence::Update(float deltaTime)
 {
 	if (GetIsCompleted() || !GetIsPlaying()) return;
 
-	ElapsedTime += deltaTime;
+	ElapsedTime = !bIsReversed ? ElapsedTime + deltaTime : ElapsedTime - deltaTime;
 
 	if (OnUpdate.IsBound())
 	{
@@ -259,13 +259,21 @@ void UQuickTweenSequence::Update(float deltaTime)
 	}
 
 
-	if (ElapsedTime >= (GetDuration() * CurrentLoop))
+	bool shouldComplete = false;
+	if (!bIsReversed)
 	{
-		if (Loops != INFINITE_LOOPS && CurrentLoop >= Loops)
-		{
-			Complete();
-			return;
-		}
+		shouldComplete = ElapsedTime >= GetDuration() * CurrentLoop && CurrentLoop >= Loops;
+	}
+	else
+	{
+		shouldComplete = ElapsedTime <= 0.0f && (CurrentLoop - 1) <= 0;
+	}
+	shouldComplete &= Loops != INFINITE_LOOPS;
+
+	if (shouldComplete)
+	{
+		Complete();
+		return;
 	}
 
 
@@ -298,7 +306,7 @@ void UQuickTweenSequence::Update(float deltaTime)
 
 	if (bShouldCompleteLoop)
 	{
-		if (bIsBackwards)
+		if (bIsReversed)
 		{
 			CurrentTweenGroupIndex--;
 		}else
@@ -310,7 +318,7 @@ void UQuickTweenSequence::Update(float deltaTime)
 			switch (LoopType)
 			{
 			case ELoopType::Restart:
-				CurrentTweenGroupIndex = bIsBackwards ? TweenGroups.Num() - 1 : 0;
+				CurrentTweenGroupIndex = bIsReversed ? TweenGroups.Num() - 1 : 0;
 				for (auto [tweens] : TweenGroups)
 				{
 					for (TWeakObjectPtr<UQuickTweenBase> tween : tweens)
@@ -328,7 +336,7 @@ void UQuickTweenSequence::Update(float deltaTime)
 				}
 				break;
 			case ELoopType::PingPong:
-				CurrentTweenGroupIndex = bIsBackwards ? TweenGroups.Num() - 1 : 0;
+				CurrentTweenGroupIndex = bIsReversed ? TweenGroups.Num() - 1 : 0;
 				Reverse();
 				for (auto [tweens] : TweenGroups)
 				{

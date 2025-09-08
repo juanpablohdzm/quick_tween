@@ -182,7 +182,7 @@ void QuickVectorTweenSpec::Define()
 			TestNearlyEqual("Start at From", Current, From, 1.0f);
 			Tween->Update(0.5f);
 			TestNearlyEqual("~halfway in loop 1", Current, FVector(50,50,50), 10.0f);
-			Tween->Update(0.49f);
+			Tween->Update(0.5f);
 			TestNearlyEqual("At To after loop 1", Current, To, 2.0f);
 			TestFalse("Not completed after first loop", Tween->GetIsCompleted());
 
@@ -223,5 +223,222 @@ void QuickVectorTweenSpec::Define()
 			Tween->Update(1.f); // ensure overshoot
 			TestTrue("Completed after ping-pong loops", Tween->GetIsCompleted());
 		});
+
+		It("Reverse on Restart at loop 2/3: returns to 0 and completes (boundary-stepped)", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Cur(0,0,0);
+
+			// dur=1, loops=3, Restart
+			Tween->SetUp(From, To, [&Cur](const FVector& v){ Cur=v; },
+			             1.0f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
+			Tween->Play();
+
+			// Enter loop 2 (t = 1.2): 1.0 + 0.2 (step each boundary)
+			Tween->Update(1.0f);                 // finish loop 1 => Cur ~ To
+			TestNearlyEqual("Loop1 end", Cur, To, 1.0f);
+
+			Tween->Update(0.2f);                 // 0.2 into loop 2
+			const FVector snapForward = Cur;
+
+			// Reverse mid loop 2: should head back to 0 and COMPLETE when reaches From.
+			Tween->Reverse();
+
+			// Step back to the previous boundary (t=1.0)
+			Tween->Update(0.2f);
+			TestNearlyEqual("Back at loop1 boundary value (~To)", Cur, To, 1.0f);
+			TestFalse("Not completed yet at 1.0", Tween->GetIsCompleted());
+
+			// Step back to start (t=0.0)
+			Tween->Update(1.0f);
+			TestTrue("Completed when reached 0 after Reverse", Tween->GetIsCompleted());
+			TestNearlyEqual("Ended at From after Reverse-to-zero", Cur, From, 1.0f);
+		});
+
+		It("Reverse on Restart in loop 3/3 mid-way: boundary steps 2.3 -> 2.0 -> 1.0 -> 0.0", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Cur(0,0,0);
+
+			Tween->SetUp(From, To, [&Cur](const FVector& v){ Cur=v; },
+			             1.0f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
+			Tween->Play();
+
+			// Advance to t=2.3: (1.0 + 1.0 + 0.3), stepping boundaries
+			Tween->Update(1.0f);
+			Tween->Update(1.0f);
+			Tween->Update(0.3f);
+			const FVector snap23 = Cur;
+			TestTrue("> start and < end", Cur.X > 0.0f && Cur.X < 100.0f);
+
+			// Reverse, then walk back across EACH boundary
+			Tween->Reverse();
+
+			Tween->Update(0.3f); // 2.3 -> 2.0
+			TestTrue("Reached t=2.0 boundary", Cur.X >= 99.0f || Cur.Equals(To, 2.0f));
+
+			Tween->Update(1.0f); // 2.0 -> 1.0
+			TestTrue("Reached t=1.0 boundary", Cur.X >= 99.0f || Cur.Equals(To, 2.0f));
+
+			Tween->Update(1.0f); // 1.0 -> 0.0
+			TestTrue("Completed at zero after Reverse", Tween->GetIsCompleted());
+			TestNearlyEqual("Ended at From", Cur, From, 1.0f);
+		});
+
+		It("Reverse at exact boundary (start of loop 2/3) then 1.0s back to zero completes", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Cur(0,0,0);
+
+			Tween->SetUp(From, To, [&Cur](const FVector& v){ Cur=v; },
+			             1.0f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
+			Tween->Play();
+
+			Tween->Update(1.0f); // exactly loop 1 end
+			TestNearlyEqual("At To at 1.0", Cur, To, 1.0f);
+
+			Tween->Reverse();     // now head to zero and complete there
+			Tween->Update(1.0f);  // 1.0 back to zero
+
+			TestTrue("Completed at zero after Reverse on boundary", Tween->GetIsCompleted());
+			TestNearlyEqual("Ended at From", Cur, From, 1.0f);
+		});
+
+		It("Reverse honors TimeScale (0.5x): needs scaled time to return to zero and complete", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Cur(0,0,0);
+
+			// TS=0.5 => elapsed advances at half speed
+			Tween->SetUp(From, To, [&Cur](const FVector& v){ Cur=v; },
+			             1.0f, 0.5f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
+			Tween->Play();
+
+			// Reach t=1.2 elapsed: need 2.4s of real time (2.0s to get to 1.0 + 0.4s to get to 1.2)
+			Tween->Update(2.0f); // -> t=1.0
+			TestNearlyEqual("At To (loop1 end) with timescale", Cur, To, 1.0f);
+			Tween->Update(0.4f); // -> t=1.2
+
+			Tween->Reverse();
+
+			// Back to 1.0 needs 0.2 elapsed => 0.4s real time
+			Tween->Update(0.4f);
+			TestNearlyEqual("Back to boundary 1.0", Cur, To, 1.0f);
+			TestFalse("Not done yet", Tween->GetIsCompleted());
+
+			// Back to 0 needs 1.0 elapsed => 2.0s real time
+			Tween->Update(2.0f);
+			TestTrue("Completed at zero after Reverse with timescale", Tween->GetIsCompleted());
+			TestNearlyEqual("Ended at From", Cur, From, 1.0f);
+		});
+
+		It("Reverse on single-loop (1/1) mid-way: goes back to 0 and completes instead of finishing at To", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Cur(0,0,0);
+
+			Tween->SetUp(From, To, [&Cur](const FVector& v){ Cur=v; }, 1.0f, 1.0f, EEaseType::Linear, nullptr, 1, ELoopType::Restart);
+			Tween->Play();
+
+			Tween->Update(0.6f);   // forward 0.6
+			TestTrue("Forward > halfway", Cur.X > 50.0f);
+
+			Tween->Reverse();      // should cause completion when reaching 0
+			Tween->Update(0.6f);   // 0.6 back to zero
+
+			TestTrue("Completed at zero after Reverse", Tween->GetIsCompleted());
+			TestNearlyEqual("Ended at From", Cur, From, 1.0f);
+		});
+
+		It("Reverse early on PingPong(3 loops): returns to 0 and completes at zero", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Cur(0,0,0);
+
+			Tween->SetUp(From, To, [&Cur](const FVector& v){ Cur=v; },
+			             1.0f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::PingPong);
+			Tween->Play();
+
+			Tween->Update(0.25f);  // a bit into forward
+			TestTrue("Forward started", Cur.X > 0.0f);
+
+			Tween->Reverse();      // should head to zero and complete on arrival
+			Tween->Update(0.25f);  // back to zero
+
+			TestTrue("Completed at zero after Reverse", Tween->GetIsCompleted());
+			TestNearlyEqual("Ended at From", Cur, From, 1.0f);
+		});
+
+		It("Reverse when already at start: completes immediately on next tick", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Cur(0,0,0);
+
+			Tween->SetUp(From, To, [&Cur](const FVector& v){ Cur=v; }, 1.0f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
+			Tween->Play();
+
+			// Immediately reverse at t=0
+			Tween->Reverse();
+			Tween->Update(0.0f); // tick to apply
+
+			TestTrue("Completed instantly since already at zero", Tween->GetIsCompleted());
+			TestNearlyEqual("Still at From", Cur, From, 1.0f);
+		});
+
+		It("Reverse after completion is a no-op: remains completed and value unchanged", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Cur(0,0,0);
+
+			Tween->SetUp(From, To, [&Cur](const FVector& v){ Cur=v; }, 1.0f, 1.0f, EEaseType::Linear, nullptr, 1, ELoopType::Restart);
+			Tween->Play();
+			Tween->Update(1.0f); // complete normally
+			TestTrue("Completed normally", Tween->GetIsCompleted());
+			const FVector EndVal = Cur;
+
+			Tween->Reverse();     // should have no effect
+			Tween->Update(0.5f);
+			TestTrue("Still completed", Tween->GetIsCompleted());
+			TestTrue("Value unchanged after reverse post-complete", Cur.Equals(EndVal, 1e-3f));
+		});
+
+		It("Reverse at loop boundary (PingPong even loop about to start): heads to To and completes", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Cur(0,0,0);
+
+			// 2 loops pingpong: would normally end at start anyway,
+			// but we verify Reverse path explicitly at boundary.
+			Tween->SetUp(From, To, [&Cur](const FVector& v){ Cur=v; },
+			             0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong);
+			Tween->Play();
+
+			Tween->Update(0.5f); // end of forward loop 1
+			TestNearlyEqual("At To at boundary", Cur, To, 1.0f);
+
+			Tween->Reverse();     // go to zero and complete there
+			Tween->Update(0.5f);
+			Tween->Update(0.5f);
+			TestTrue("Completed at From after Reverse at boundary", Tween->GetIsCompleted());
+			TestNearlyEqual("Ended at From", Cur, From, 1.0f);
+		});
+
+		It("Reverse multiple boundaries: loop2 mid -> back to loop1 end -> back to start; completes only at 0", [this]()
+		{
+			FVector From(0,0,0), To(100,100,100), Cur(0,0,0);
+
+			Tween->SetUp(From, To, [&Cur](const FVector& v){ Cur=v; },
+			             1.0f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
+			Tween->Play();
+
+			// enter loop 2 at t=1.4: 1.0 + 0.4 (hit boundary separately)
+			Tween->Update(1.0f);
+			Tween->Update(0.4f);
+			TestTrue("In loop 2 forward", Cur.X > 0.0f && Cur.X < 100.0f);
+
+			Tween->Reverse(); // should now head to zero and only complete when reach 0
+
+			// step back to 1.0 boundary first
+			Tween->Update(0.4f);
+			TestNearlyEqual("At loop1 boundary again (~To)", Cur, To, 1.0f);
+			TestFalse("Not completed yet at boundary", Tween->GetIsCompleted());
+
+			// then to 0
+			Tween->Update(1.0f);
+			TestTrue("Completed ONLY when reaching 0", Tween->GetIsCompleted());
+			TestNearlyEqual("Ended at From", Cur, From, 1.0f);
+		});
+
 	});
 }

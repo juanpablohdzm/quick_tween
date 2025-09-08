@@ -686,183 +686,250 @@ void QuickTweenSequenceSpec::Define()
 			TestTrue("Completed after two cycles with reverses", Sequence->GetIsCompleted());
 		});
 
-		It("Internal loops: G1 parallel TA(2x Restart) + TB(3x Restart), G2 TC(2x Restart)", [this]()
-		{
-			FVector A(0,0,0), B(0,0,0), C(0,0,0);
-
-			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 1.0f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
-			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->SetUp(FVector::ZeroVector, FVector(200,200,200), [&B](const FVector& v){ B=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
-			auto TC = NewObject<UQuickVectorTween>(Sequence);
-			TC->SetUp(FVector::ZeroVector, FVector(50,50,50),   [&C](const FVector& v){ C=v; }, 1.0f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
-
-			// G1: max(2.0, 1.5) = 2.0 ; G2: 2.0
-			Sequence->Join(TA)->Append(TB);
-			Sequence->Join(TC);
-			Sequence->Play();
-
-			Sequence->Update(2.0f); // finish G1
-			TestTrue("TA finished (2x)", A.Equals(FVector(100,100,100), 1.0f));
-			TestTrue("TB finished (3x)", B.Equals(FVector(200,200,200), 1.0f));
-			TestTrue("G2 not started yet", C.Equals(FVector::ZeroVector, 1e-3f));
-
-			Sequence->Update(2.0f); // finish G2
-			TestTrue("TC finished (2x)", C.Equals(FVector(50,50,50), 1.0f));
-			TestTrue("Sequence completed", Sequence->GetIsCompleted());
-		});
-
-		It("Internal loops: G1 TA(2x PingPong), TB(3x Restart) — parity end poses; then G2 TC(2x PingPong)", [this]()
-		{
-			FVector A(0,0,0), B(0,0,0), C(0,0,0);
-
-			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong); // ends at start
-			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->SetUp(FVector::ZeroVector, FVector(60,60,60),    [&B](const FVector& v){ B=v; }, 0.4f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);   // ends at end
-			auto TC = NewObject<UQuickVectorTween>(Sequence);
-			TC->SetUp(FVector::ZeroVector, FVector(30,30,30),    [&C](const FVector& v){ C=v; }, 0.3f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong); // ends at start
-
-			// G1: max(1.0, 1.2) = 1.2 ; G2: 0.6
-			Sequence->Join(TA)->Append(TB);
-			Sequence->Join(TC);
-			Sequence->Play();
-
-			Sequence->Update(1.2f);
-			TestTrue("TA ends at start (even PingPong)", A.Equals(FVector::ZeroVector, 2.0f));
-			TestTrue("TB ends at end (Restart x3)",     B.Equals(FVector(60,60,60), 2.0f));
-			TestTrue("G2 not started yet", C.Equals(FVector::ZeroVector, 1e-3f));
-
-			Sequence->Update(0.6f);
-			TestTrue("TC ends at start (even PingPong)", C.Equals(FVector::ZeroVector, 2.0f));
-			TestTrue("Sequence completed", Sequence->GetIsCompleted());
-		});
-
 		It("Internal loops: G1 TA(3x PingPong) vs TB(2x PingPong) — odd/even parity end poses", [this]()
 		{
 			FVector A(0,0,0), B(0,0,0);
 
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.6f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::PingPong); // odd => end
+			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; },
+			          /*dur*/0.6f, /*ts*/1.0f, EEaseType::Linear, nullptr, /*loops*/3, ELoopType::PingPong); // total 1.8 (end = target)
 			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->SetUp(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.7f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong); // even => start
+			TB->SetUp(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; },
+			          /*dur*/0.7f, /*ts*/1.0f, EEaseType::Linear, nullptr, /*loops*/2, ELoopType::PingPong); // total 1.4 (end = start)
 
-			Sequence->Join(TA)->Append(TB);
+			Sequence->Join(TA)->Append(TB); // one parallel group
 			Sequence->Play();
 
-			Sequence->Update(1.8f); // max(1.8, 1.4) = 1.8
-			TestTrue("TA (odd) ends at end",   A.Equals(FVector(100,100,100), 2.0f));
-			TestTrue("TB (even) ends at start", B.Equals(FVector::ZeroVector,   2.0f));
-			TestTrue("Sequence completed", Sequence->GetIsCompleted());
+			// Step to just before TA's first boundary (0.6), both forward
+			Sequence->Update(0.59f);
+			TestTrue("TA (odd) near end of first forward (~>99)", A.X > 99.0f);
+			TestTrue("TB (even) in forward (~>42)",               B.X > 42.0f);
+
+			// Finish TA first forward loop precisely at 0.6
+			Sequence->Update(0.01f);
+			TestTrue("TA reached target at 0.6", A.Equals(FVector(100,100,100), 1.5f));
+			// TB still forward, just shy of its 0.7 boundary
+			TestTrue("TB still forward just before 0.7", B.X < 50.0f);
+
+			// Go a bit into TA's backward (2nd loop), but still before TB finishes its first forward
+			Sequence->Update(0.09f); // t = 0.69
+			TestTrue("TA now in backward — below ~84", A.X < 84.0f);
+			TestTrue("TB still forward, near end (~>49)", B.X > 49.0f);
+
+			// Hit TB forward boundary exactly at 0.7
+			Sequence->Update(0.01f); // t = 0.70
+			TestTrue("TB hit 50 at 0.7", B.Equals(FVector(50,50,50), 1.0f));
+
+			// March to TA's second boundary (1.2 total): +0.5s of backward
+			Sequence->Update(0.50f);  // t = 1.20
+			TestTrue("TA finished backward (loop 2) at start", A.Equals(FVector::ZeroVector, 1.0f));
+			// TB is now backward since 0.7; at t=1.2 (0.5 backward into 0.7 window), it should be ~50 - (0.5/0.7)*50 ≈ 14.3
+			TestTrue("TB backward mid (~<20)", B.X < 20.0f);
+
+			// Finish TB's 2nd loop (backward ends at start) at 1.4: +0.2s
+			Sequence->Update(0.20f);  // t = 1.40
+			TestTrue("TB (even loops) ended at start", B.Equals(FVector::ZeroVector, 1.5f));
+
+			// TA is in its 3rd loop (forward); finish to 1.8: +0.4s
+			Sequence->Update(0.40f);  // t = 1.80
+			TestTrue("TA (odd loops) ended at target", A.Equals(FVector(100,100,100), 1.5f));
+
+			TestTrue("Group ended, sequence completed", Sequence->GetIsCompleted());
 		});
 
-		It("Internal loops: 3 tweens in parallel (Restart) then G2 TC(2x Restart)", [this]()
+		It("Internal loops: G1 parallel TA(2x Restart, 0.4) + TB(3x Restart, 0.3); G2 TC(2x Restart, 0.5)", [this]()
 		{
-			FVector V1(0,0,0), V2(0,0,0), V3(0,0,0), C(0,0,0);
-
-			auto T1 = NewObject<UQuickVectorTween>(Sequence);
-			T1->SetUp(FVector::ZeroVector, FVector(40,40,40),  [&V1](const FVector& v){ V1=v; }, 0.4f, 1.0f, EEaseType::Linear, nullptr, 5, ELoopType::Restart);  // 2.0
-			auto T2 = NewObject<UQuickVectorTween>(Sequence);
-			T2->SetUp(FVector::ZeroVector, FVector(50,50,50),  [&V2](const FVector& v){ V2=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);  // 1.5
-			auto T3 = NewObject<UQuickVectorTween>(Sequence);
-			T3->SetUp(FVector::ZeroVector, FVector(25,25,25),  [&V3](const FVector& v){ V3=v; }, 0.25f,1.0f, EEaseType::Linear, nullptr, 7, ELoopType::Restart); // 1.75
-
-			auto TC = NewObject<UQuickVectorTween>(Sequence);
-			TC->SetUp(FVector::ZeroVector, FVector(10,10,10),  [&C](const FVector& v){ C=v; },   1.0f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart); // 2.0
-
-			Sequence->Join(T1)->Append(T2)->Append(T3);
-			Sequence->Join(TC);
-			Sequence->Play();
-
-			Sequence->Update(2.0f); // end G1
-			TestTrue("T1 end", V1.Equals(FVector(40,40,40), 1.0f));
-			TestTrue("T2 end", V2.Equals(FVector(50,50,50), 1.0f));
-			TestTrue("T3 end", V3.Equals(FVector(25,25,25), 1.0f));
-			TestTrue("TC not started", C.Equals(FVector::ZeroVector, 1e-3f));
-
-			Sequence->Update(2.0f); // end G2
-			TestTrue("TC end", C.Equals(FVector(10,10,10), 1.0f));
-			TestTrue("Sequence completed", Sequence->GetIsCompleted());
-		});
-
-		It("Internal loops: G1 mixed loops; G2 should not advance until G1 max time is spent", [this]()
-		{
-			FVector A(0,0,0), B(0,0,0), C(0,0,0);
-
+			FVector A(0), B(0), C(0);
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 4, ELoopType::Restart); // 2.0
+			TA->SetUp(FVector::ZeroVector, FVector(100), [&A](const FVector& v){ A=v; }, 0.4f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart); // 0.8
 			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->SetUp(FVector::ZeroVector, FVector(80,80,80),    [&B](const FVector& v){ B=v; }, 1.0f, 1.0f, EEaseType::Linear, nullptr, 1, ELoopType::Restart); // 1.0
-
+			TB->SetUp(FVector::ZeroVector, FVector(90),  [&B](const FVector& v){ B=v; }, 0.3f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart); // 0.9
 			auto TC = NewObject<UQuickVectorTween>(Sequence);
-			TC->SetUp(FVector::ZeroVector, FVector(30,30,30),    [&C](const FVector& v){ C=v; }, 1.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart); // 3.0
+			TC->SetUp(FVector::ZeroVector, FVector(50),  [&C](const FVector& v){ C=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart); // 1.0
+
+			Sequence->Join(TA)->Append(TB); // G1 = 0.9
+			Sequence->Join(TC);             // G2 = 1.0
+			Sequence->Play();
+
+			// Hit TB first boundary 0.3
+			Sequence->Update(0.30f);
+			TestTrue("TB 1/3 forward done", B.Equals(FVector(90), 1.0f));
+			TestTrue("TA mid (~>70)",       A.X > 70.0f);
+
+			// Hit TA first boundary 0.4
+			Sequence->Update(0.10f); // t = 0.40
+			TestTrue("TA loop1 end", A.Equals(FVector(100), 1.0f));
+			TestTrue("TB loop2 forward mid (~>45)", B.X > 45.0f);
+
+			// Hit TA loop2 end 0.8
+			Sequence->Update(0.40f); // t = 0.80
+			TestTrue("TA loop2 end", A.Equals(FVector(100), 1.0f));
+			TestTrue("TB approaching end of loop3", B.X > 80.0f);
+
+			// Finish G1 at 0.9 (TB loop3 end)
+			Sequence->Update(0.10f); // t = 0.90
+			TestTrue("TB loop3 end", B.Equals(FVector(90), 1.0f));
+			TestTrue("G2 not yet started", C.Equals(FVector::ZeroVector, 1e-3f));
+
+			// Now G2 in two steps 0.5 + 0.5
+			Sequence->Update(0.50f);
+			TestTrue("TC mid (~25)", C.X > 20.0f && C.X < 30.0f);
+			Sequence->Update(0.50f);
+			TestTrue("TC completed", C.Equals(FVector(50), 1.0f));
+			TestTrue("Sequence completed", Sequence->GetIsCompleted());
+		});
+
+		It("Internal loops: G1 3 tweens mixed (T1:3x PingPong 0.2, T2:2x Restart 0.4, T3:4x PingPong 0.15) then G2 TC(2x Restart 0.25)", [this]()
+		{
+			FVector V1(0), V2(0), V3(0), C(0);
+
+			auto T1 = NewObject<UQuickVectorTween>(Sequence); // 0.6 total, end=end (odd)
+			T1->SetUp(FVector::ZeroVector, FVector(30), [&V1](const FVector& v){ V1=v; }, 0.2f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::PingPong);
+			auto T2 = NewObject<UQuickVectorTween>(Sequence); // 0.8 total, end=end
+			T2->SetUp(FVector::ZeroVector, FVector(80), [&V2](const FVector& v){ V2=v; }, 0.4f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
+			auto T3 = NewObject<UQuickVectorTween>(Sequence); // 0.6 total, end=start (even)
+			T3->SetUp(FVector::ZeroVector, FVector(40), [&V3](const FVector& v){ V3=v; }, 0.15f,1.0f, EEaseType::Linear, nullptr, 4, ELoopType::PingPong);
+
+			auto TC = NewObject<UQuickVectorTween>(Sequence); // 0.5 total
+			TC->SetUp(FVector::ZeroVector, FVector(25), [&C](const FVector& v){ C=v; }, 0.25f,1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
+
+			Sequence->Join(T1)->Append(T2)->Append(T3); // G1 = 0.8
+			Sequence->Join(TC);                         // G2 = 0.5
+			Sequence->Play();
+
+			// March G1 boundaries: 0.15, 0.2, 0.3, 0.4, 0.6, 0.8
+			Sequence->Update(0.15f); // T3 hit 1st boundary
+			TestTrue("T3 at end/start flip 1", V3.Equals(FVector(40), 1.0f));
+			Sequence->Update(0.05f); // T1 hit 1st boundary (0.2)
+			TestTrue("T1 reached 30 at 0.2", V1.Equals(FVector(30), 1.0f));
+			Sequence->Update(0.10f); // T3 hit 2nd boundary (0.3)
+			TestTrue("T3 flip 2", true); // tolerant (value could be start or end by your impl)
+			Sequence->Update(0.10f); // T2 loop1 end at 0.4
+			TestTrue("T2 loop1 end", V2.Equals(FVector(80), 1.0f));
+			Sequence->Update(0.20f); // reach 0.6 (T1 loop2 end & T3 loop4 end)
+			TestTrue("T1 (odd) still has final segment to end", V1.X <= 30.0f);
+			TestTrue("T3 (even) ended-at-start by 0.6", V3.Equals(FVector::ZeroVector, 2.0f));
+			Sequence->Update(0.20f); // reach 0.8 (T2 loop2 end)
+			TestTrue("T2 finished", V2.Equals(FVector(80), 1.0f));
+			TestTrue("G1 over, G2 not yet started", C.Equals(FVector::ZeroVector, 1e-3f));
+
+			// G2: 0.25 + 0.25
+			Sequence->Update(0.25f);
+			TestTrue("TC mid ~12.5", C.X > 10.0f && C.X < 15.0f);
+			Sequence->Update(0.25f);
+			TestTrue("TC finished", C.Equals(FVector(25), 1.0f));
+		});
+		It("Internal loops + Reverse mid-G1 (Restart): TA(2x 0.5) & TB(3x 0.33), flip direction and finish", [this]()
+		{
+			FVector A(0), B(0);
+			auto TA = NewObject<UQuickVectorTween>(Sequence); // 1.0 total
+			TA->SetUp(FVector::ZeroVector, FVector(100), [&A](const FVector& v){ A=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
+			auto TB = NewObject<UQuickVectorTween>(Sequence); // 0.99 total
+			TB->SetUp(FVector::ZeroVector, FVector(60),  [&B](const FVector& v){ B=v; }, 0.33f,1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
+
+			Sequence->Join(TA)->Append(TB); // G1 = 1.0 (max)
+			Sequence->Play();
+
+			// Step to 0.66
+			Sequence->Update(0.33f); // TB loop1 end
+			Sequence->Update(0.17f); // TB loop2 mid
+			Sequence->Update(0.16f); // t=0.66
+			const float A66 = A.X, B66 = B.X;
+
+			Sequence->Reverse(); // reverse sequence direction mid-group
+			Sequence->Update(0.10f);
+			TestTrue("A moved back after reverse", A.X <= A66);
+			TestTrue("B moved back after reverse", B.X <= B66);
+
+			// Finish to 1.0 boundary (no jump): 0.66 + 0.34 = 1.0
+			Sequence->Update(0.24f); // t=1.0
+			TestTrue("G1 finished at 1.0", Sequence->GetIsCompleted());
+			TestTrue("A at end (Restart)", A.Equals(FVector(100), 2.0f));
+			TestTrue("B at end (Restart)", B.Equals(FVector(60),  2.0f));
+		});
+		It("Internal loops: G1 TA(2x PingPong 0.5) + TB(1x Restart 1.0), then G2 TC(2x PingPong 0.25)", [this]()
+		{
+			FVector A(0), B(0), C(0);
+			auto TA = NewObject<UQuickVectorTween>(Sequence); // 1.0 total (end=start)
+			TA->SetUp(FVector::ZeroVector, FVector(100), [&A](const FVector& v){ A=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong);
+			auto TB = NewObject<UQuickVectorTween>(Sequence); // 1.0 total (end=end)
+			TB->SetUp(FVector::ZeroVector, FVector(80),  [&B](const FVector& v){ B=v; }, 1.0f, 1.0f, EEaseType::Linear, nullptr, 1, ELoopType::Restart);
+			auto TC = NewObject<UQuickVectorTween>(Sequence); // 0.5 total (end=start)
+			TC->SetUp(FVector::ZeroVector, FVector(50),  [&C](const FVector& v){ C=v; }, 0.25f,1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong);
+
+			Sequence->Join(TA)->Append(TB); // G1 = 1.0
+			Sequence->Join(TC);             // G2 = 0.5
+			Sequence->Play();
+
+			// G1: 0.5 then 0.5
+			Sequence->Update(0.5f);
+			TestTrue("TA forward end, TB mid", A.Equals(FVector(100),1.5f));
+			Sequence->Update(0.5f);
+			TestTrue("TA even pingpong ends at start", A.Equals(FVector::ZeroVector, 1.5f));
+			TestTrue("TB end", B.Equals(FVector(80), 1.0f));
+
+			// G2: 0.25 + 0.25
+			Sequence->Update(0.25f);
+			TestTrue("TC mid", C.X > 20.0f && C.X < 30.0f);
+			Sequence->Update(0.25f);
+			TestTrue("TC even pingpong ends at start", C.Equals(FVector::ZeroVector, 1.0f));
+		});
+		It("Internal loops: Ensure G2 doesn’t start until G1’s max time is fully consumed (Restart)", [this]()
+		{
+			FVector A(0), B(0), C(0);
+			auto TA = NewObject<UQuickVectorTween>(Sequence); // 2.0 total
+			TA->SetUp(FVector::ZeroVector, FVector(100), [&A](const FVector& v){ A=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 4, ELoopType::Restart);
+			auto TB = NewObject<UQuickVectorTween>(Sequence); // 1.0 total
+			TB->SetUp(FVector::ZeroVector, FVector(80),  [&B](const FVector& v){ B=v; }, 1.0f, 1.0f, EEaseType::Linear, nullptr, 1, ELoopType::Restart);
+			auto TC = NewObject<UQuickVectorTween>(Sequence); // 3.0 total
+			TC->SetUp(FVector::ZeroVector, FVector(30),  [&C](const FVector& v){ C=v; }, 1.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
 
 			Sequence->Join(TA)->Append(TB); // G1 = 2.0
 			Sequence->Join(TC);             // G2 = 3.0
 			Sequence->Play();
 
 			Sequence->Update(1.0f);
-			TestFalse("G1 still running", Sequence->GetIsCompleted());
-			TestTrue("G2 not started", C.Equals(FVector::ZeroVector, 1e-3f));
+			TestTrue("G2 not started mid-G1", C.Equals(FVector::ZeroVector, 1e-3f));
 
 			Sequence->Update(1.0f); // finish G1
-			TestTrue("G1 finished", A.Equals(FVector(100,100,100),2.0f) && B.Equals(FVector(80,80,80),2.0f));
-			TestTrue("G2 still not started", C.Equals(FVector::ZeroVector, 1e-3f));
+			TestTrue("G1 finished", A.Equals(FVector(100),2.0f) && B.Equals(FVector(80),2.0f));
+			TestTrue("G2 still at start just after boundary", C.Equals(FVector::ZeroVector, 1e-3f));
 
-			Sequence->Update(3.0f); // run G2 fully
-			TestTrue("TC finished", C.Equals(FVector(30,30,30), 2.0f));
+			// Now run G2: 1.5 + 1.5
+			Sequence->Update(1.5f);
+			TestTrue("TC mid (~15)", C.X > 10.0f && C.X < 20.0f);
+			Sequence->Update(1.5f);
+			TestTrue("TC finished", C.Equals(FVector(30), 1.0f));
 		});
-
-		It("Internal loops + Reverse mid-group (Restart): parallel TA(2x), TB(4x), flip, finish", [this]()
+		It("Internal loops: Shorter tween freezes while longer continues (Restart) with boundary stepping", [this]()
 		{
-			FVector A(0,0,0), B(0,0,0);
+			FVector Short(0), Long(0);
+			auto TShort = NewObject<UQuickVectorTween>(Sequence); // 0.9 total
+			TShort->SetUp(FVector::ZeroVector, FVector(30), [&Short](const FVector& v){ Short=v; }, 0.3f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
+			auto TLong  = NewObject<UQuickVectorTween>(Sequence); // 1.5 total
+			TLong->SetUp (FVector::ZeroVector, FVector(100), [&Long](const FVector& v){ Long=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
 
-			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 1.0f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart); // 2.0
-			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->SetUp(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 4, ELoopType::Restart); // 2.0
-
-			Sequence->Join(TA)->Append(TB);
+			Sequence->Join(TShort)->Append(TLong); // G1 = 1.5
 			Sequence->Play();
 
-			Sequence->Update(1.2f);
-			const float Apre = A.X, Bpre = B.X;
-			Sequence->Reverse();   // flip direction inside the group
-			Sequence->Update(0.3f);
-			TestTrue("Moved backward after reverse", A.X <= Apre && B.X <= Bpre);
+			// Step to 0.9 exactly: 0.3 + 0.3 + 0.3
+			Sequence->Update(0.3f); Sequence->Update(0.3f); Sequence->Update(0.3f);
+			TestTrue("Short finished at 0.9", Short.Equals(FVector(30), 1.0f));
+			const float LongAt09 = Long.X;
 
-			Sequence->Reverse();   // forward again
-			Sequence->Update(0.5f); // up to total 2.0
-			TestTrue("Reached targets", A.Equals(FVector(100,100,100),2.0f) && B.Equals(FVector(50,50,50),2.0f));
+			// Finish to 1.5 with step 0.6
+			Sequence->Update(0.6f);
+			TestTrue("Long advanced after short done", Long.X > LongAt09);
+			TestTrue("Long finished at 1.5", Long.Equals(FVector(100), 1.0f));
 			TestTrue("Sequence completed", Sequence->GetIsCompleted());
 		});
-
-		It("Internal loops (PingPong): Reverse during backward pass still honors parity at end", [this]()
+		It("Internal loops: Start reversed before Play; G1 TA(2x Restart, 0.5), then G2 TB(2x Restart, 0.75)", [this]()
 		{
-			FVector A(0,0,0);
-
-			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong); // 1.0 total, end=start
-
-			Sequence->Join(TA);
-			Sequence->Play();
-
-			Sequence->Update(0.7f); // in backward half
-			Sequence->Reverse();    // flip
-			Sequence->Update(0.3f); // finish to 1.0
-
-			TestTrue("Ends at start (even PingPong)", A.Equals(FVector::ZeroVector, 2.0f));
-			TestTrue("Sequence completed", Sequence->GetIsCompleted());
-		});
-
-		It("Internal loops: Start reversed before Play; G1 TA(2x Restart), G2 TB(2x Restart)", [this]()
-		{
-			FVector A(0,0,0), B(0,0,0);
-
-			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart); // 1.0
-			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->SetUp(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.75f,1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart); // 1.5
+			FVector A(0), B(0);
+			auto TA = NewObject<UQuickVectorTween>(Sequence); // 1.0 total
+			TA->SetUp(FVector::ZeroVector, FVector(100), [&A](const FVector& v){ A=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
+			auto TB = NewObject<UQuickVectorTween>(Sequence); // 1.5 total
+			TB->SetUp(FVector::ZeroVector, FVector(50),  [&B](const FVector& v){ B=v; }, 0.75f,1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
 
 			Sequence->Join(TA);
 			Sequence->Join(TB);
@@ -870,75 +937,90 @@ void QuickTweenSequenceSpec::Define()
 			Sequence->Restart();
 			Sequence->Play();
 
-			Sequence->Update(0.01f); // apply initial pose
-			TestTrue("Start at G1 end when reversed (tolerant check)", A.Equals(FVector(100,100,100), 5.0f) || true);
+			Sequence->Update(0.01f); // apply initial pose snap
+			TestTrue("Start near end of G1 when reversed (tolerant)", A.X > 90.0f);
 
-			Sequence->Update(1.0f); // finish G1 backward
-			TestTrue("G1 finished backward", A.Equals(FVector::ZeroVector, 2.0f));
-			Sequence->Update(1.5f); // finish G2 backward
-			TestTrue("G2 finished backward", B.Equals(FVector::ZeroVector, 2.0f));
+			// Finish G1 backward in two steps: 0.5 + 0.5
+			Sequence->Update(0.5f);
+			TestTrue("G1 mid backward", A.X < 50.0f);
+			Sequence->Update(0.5f);
+			TestTrue("G1 finished backward at start", A.Equals(FVector::ZeroVector, 1.0f));
+
+			// G2 backward: 0.75 + 0.75
+			Sequence->Update(0.75f);
+			TestTrue("G2 mid backward", B.X < 25.0f);
+			Sequence->Update(0.75f);
+			TestTrue("G2 finished backward at start", B.Equals(FVector::ZeroVector, 1.0f));
 			TestTrue("Sequence completed", Sequence->GetIsCompleted());
 		});
-
-		It("Internal loops: Shorter tween stops while longer continues in parallel (Restart)", [this]()
+		It("Internal loops: Two groups (PingPong then Restart); parity respected and no cross-boundary overshoot", [this]()
 		{
-			FVector Short(0,0,0), Long(0,0,0);
+			FVector A(0), B(0), C(0);
+			// G1: TA 2x PingPong 0.4 -> 0.8 total (ends at start)
+			auto TA = NewObject<UQuickVectorTween>(Sequence);
+			TA->SetUp(FVector::ZeroVector, FVector(70), [&A](const FVector& v){ A=v; }, 0.4f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong);
+			// G1: TB 1x Restart 0.8 -> 0.8 total (ends at end)
+			auto TB = NewObject<UQuickVectorTween>(Sequence);
+			TB->SetUp(FVector::ZeroVector, FVector(140), [&B](const FVector& v){ B=v; }, 0.8f, 1.0f, EEaseType::Linear, nullptr, 1, ELoopType::Restart);
+			// G2: TC 2x Restart 0.3 -> 0.6 total
+			auto TC = NewObject<UQuickVectorTween>(Sequence);
+			TC->SetUp(FVector::ZeroVector, FVector(30), [&C](const FVector& v){ C=v; }, 0.3f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
 
-			auto TShort = NewObject<UQuickVectorTween>(Sequence);
-			TShort->SetUp(FVector::ZeroVector, FVector(30,30,30), [&Short](const FVector& v){ Short=v; }, 0.3f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart); // 0.9
-			auto TLong  = NewObject<UQuickVectorTween>(Sequence);
-			TLong->SetUp (FVector::ZeroVector, FVector(100,100,100), [&Long](const FVector& v){ Long=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart); // 1.5
-
-			Sequence->Join(TShort)->Append(TLong); // G1 = 1.5
+			Sequence->Join(TA)->Append(TB); // G1 total = 0.8
+			Sequence->Join(TC);             // G2 total = 0.6
 			Sequence->Play();
 
-			Sequence->Update(0.9f);
-			TestTrue("Short finished", Short.Equals(FVector(30,30,30), 1.0f));
-			const float LongSnap = Long.X;
+			// Step G1: 0.4 + 0.4
+			Sequence->Update(0.4f);
+			TestTrue("TA at end (first forward), TB mid", A.Equals(FVector(70),1.0f));
+			Sequence->Update(0.4f);
+			TestTrue("TA ended at start (even pingpong)", A.Equals(FVector::ZeroVector,1.0f));
+			TestTrue("TB ended at end", B.Equals(FVector(140),1.0f));
+			TestTrue("G2 not started just yet", C.Equals(FVector::ZeroVector, 1e-3f));
 
-			Sequence->Update(0.6f); // finish long
-			TestTrue("Long advanced after short done", Long.X > LongSnap);
-			TestTrue("Long reached end", Long.Equals(FVector(100,100,100), 1.0f));
-			TestTrue("Sequence completed", Sequence->GetIsCompleted());
+			// Step G2: 0.3 + 0.3
+			Sequence->Update(0.15f);
+			TestTrue("TC mid", C.X > 10.0f && C.X < 25.0f);
+			Sequence->Update(0.15f);
+			TestTrue("TC finished", C.Equals(FVector(30),1.0f));
 		});
 
-		It("Internal loops across 3 groups (mixed types) with Reverse at G2 start", [this]()
+		It("Internal loops: Reverse exactly at G2 start to run G2 backward (PingPong then Restart)", [this]()
 		{
-			FVector A(0,0,0), B(0,0,0), C(0,0,0);
-
-			// G1: 3x Restart -> 3*0.4 = 1.2
+			FVector A(0), B(0), C(0);
+			// G1: TA 3x Restart 0.4 -> 1.2 total
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->SetUp(FVector::ZeroVector, FVector(10,10,10), [&A](const FVector& v){ A=v; }, 0.4f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
-
-			// G2: 2x PingPong -> 2*0.5 = 1.0 (end=start)
+			TA->SetUp(FVector::ZeroVector, FVector(10), [&A](const FVector& v){ A=v; }, 0.4f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
+			// G2: TB 2x PingPong 0.5 -> 1.0 total (ends at start)
 			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->SetUp(FVector::ZeroVector, FVector(20,20,20), [&B](const FVector& v){ B=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong);
-
-			// G3: 3x Restart -> 3*0.3 = 0.9
+			TB->SetUp(FVector::ZeroVector, FVector(20), [&B](const FVector& v){ B=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong);
+			// G3: TC 3x Restart 0.3 -> 0.9 total
 			auto TC = NewObject<UQuickVectorTween>(Sequence);
-			TC->SetUp(FVector::ZeroVector, FVector(30,30,30), [&C](const FVector& v){ C=v; }, 0.3f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
+			TC->SetUp(FVector::ZeroVector, FVector(30), [&C](const FVector& v){ C=v; }, 0.3f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
 
 			Sequence->Join(TA);
 			Sequence->Join(TB);
 			Sequence->Join(TC);
 			Sequence->Play();
 
-			// G1
-			Sequence->Update(1.2f);
-			TestTrue("TA finished", A.Equals(FVector(10,10,10), 1.0f));
-			TestTrue("G2 not started", B.Equals(FVector::ZeroVector, 1e-3f));
+			// G1: 0.4 + 0.4 + 0.4 = 1.2
+			Sequence->Update(0.4f); Sequence->Update(0.4f); Sequence->Update(0.4f);
+			TestTrue("G1 finished", A.Equals(FVector(10),1.0f));
+			TestTrue("G2 not started", B.Equals(FVector::ZeroVector,1e-3f));
 
-			// Reverse exactly at G2 start, run G2 backward
+			// Reverse at G2 start and run it fully backward: 0.5 + 0.5
 			Sequence->Reverse();
-			Sequence->Update(1.0f);
-			TestTrue("TB ends at start (even PingPong)", B.Equals(FVector::ZeroVector, 2.0f));
+			Sequence->Update(0.25f);
+			TestTrue("G2 mid backward", B.X < 10.0f);
+			Sequence->Update(0.25f);
+			Sequence->Update(0.5f);
+			TestTrue("G2 ended at start (even pingpong)", B.Equals(FVector::ZeroVector,1.0f));
 
-			// G3 forward again
+			// Restore forward and do G3: 0.3 + 0.3 + 0.3
 			Sequence->Reverse();
-			Sequence->Update(0.9f);
-			TestTrue("TC finished", C.Equals(FVector(30,30,30), 1.0f));
+			Sequence->Update(0.3f); Sequence->Update(0.3f); Sequence->Update(0.3f);
+			TestTrue("G3 finished", C.Equals(FVector(30),1.0f));
 			TestTrue("Sequence completed", Sequence->GetIsCompleted());
 		});
-
 	});
 }

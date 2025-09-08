@@ -11,7 +11,17 @@ void UQuickVectorTween::Update(float deltaTime, Badge<UQuickTweenSequence>* badg
 
 	if (GetIsCompleted() || !GetIsPlaying()) return;
 
-	const float currentLoopElapsedTime = FMath::Fmod(ElapsedTime, GetDuration());
+	float currentLoopElapsedTime;
+
+	const float mod = FMath::Fmod(ElapsedTime, GetDuration());
+	if (FMath::IsNearlyZero(mod))
+	{
+		currentLoopElapsedTime = FMath::IsNearlyZero(ElapsedTime) ? 0.0f : GetDuration();
+	}
+	else
+	{
+		currentLoopElapsedTime = mod;
+	}
 	float progress = FMath::Abs(currentLoopElapsedTime / GetDuration());
 	if (UCurveFloat* curve = GetEaseCurve())
 	{
@@ -24,6 +34,15 @@ void UQuickVectorTween::Update(float deltaTime, Badge<UQuickTweenSequence>* badg
 
 UQuickTweenBase* UQuickVectorTween::Complete(Badge<UQuickTweenSequence>* badge)
 {
-	SetterFunction(GetIsBackwards() ? From : To);
+	if (GetLoopType() == ELoopType::PingPong )
+	{
+		const bool isOddLoop = GetCurrentLoop() % 2 == 1;
+		const bool toEnd = (isOddLoop && !GetIsReversed()) || (!isOddLoop && GetIsReversed());
+		SetterFunction(toEnd ? To : From);
+	}
+	else
+	{
+		SetterFunction(GetIsReversed() ? From : To);
+	}
 	return Super::Complete(badge);
 }

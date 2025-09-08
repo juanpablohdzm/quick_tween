@@ -175,6 +175,22 @@ public:
 	 */
 	virtual void Update(float deltaTime) override;
 
+private:
+	/**
+	 * Updates the tween in Restart loop mode.
+	 * @param deltaTime Time since last update.
+	 * @param badge Badge pointer to allow internal calls from sequences.
+	 */
+	void Update_Restart(float deltaTime, Badge<UQuickTweenSequence>* badge);
+
+	/**
+	 * Updates the tween in PingPong loop mode.
+	 * @param deltaTime Time since last update.
+	 * @param badge Badge pointer to allow internal calls from sequences.
+	 */
+	void Update_PingPong(float deltaTime, Badge<UQuickTweenSequence>* badge);
+
+public:
 	/**
 	 * Updates the tween by the given delta time from a sequence.
 	 * @param deltaTime Time since last update.
@@ -214,6 +230,9 @@ public:
 	/** Returns true if the tween is playing backwards. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] bool GetIsBackwards() const { return bIsBackwards; }
+
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] bool GetIsReversed() const { return bIsReversed; }
 
 	/** Gets the ease type of the tween. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
@@ -275,6 +294,8 @@ private:
 	bool bIsCompleted = false;
 	/** Whether the tween is playing backwards. */
 	bool bIsBackwards = false;
+	/** Internal flag to track if the tween is reversed. */
+	bool bIsReversed = false;
 
 	/** Easing type for the tween. */
 	EEaseType EaseType = EEaseType::Linear;
