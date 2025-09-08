@@ -134,10 +134,10 @@ UQuickTweenSequence* UQuickTweenSequence::Complete()
 	bIsPlaying   = false;
 	bIsCompleted = true;
 
-	ElapsedTime = GetDuration();
+	ElapsedTime = !bIsReversed? GetDuration() * GetLoops() : 0.0f;
 	Progress    = 1.0f;
 	CurrentLoop = Loops;
-	CurrentTweenGroupIndex = TweenGroups.Num() > 0 ? TweenGroups.Num() - 1 : 0;
+	CurrentTweenGroupIndex = !bIsReversed ? FMath::Max(TweenGroups.Num() -1, 0) : 0;
 
 	for (int32 groupIdx = 0; groupIdx < TweenGroups.Num(); ++groupIdx)
 	{
@@ -166,7 +166,7 @@ UQuickTweenSequence* UQuickTweenSequence::Restart()
 	bIsPlaying   = true;
 	bIsCompleted = false;
 
-	ElapsedTime = bIsReversed ? GetDuration() : 0.0f;
+	ElapsedTime = bIsReversed ? GetDuration() * GetLoops() : 0.0f;
 	Progress    = bIsReversed ? 1.0f     : 0.0f;
 
 	CurrentLoop = bIsReversed ? Loops : 1;
@@ -217,6 +217,11 @@ UQuickTweenSequence* UQuickTweenSequence::KillSequence()
 UQuickTweenSequence* UQuickTweenSequence::Reverse()
 {
 	bIsReversed = !bIsReversed;
+	return Reverse_Tweens();
+}
+
+UQuickTweenSequence* UQuickTweenSequence::Reverse_Tweens()
+{
 	for (auto [tweens] : TweenGroups)
 	{
 		for (TWeakObjectPtr<UQuickTweenBase>& weakTween : tweens)
@@ -251,26 +256,41 @@ void UQuickTweenSequence::Update(float deltaTime)
 {
 	if (GetIsCompleted() || !GetIsPlaying()) return;
 
-	ElapsedTime = !bIsReversed ? ElapsedTime + deltaTime : ElapsedTime - deltaTime;
+	switch (LoopType)
+	{
+		case ELoopType::Restart:
+			Update_Restart(deltaTime);
+			break;
+		case ELoopType::PingPong:
+			Update_PingPong(deltaTime);
+			break;
+	}
+}
+
+void UQuickTweenSequence::Update_Restart(float deltaTime)
+{
+	ElapsedTime = !bIsReversed ?  ElapsedTime + deltaTime : ElapsedTime - deltaTime;
 
 	if (OnUpdate.IsBound())
 	{
 		OnUpdate.Broadcast(this);
 	}
 
-
 	bool shouldComplete = false;
 	if (!bIsReversed)
 	{
-		shouldComplete = ElapsedTime >= GetDuration() * CurrentLoop && CurrentLoop >= Loops;
+		CurrentLoop = (ElapsedTime / GetDuration()) + 1;
+		shouldComplete = CurrentLoop > Loops;
 	}
 	else
 	{
-		shouldComplete = ElapsedTime <= 0.0f && (CurrentLoop - 1) <= 0;
+		const float mod = FMath::Fmod(ElapsedTime, GetDuration());
+		const uint32 loop = ElapsedTime / GetDuration();
+		CurrentLoop = loop + 1;
+		shouldComplete = loop <= 0 && FMath::IsNearlyZero(mod);
 	}
-	shouldComplete &= Loops != INFINITE_LOOPS;
 
-	if (shouldComplete)
+	if (Loops != INFINITE_LOOPS && shouldComplete)
 	{
 		Complete();
 		return;
@@ -315,49 +335,98 @@ void UQuickTweenSequence::Update(float deltaTime)
 		}
 		if (CurrentTweenGroupIndex >= TweenGroups.Num() || CurrentTweenGroupIndex < 0)
 		{
-			switch (LoopType)
+			CurrentTweenGroupIndex = bIsReversed ? TweenGroups.Num() - 1 : 0;
+			for (auto [tweens] : TweenGroups)
 			{
-			case ELoopType::Restart:
-				CurrentTweenGroupIndex = bIsReversed ? TweenGroups.Num() - 1 : 0;
-				for (auto [tweens] : TweenGroups)
+				for (TWeakObjectPtr<UQuickTweenBase> tween : tweens)
 				{
-					for (TWeakObjectPtr<UQuickTweenBase> tween : tweens)
+					if (tween.IsValid())
 					{
-						if (tween.IsValid())
-						{
-							Badge<UQuickTweenSequence> badge;
-							tween->Restart(&badge);
-						}
-						else
-						{
-							UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid. This should not happen."));
-						}
+						Badge<UQuickTweenSequence> badge;
+						tween->Restart(&badge);
+					}
+					else
+					{
+						UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid. This should not happen."));
 					}
 				}
-				break;
-			case ELoopType::PingPong:
-				CurrentTweenGroupIndex = bIsReversed ? TweenGroups.Num() - 1 : 0;
-				Reverse();
-				for (auto [tweens] : TweenGroups)
-				{
-					for (TWeakObjectPtr<UQuickTweenBase> tween : tweens)
-					{
-						if (tween.IsValid())
-						{
-							Badge<UQuickTweenSequence> badge;
-							tween->Restart(&badge);
-						}
-						else
-						{
-							UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid. This should not happen."));
-						}
-					}
-				}
-				break;
-			default:
-				ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));
 			}
-			CurrentLoop++;
+			CurrentLoop = bIsReversed ? CurrentLoop - 1 : CurrentLoop + 1;
+		}
+	}
+}
+
+void UQuickTweenSequence::Update_PingPong(float deltaTime)
+{
+	ElapsedTime = !bIsReversed ?  ElapsedTime + deltaTime : ElapsedTime - deltaTime;
+
+	if (OnUpdate.IsBound())
+	{
+		OnUpdate.Broadcast(this);
+	}
+
+	bool bShouldCompleteLoop = CurrentTweenGroupIndex >= TweenGroups.Num() || CurrentTweenGroupIndex < 0;
+
+	if (!bShouldCompleteLoop)
+	{
+		const FQuickTweenSequenceGroup& currentGroup = TweenGroups[CurrentTweenGroupIndex];
+		uint32 completedTweens = 0;
+		for (TWeakObjectPtr<UQuickTweenBase> tween : currentGroup.Tweens)
+		{
+			if (tween.IsValid())
+			{
+				Badge<UQuickTweenSequence> badge;
+				tween->Update(deltaTime, &badge);
+
+				if (tween->GetIsCompleted())
+				{
+					completedTweens++;
+				}
+			}
+			else
+			{
+				UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid. This should not happen. Considering it as completed."));
+				completedTweens++;
+			}
+		}
+		bShouldCompleteLoop = completedTweens == currentGroup.Tweens.Num();
+	}
+
+	if (bShouldCompleteLoop)
+	{
+		if (bIsReversed)
+		{
+			CurrentTweenGroupIndex--;
+		}else
+		{
+			CurrentTweenGroupIndex++;
+		}
+		if (CurrentTweenGroupIndex >= TweenGroups.Num() || CurrentTweenGroupIndex < 0)
+		{
+			CurrentLoop = bIsReversed ? CurrentLoop - 1 : CurrentLoop + 1;
+			if (Loops != INFINITE_LOOPS && (!bIsReversed && CurrentLoop > Loops || bIsReversed && (CurrentLoop - 1) <= 0))
+			{
+				Complete();
+				return;
+			}
+
+			CurrentTweenGroupIndex = bIsReversed ? TweenGroups.Num() - 1 : 0;
+			Reverse_Tweens();
+			for (auto [tweens] : TweenGroups)
+			{
+				for (TWeakObjectPtr<UQuickTweenBase> tween : tweens)
+				{
+					if (tween.IsValid())
+					{
+						Badge<UQuickTweenSequence> badge;
+						tween->Restart(&badge);
+					}
+					else
+					{
+						UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid. This should not happen."));
+					}
+				}
+			}
 		}
 	}
 }

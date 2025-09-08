@@ -104,6 +104,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
 	UQuickTweenSequence* Reverse();
 
+private:
+	/**
+	 * Reverses all tweens in the sequence.
+	 * @return Reference to this sequence.
+	 */
+	UQuickTweenSequence* Reverse_Tweens();
+public:
+
 	/**
 	 * Toggles the pause state of the sequence.
 	 * @return Reference to this sequence.
@@ -116,6 +124,20 @@ public:
 	 * @param deltaTime Time since last update.
 	 */
 	virtual void Update(float deltaTime) override;
+
+private:
+	/**
+	 * Updates the sequence in Restart loop mode.
+	 * @param deltaTime Time since last update.
+	 */
+	void Update_Restart(float deltaTime);
+
+	/**
+	 * Updates the sequence in PingPong loop mode.
+	 * @param deltaTime Time since last update.
+	 */
+	void Update_PingPong(float deltaTime);
+public:
 
 	/**
 	 * If this sequence should be eliminated from the manager.

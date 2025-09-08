@@ -522,14 +522,23 @@ void QuickTweenSequenceSpec::Define()
 
 			Sequence->Update(0.01f); // apply initial pose
 			TestTrue("Start at end of last group in backwards play",
-				B.Equals(FVector(50,50,50), 2.0f) || A.Equals(FVector(100,100,100), 2.0f));
+				B.Equals(FVector(50,50,50), 2.0f));
+
+			Sequence->Update(0.24f);
+			TestTrue("Values decreasing from ends", B.X < 50.0f);
+
+			Sequence->Update(0.25); // finish first group backward
+			TestTrue("First group reached start", B.Equals(FVector::ZeroVector, 2.0f));
+
+			Sequence->Update(0.25f); // reach starts
+			TestTrue("Second group mid", A.Equals(FVector(50,50,50), 2.0f));
 
 			Sequence->Update(0.25f);
-			TestTrue("Values decreasing from ends", A.X < 100.0f || B.X < 50.0f);
+			TestTrue("Both groups at start", A.Equals(FVector::ZeroVector, 2.0f) && B.Equals(FVector::ZeroVector, 2.0f));
 
-			Sequence->Update(0.75f); // reach starts
 			Sequence->Reverse();     // go forward
-			Sequence->Update(1.0f);  // finish forward
+			Sequence->Update(0.5f);
+			Sequence->Update(0.5f);
 			TestTrue("Completed", Sequence->GetIsCompleted());
 		});
 
