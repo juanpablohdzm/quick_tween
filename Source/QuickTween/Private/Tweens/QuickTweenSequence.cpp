@@ -165,6 +165,7 @@ UQuickTweenSequence* UQuickTweenSequence::Restart()
 {
 	bIsPlaying   = true;
 	bIsCompleted = false;
+	bIsBackwards = false;
 
 	ElapsedTime = bIsReversed ? GetDuration() * GetLoops() : 0.0f;
 	Progress    = bIsReversed ? 1.0f     : 0.0f;
@@ -394,7 +395,7 @@ void UQuickTweenSequence::Update_PingPong(float deltaTime)
 
 	if (bShouldCompleteLoop)
 	{
-		if (bIsReversed)
+		if (bIsBackwards)
 		{
 			CurrentTweenGroupIndex--;
 		}else
@@ -410,7 +411,6 @@ void UQuickTweenSequence::Update_PingPong(float deltaTime)
 				return;
 			}
 
-			CurrentTweenGroupIndex = bIsReversed ? TweenGroups.Num() - 1 : 0;
 			Reverse_Tweens();
 			for (auto [tweens] : TweenGroups)
 			{
@@ -427,6 +427,8 @@ void UQuickTweenSequence::Update_PingPong(float deltaTime)
 					}
 				}
 			}
+			bIsBackwards = !bIsBackwards;
+			CurrentTweenGroupIndex = bIsBackwards ? TweenGroups.Num() - 1 : 0;
 		}
 	}
 }

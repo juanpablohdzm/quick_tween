@@ -264,6 +264,9 @@ private:
 	/** Whether the sequence is playing backwards. */
 	bool bIsReversed = false;
 
+	/** Whether the sequence is playing backwards internally. */
+	bool bIsBackwards = false;
+
 	/** Current loop index. */
 	int32 CurrentLoop = 1;
 

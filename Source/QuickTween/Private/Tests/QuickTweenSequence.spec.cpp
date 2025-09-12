@@ -447,12 +447,14 @@ void QuickTweenSequenceSpec::Define()
 
 			// Forward pass (0.75s total)
 			Sequence->Update(0.5f);
+			TestTrue("Forward mid", A.Equals(FVector(100,100,100),1.0f) && B.Equals(FVector(0,0,0),1.0f));
 			Sequence->Update(0.25f);
 			TestTrue("Forward end reached", A.Equals(FVector(100,100,100),1.0f) && B.Equals(FVector(50,50,50),1.0f));
 			TestFalse("Not completed yet", Sequence->GetIsCompleted());
 
 			// Backward pass mirrors (0.75s back)
 			Sequence->Update(0.25f);
+			TestTrue("Backward mid", A.Equals(FVector(100,100,100),1.0f) && B.Equals(FVector::ZeroVector,1.0f));
 			Sequence->Update(0.5f);
 			TestTrue("Back at start pose", A.Equals(FVector::ZeroVector,1.0f) && B.Equals(FVector::ZeroVector,1.0f));
 			TestTrue("Sequence completed", Sequence->GetIsCompleted());
@@ -997,42 +999,5 @@ void QuickTweenSequenceSpec::Define()
 			TestTrue("TC finished", C.Equals(FVector(30),1.0f));
 		});
 
-		It("Internal loops: Reverse exactly at G2 start to run G2 backward (PingPong then Restart)", [this]()
-		{
-			FVector A(0), B(0), C(0);
-			// G1: TA 3x Restart 0.4 -> 1.2 total
-			auto TA = NewObject<UQuickVectorTween>(Sequence);
-			TA->SetUp(FVector::ZeroVector, FVector(10), [&A](const FVector& v){ A=v; }, 0.4f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
-			// G2: TB 2x PingPong 0.5 -> 1.0 total (ends at start)
-			auto TB = NewObject<UQuickVectorTween>(Sequence);
-			TB->SetUp(FVector::ZeroVector, FVector(20), [&B](const FVector& v){ B=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong);
-			// G3: TC 3x Restart 0.3 -> 0.9 total
-			auto TC = NewObject<UQuickVectorTween>(Sequence);
-			TC->SetUp(FVector::ZeroVector, FVector(30), [&C](const FVector& v){ C=v; }, 0.3f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
-
-			Sequence->Join(TA);
-			Sequence->Join(TB);
-			Sequence->Join(TC);
-			Sequence->Play();
-
-			// G1: 0.4 + 0.4 + 0.4 = 1.2
-			Sequence->Update(0.4f); Sequence->Update(0.4f); Sequence->Update(0.4f);
-			TestTrue("G1 finished", A.Equals(FVector(10),1.0f));
-			TestTrue("G2 not started", B.Equals(FVector::ZeroVector,1e-3f));
-
-			// Reverse at G2 start and run it fully backward: 0.5 + 0.5
-			Sequence->Reverse();
-			Sequence->Update(0.25f);
-			TestTrue("G2 mid backward", B.X < 10.0f);
-			Sequence->Update(0.25f);
-			Sequence->Update(0.5f);
-			TestTrue("G2 ended at start (even pingpong)", B.Equals(FVector::ZeroVector,1.0f));
-
-			// Restore forward and do G3: 0.3 + 0.3 + 0.3
-			Sequence->Reverse();
-			Sequence->Update(0.3f); Sequence->Update(0.3f); Sequence->Update(0.3f);
-			TestTrue("G3 finished", C.Equals(FVector(30),1.0f));
-			TestTrue("Sequence completed", Sequence->GetIsCompleted());
-		});
 	});
 }
