@@ -285,10 +285,17 @@ void UQuickTweenSequence::Update_Restart(float deltaTime)
 	}
 	else
 	{
-		const float mod = FMath::Fmod(ElapsedTime, GetDuration());
-		const uint32 loop = ElapsedTime / GetDuration();
-		CurrentLoop = loop + 1;
-		shouldComplete = loop <= 0 && FMath::IsNearlyZero(mod);
+		if (ElapsedTime < 0.0f)
+		{
+			shouldComplete = true;
+		}
+		else
+		{
+			const float mod = FMath::Fmod(ElapsedTime, GetDuration());
+			const uint32 loop = ElapsedTime / GetDuration();
+			CurrentLoop = loop + 1;
+			shouldComplete = loop <= 0 && FMath::IsNearlyZero(mod);
+		}
 	}
 
 	if (Loops != INFINITE_LOOPS && shouldComplete)

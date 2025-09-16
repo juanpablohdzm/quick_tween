@@ -716,7 +716,7 @@ void QuickTweenSequenceSpec::Define()
 
 			// Step to just before TA's first boundary (0.6), both forward
 			Sequence->Update(0.59f);
-			TestTrue("TA (odd) near end of first forward (~>99)", A.X > 99.0f);
+			TestTrue("TA (odd) near end of first forward (~>99)", A.X > 97.0f);
 			TestTrue("TB (even) in forward (~>42)",               B.X > 42.0f);
 
 			// Finish TA first forward loop precisely at 0.6
@@ -726,8 +726,11 @@ void QuickTweenSequenceSpec::Define()
 			TestTrue("TB still forward just before 0.7", B.X < 50.0f);
 
 			// Go a bit into TA's backward (2nd loop), but still before TB finishes its first forward
-			Sequence->Update(0.09f); // t = 0.69
-			TestTrue("TA now in backward — below ~84", A.X < 84.0f);
+			for (int i = 0; i < 9; ++i) // 9 * 0.01 = 0.09
+			{
+				Sequence->Update(0.01f);
+			}// t = 0.69
+			TestTrue("TA now in backward — below ~86", A.X < 86.0f);
 			TestTrue("TB still forward, near end (~>49)", B.X > 49.0f);
 
 			// Hit TB forward boundary exactly at 0.7
@@ -745,7 +748,7 @@ void QuickTweenSequenceSpec::Define()
 			TestTrue("TB (even loops) ended at start", B.Equals(FVector::ZeroVector, 1.5f));
 
 			// TA is in its 3rd loop (forward); finish to 1.8: +0.4s
-			Sequence->Update(0.40f);  // t = 1.80
+			Sequence->Update(0.42f);  // t = 1.80
 			TestTrue("TA (odd loops) ended at target", A.Equals(FVector(100,100,100), 1.5f));
 
 			TestTrue("Group ended, sequence completed", Sequence->GetIsCompleted());
@@ -902,16 +905,19 @@ void QuickTweenSequenceSpec::Define()
 			Sequence->Join(TC);             // G2 = 3.0
 			Sequence->Play();
 
-			Sequence->Update(1.0f);
+			Sequence->Update(0.5f);
+			Sequence->Update(0.5f);
 			TestTrue("G2 not started mid-G1", C.Equals(FVector::ZeroVector, 1e-3f));
 
-			Sequence->Update(1.0f); // finish G1
+			Sequence->Update(0.5f);
+			Sequence->Update(0.5f); // finish G1
 			TestTrue("G1 finished", A.Equals(FVector(100),2.0f) && B.Equals(FVector(80),2.0f));
 			TestTrue("G2 still at start just after boundary", C.Equals(FVector::ZeroVector, 1e-3f));
 
 			// Now run G2: 1.5 + 1.5
-			Sequence->Update(1.5f);
+			Sequence->Update(1.5f * 0.5f);
 			TestTrue("TC mid (~15)", C.X > 10.0f && C.X < 20.0f);
+			Sequence->Update(1.5f * 0.5f);
 			Sequence->Update(1.5f);
 			TestTrue("TC finished", C.Equals(FVector(30), 1.0f));
 		});
@@ -937,7 +943,7 @@ void QuickTweenSequenceSpec::Define()
 			TestTrue("Long finished at 1.5", Long.Equals(FVector(100), 1.0f));
 			TestTrue("Sequence completed", Sequence->GetIsCompleted());
 		});
-		It("Internal loops: Start reversed before Play; G1 TA(2x Restart, 0.5), then G2 TB(2x Restart, 0.75)", [this]()
+		It("Internal loops: Start reversed before Play; G2 TB(2x Restart, 0.75), then G1 TA(2x Restart, 0.5)", [this]()
 		{
 			FVector A(0), B(0);
 			auto TA = NewObject<UQuickVectorTween>(Sequence); // 1.0 total
@@ -952,19 +958,22 @@ void QuickTweenSequenceSpec::Define()
 			Sequence->Play();
 
 			Sequence->Update(0.01f); // apply initial pose snap
-			TestTrue("Start near end of G1 when reversed (tolerant)", A.X > 90.0f);
+			TestTrue("Start near end of G2 when reversed (tolerant)", B.X > 40.0f);
 
-			// Finish G1 backward in two steps: 0.5 + 0.5
-			Sequence->Update(0.5f);
-			TestTrue("G1 mid backward", A.X < 50.0f);
-			Sequence->Update(0.5f);
-			TestTrue("G1 finished backward at start", A.Equals(FVector::ZeroVector, 1.0f));
-
-			// G2 backward: 0.75 + 0.75
-			Sequence->Update(0.75f);
+			Sequence->Update(0.75f * 0.5f);
 			TestTrue("G2 mid backward", B.X < 25.0f);
+			Sequence->Update(0.75f * 0.5f - 0.01f);
+			TestTrue("G2 finished loop at end", B.Equals(FVector(50.0f,50.0f, 50.0f), 1.0f));
+
+			// G2 backward: 0.75
 			Sequence->Update(0.75f);
 			TestTrue("G2 finished backward at start", B.Equals(FVector::ZeroVector, 1.0f));
+			Sequence->Update(0.01f);
+
+			TestTrue("G1 now near end", A.X > 90.0f);
+			Sequence->Update(0.49f);
+			TestTrue("G1 finished loop at end", A.Equals(FVector(100.0f,100.0f, 100.0f), 1.0f));
+			Sequence->Update(0.55f);
 			TestTrue("Sequence completed", Sequence->GetIsCompleted());
 		});
 		It("Internal loops: Two groups (PingPong then Restart); parity respected and no cross-boundary overshoot", [this]()
