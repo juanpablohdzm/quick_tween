@@ -22,21 +22,21 @@ void UQuickTweenManager::OnWorldBeginPlay(UWorld& inWorld)
 
 bool UQuickTweenManager::Tick(float deltaTime)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("QuickTweenManager Tick with %d tweens"), QuickTweens.Num()));
 	for (int i = QuickTweens.Num() - 1; i >= 0; --i)
 	{
 		IQuickTweenable* tweenContainer = reinterpret_cast<IQuickTweenable*>(QuickTweens[i]);
-
-		if (tweenContainer->GetIsPlaying())
-		{
-			tweenContainer->Update(deltaTime);
-		}
 
 		if (tweenContainer->GetIsPendingKill())
 		{
 			QuickTweens.RemoveAt(i);
 			continue;
 		}
+
+		if (tweenContainer->GetIsPlaying())
+		{
+			tweenContainer->Update(deltaTime);
+		}
+
 	}
 	return true;
 }

@@ -23,7 +23,8 @@ public:
 		UObject* worldContextObject,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		const FString& tweenTag = "");
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = true);
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "QuickTween")
 	static UQuickTweenBuilderCameraComponent* CreateQuickTweenBuilderCameraComp(class UCameraComponent* InTarget);

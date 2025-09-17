@@ -40,7 +40,8 @@ public:
 		const UObject* worldContextObject = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		const FString& id = FString());
+		const FString& id = FString(),
+		bool bShouldAutoKill = true);
 
 	/**
 	 * Joins a tween to the current group, allowing them to run in parallel.
@@ -282,8 +283,13 @@ private:
 	/** Index of the current tween group. */
 	int32 CurrentTweenGroupIndex = 0;
 
+	/** If the sequence is waiting for remove. */
 	bool bIsPendingKill = false;
 
+	/** If the sequence should be eliminated from the manager when completed. */
+	bool bAutoKill = true;
+
+	/** Object to do world queries. */
 	UPROPERTY()
 	const UObject* WorldContextObject = nullptr;
 

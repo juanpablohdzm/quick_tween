@@ -20,12 +20,11 @@ UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::MoveTo(
 	USceneComponent* sceneComp = Cast<USceneComponent>(Target);
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
 	tween->SetUp(
-		sceneComp->GetRelativeLocation(),
+		[sceneComp]()->FVector { return sceneComp->GetComponentLocation(); },
 		to,
 		[sceneComp](const FVector& v)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Moving to: %s"), *v.ToString()));
-			sceneComp->SetRelativeLocation(v);
+			sceneComp->SetWorldLocation(v, true, nullptr, ETeleportType::None);
 		},
 		duration,
 		timeScale,
@@ -33,7 +32,9 @@ UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::MoveTo(
 		easeCurve,
 		loops,
 		loopType,
-		tweenTag
+		tweenTag,
+		nullptr,
+		false
 	);
 
 	if (bIsAppend)
@@ -88,7 +89,7 @@ UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::ScaleTo(
 	USceneComponent* sceneComp = Cast<USceneComponent>(Target);
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
 	tween->SetUp(
-		sceneComp->GetRelativeScale3D(),
+		[sceneComp]()->FVector { return sceneComp->GetRelativeScale3D(); },
 		to,
 		[sceneComp](const FVector& v) { sceneComp->SetRelativeScale3D(v); },
 		duration,
@@ -97,7 +98,9 @@ UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::ScaleTo(
 		easeCurve,
 		loops,
 		loopType,
-		tweenTag
+		tweenTag,
+		nullptr,
+		false
 	);
 
 	if (bIsAppend)

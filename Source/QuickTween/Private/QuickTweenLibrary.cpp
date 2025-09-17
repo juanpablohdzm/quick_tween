@@ -14,11 +14,12 @@ UQuickTweenBuilderSceneComponent* UQuickTweenLibrary::CreateQuickTweenBuilderSce
 	UObject* worldContextObject,
 	int32 loops,
 	ELoopType loopType,
-	const FString& tweenTag)
+	const FString& tweenTag,
+	bool bShouldAutoKill)
 {
 	UQuickTweenBuilderSceneComponent* builder = NewObject<UQuickTweenBuilderSceneComponent>();
 	builder->Initialize(inTarget);
-	builder->SetUp(worldContextObject, loops, loopType, tweenTag);
+	builder->SetUp(worldContextObject, loops, loopType, tweenTag, bShouldAutoKill);
 	return builder;
 }
 

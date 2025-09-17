@@ -14,7 +14,8 @@ void UQuickTweenBase::SetUp(
 	int32 loops,
 	ELoopType loopType,
 	const FString& tweenTag,
-	const UObject* worldContextObject)
+	const UObject* worldContextObject,
+	bool bShouldAutoKill)
 {
 	Duration = duration;
 	TimeScale = timeScale;
@@ -23,6 +24,7 @@ void UQuickTweenBase::SetUp(
 	Loops = loops;
 	LoopType = loopType;
 	TweenTag = tweenTag;
+	bAutoKill = bShouldAutoKill;
 
 	UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject);
 	if (!manager)
@@ -121,7 +123,7 @@ void UQuickTweenBase::Update_PingPong(float deltaTime, Badge<UQuickTweenSequence
 			return;
 		}
 
-		bIsBackwards = !bIsReversed;
+		bIsBackwards = !bIsBackwards;
 		CurrentLoop = !bIsReversed ? CurrentLoop + 1 : CurrentLoop - 1;
 	}
 }
@@ -146,6 +148,15 @@ void UQuickTweenBase::Update(float deltaTime, Badge<UQuickTweenSequence>* badge)
 			break;
 		default:
 			ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));
+	}
+}
+
+void UQuickTweenBase::SetAutoKill(bool bShouldAutoKill)
+{
+	bAutoKill = bShouldAutoKill;
+	if (GetIsCompleted() && !bIsInSequence)
+	{
+		bIsPendingKill = bAutoKill;
 	}
 }
 
@@ -247,6 +258,10 @@ UQuickTweenBase* UQuickTweenBase::Complete(Badge<UQuickTweenSequence>* badge)
 
 	ElapsedTime = toEnd ? Duration : 0.0f;
 	Progress    = toEnd ? 1.0f     : 0.0f;
+	if (bAutoKill)
+	{
+		Kill(badge);
+	}
 
 	if (OnComplete.IsBound())
 	{
@@ -287,7 +302,7 @@ void UQuickTweenBase::Kill()
 
 void UQuickTweenBase::Kill(Badge<UQuickTweenSequence>* badge)
 {
-	if (bIsInSequence && !badge) return;
+	if (bIsInSequence) return;
 	if (bIsPendingKill) return;
 
 	bIsPendingKill = true;

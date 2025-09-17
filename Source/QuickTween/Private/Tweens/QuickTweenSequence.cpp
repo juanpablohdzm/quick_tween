@@ -10,12 +10,18 @@
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenSequence, Log, All);
 
 
-UQuickTweenSequence* UQuickTweenSequence::SetUp(const UObject* worldContextObject, int32 loops, ELoopType loopType, const FString& id)
+UQuickTweenSequence* UQuickTweenSequence::SetUp(
+	const UObject* worldContextObject,
+	int32 loops,
+	ELoopType loopType,
+	const FString& id,
+	bool bShouldAutoKill)
 {
-	Loops           = loops;
-	LoopType        = loopType;
-	SequenceTweenId = id;
+	Loops = loops;
+	LoopType = loopType;
+	SequenceTweenId	= id;
 	WorldContextObject = worldContextObject;
+	bAutoKill	= bShouldAutoKill;
 
 	UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject);
 	if (!manager)
@@ -45,7 +51,6 @@ UQuickTweenSequence* UQuickTweenSequence::Join(UQuickTweenBase* tween)
 	else
 	{
 		UE_LOG(LogQuickTweenSequence, Log, TEXT("Failed to get QuickTweenManager when joining a tween to sequence."));
-		return this;
 	}
 	tween->SetIsInSequence(Badge<UQuickTweenSequence>(), true);
 
@@ -76,7 +81,6 @@ UQuickTweenSequence* UQuickTweenSequence::Append(UQuickTweenBase* tween)
 	else
 	{
 		UE_LOG(LogQuickTweenSequence, Log, TEXT("Failed to get QuickTweenManager when appending a tween to sequence."));
-		return this;
 	}
 	tween->SetIsInSequence(Badge<UQuickTweenSequence>(), true);
 
@@ -164,6 +168,11 @@ UQuickTweenSequence* UQuickTweenSequence::Complete()
 			weakTween->Complete(&Badge);
 
 		}
+	}
+
+	if (bAutoKill)
+	{
+		KillSequence();
 	}
 
 	OnComplete.Broadcast(this);
@@ -461,7 +470,7 @@ float UQuickTweenSequence::GetDuration() const
 		{
 			if (tween.IsValid())
 			{
-				groupMaxDuration  = FMath::Max(groupMaxDuration, tween->GetDuration() * tween->GetLoops());
+				groupMaxDuration  = FMath::Max(groupMaxDuration, tween->GetDuration() * tween->GetLoops() / tween->GetTimeScale());
 			}
 			else
 			{

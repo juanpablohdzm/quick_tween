@@ -42,7 +42,8 @@ public:
 		int32 loops,
 		ELoopType loopType,
 		const FString& tweenTag = FString(),
-		const UObject* worldContextObject = nullptr);
+		const UObject* worldContextObject = nullptr,
+		bool bShouldAutoKill = true);
 
 	/** Sets whether this tween is part of a sequence. */
 	UQuickTweenBase* SetIsInSequence(Badge<UQuickTweenSequence> badge, bool bInSequence) { bIsInSequence = bInSequence; return this; }
@@ -199,14 +200,21 @@ public:
 	virtual void Update(float deltaTime, Badge<UQuickTweenSequence>* badge);
 
 	/**
-	 * If this tween should be eliminated from the manager.
-	 * @return True if the tween is pending kill, false otherwise.
+	 * Sets whether this tween will be removed after completion.
+	 * @param bShouldAutoKill Value to set.
 	 */
-	virtual bool GetIsPendingKill() const override { return bIsPendingKill; }
+	virtual void SetAutoKill(bool bShouldAutoKill);
+
 #pragma endregion
 
 #pragma region Tween State Queries
 public:
+	/**
+	 * If this tween should be eliminated from the manager.
+	 * @return True if the tween is pending kill, false otherwise.
+	 */
+	virtual bool GetIsPendingKill() const override { return bIsPendingKill; }
+
 	/** Gets the duration of the tween. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] float GetDuration() const { return Duration;}
@@ -257,6 +265,10 @@ public:
 	/** Gets the current loop index (1-based). */
 	UFUNCTION(BlueprintCallable)
 	[[nodiscard]] int32 GetCurrentLoop() const { return CurrentLoop; }
+
+	/** Gets whether this tween will be removed after completion. */
+	UFUNCTION(BlueprintCallable)
+	[[nodiscard]] bool GetAutoKill() const { return bAutoKill; }
 #pragma endregion
 
 protected:
@@ -318,4 +330,7 @@ private:
 
 	/** If this tween should be eliminated from the manager. */
 	bool bIsPendingKill = false;
+
+	/** If the tween should auto-kill upon completion. */
+	bool bAutoKill = true;
 };

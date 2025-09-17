@@ -5,8 +5,27 @@
 
 #include "Utils/EaseFunctions.h"
 
+namespace
+{
+	FVector GetFromValue(std::variant<FVector, TFunction<FVector()>>& from)
+	{
+		return std::visit([](auto&& arg)
+		{
+			if constexpr (std::is_same_v<std::decay_t<decltype(arg)>, FVector>)
+				return arg;
+			else
+				return arg();
+		}, from);
+	}
+}
+
 void UQuickVectorTween::Update(float deltaTime, Badge<UQuickTweenSequence>* badge)
 {
+	if (!StartValue.IsSet())
+	{
+		StartValue = GetFromValue(From);
+	}
+
 	UQuickTweenBase::Update(deltaTime, badge);
 
 	if (GetIsCompleted() || !GetIsPlaying()) return;
@@ -27,7 +46,8 @@ void UQuickVectorTween::Update(float deltaTime, Badge<UQuickTweenSequence>* badg
 	{
 		progress = curve->GetFloatValue(progress);
 	}
-	const FVector value = FEaseFunctions<FVector>::Ease(From, To, progress, GetEaseType());
+
+	const FVector value = FEaseFunctions<FVector>::Ease(StartValue.GetValue(), To, progress, GetEaseType());
 	SetterFunction(value);
 	SetProgress(progress);
 }
@@ -38,11 +58,11 @@ UQuickTweenBase* UQuickVectorTween::Complete(Badge<UQuickTweenSequence>* badge)
 	{
 		const bool isOddLoop = GetCurrentLoop() % 2 == 1;
 		const bool toEnd = (isOddLoop && !GetIsReversed()) || (!isOddLoop && GetIsReversed());
-		SetterFunction(toEnd ? To : From);
+		SetterFunction(toEnd ? To : StartValue.GetValue());
 	}
 	else
 	{
-		SetterFunction(GetIsReversed() ? From : To);
+		SetterFunction(GetIsReversed() ? StartValue.GetValue() : To);
 	}
 	return Super::Complete(badge);
 }

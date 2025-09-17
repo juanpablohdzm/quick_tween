@@ -18,9 +18,10 @@ UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetUp(
 	const UObject* worldContextObject,
 	int32 loops,
 	ELoopType loopType,
-	const FString& tweenTag)
+	const FString& tweenTag,
+	bool bShouldAutoKill)
 {
-	Sequence->SetUp(worldContextObject, loops, loopType, tweenTag);
+	Sequence->SetUp(worldContextObject, loops, loopType, tweenTag, bShouldAutoKill);
 	return this;
 }
 

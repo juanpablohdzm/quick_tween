@@ -23,7 +23,8 @@ public:
 		const UObject* worldContextObject,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		const FString& tweenTag = "");
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = true);
 
 	UFUNCTION(BlueprintCallable)
 	UQuickTweenBuilderObject* AppendBase();

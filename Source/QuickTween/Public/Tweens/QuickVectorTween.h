@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <variant>
+
 #include "CoreMinimal.h"
 #include "QuickTweenBase.h"
 #include "QuickVectorTween.generated.h"
@@ -37,7 +39,7 @@ public:
 	void SetUp(
 		const FVector& from,
 		const FVector& to,
-		TFunction<void(const FVector&)> setterFunction,
+		TFunction<void(const FVector&)>&& setterFunction,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -45,7 +47,8 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = FString(),
-		const UObject* worldContextObject = nullptr)
+		const UObject* worldContextObject = nullptr,
+		bool bShouldAutoKill = true)
 	{
 		From = from;
 		To = to;
@@ -58,7 +61,53 @@ public:
 			loops,
 			loopType,
 			tweenTag,
-			worldContextObject);
+			worldContextObject,
+			bShouldAutoKill);
+
+	}
+
+	/**
+	 * Set up the vector tween with the specified parameters.
+	 *
+	 * @param from Function to get the value.
+	 * @param to The target FVector value.
+	 * @param setterFunction Function to apply the interpolated value.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Multiplier for the tween's speed.
+	 * @param easeType Type of easing to apply.
+	 * @param easeCurve Optional custom curve for easing.
+	 * @param loops Number of times to loop the tween.
+	 * @param loopType Type of looping behavior.
+	 * @param tweenTag Optional tag for identifying the tween.
+	 * @param worldContextObject Context object for world access.
+	 */
+	void SetUp(
+		TFunction<FVector()>&& from,
+		const FVector& to,
+		TFunction<void(const FVector&)>&& setterFunction,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = FString(),
+		const UObject* worldContextObject = nullptr,
+		bool bShouldAutoKill = true)
+	{
+		From = from;
+		To = to;
+		SetterFunction = setterFunction;
+		UQuickTweenBase::SetUp(
+			duration,
+			timeScale,
+			easeType,
+			easeCurve,
+			loops,
+			loopType,
+			tweenTag,
+			worldContextObject,
+			bShouldAutoKill);
 
 	}
 
@@ -85,11 +134,14 @@ public:
 	using UQuickTweenBase::Complete;
 
 private:
-	/** Starting FVector value. */
-	FVector From;
+	/** Starting value or function returning FVector. */
+	std::variant<FVector, TFunction<FVector()>> From;
 
 	/** Target FVector value. */
 	FVector To;
+
+	/** Starting value. */
+	TOptional<FVector> StartValue;
 
 	/** Function to set the interpolated FVector value. */
 	TFunction<void(const FVector&)> SetterFunction;
