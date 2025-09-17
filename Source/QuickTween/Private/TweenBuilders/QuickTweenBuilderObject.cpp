@@ -15,12 +15,12 @@ void UQuickTweenBuilderObject::Initialize(UObject* inObject)
 }
 
 UQuickTweenBuilderObject* UQuickTweenBuilderObject::SetUp(
+	const UObject* worldContextObject,
 	int32 loops,
 	ELoopType loopType,
-	const FString& tweenTag,
-	const UObject* worldContextObject)
+	const FString& tweenTag)
 {
-	Sequence->SetUp(loops, loopType, tweenTag, worldContextObject);
+	Sequence->SetUp(worldContextObject, loops, loopType, tweenTag);
 	return this;
 }
 

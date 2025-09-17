@@ -9,10 +9,16 @@
 #include "TweenBuilders/QuickTweenBuilderSceneComponent.h"
 
 
-UQuickTweenBuilderSceneComponent* UQuickTweenLibrary::CreateQuickTweenBuilderSceneComp(USceneComponent* inTarget)
+UQuickTweenBuilderSceneComponent* UQuickTweenLibrary::CreateQuickTweenBuilderSceneComp(
+	USceneComponent* inTarget,
+	UObject* worldContextObject,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag)
 {
 	UQuickTweenBuilderSceneComponent* builder = NewObject<UQuickTweenBuilderSceneComponent>();
 	builder->Initialize(inTarget);
+	builder->SetUp(worldContextObject, loops, loopType, tweenTag);
 	return builder;
 }
 

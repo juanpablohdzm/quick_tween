@@ -12,18 +12,28 @@ UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::MoveTo(
 	float duration,
 	float timeScale,
 	EEaseType easeType,
-	UCurveFloat* easeCurve)
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag)
 {
 	USceneComponent* sceneComp = Cast<USceneComponent>(Target);
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
 	tween->SetUp(
 		sceneComp->GetRelativeLocation(),
 		to,
-		[sceneComp](const FVector& v) { sceneComp->SetRelativeLocation(v); },
+		[sceneComp](const FVector& v)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Moving to: %s"), *v.ToString()));
+			sceneComp->SetRelativeLocation(v);
+		},
 		duration,
 		timeScale,
 		easeType,
-		easeCurve
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag
 	);
 
 	if (bIsAppend)
@@ -37,14 +47,30 @@ UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::MoveTo(
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateTo(FRotator to, bool bUseShortestPath,
-	float duration, float timeScale, EEaseType easeType, UCurveFloat* easeCurve)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateTo(
+	FRotator to,
+	bool bUseShortestPath,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag)
 {
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateToQuat(FQuat to, bool bUseShortestPath,
-	float duration, float timeScale, EEaseType easeType, UCurveFloat* easeCurve)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateToQuat(
+	FQuat to,
+	bool bUseShortestPath,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag)
 {
 	return this;
 }
@@ -54,7 +80,10 @@ UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::ScaleTo(
 	float duration,
 	float timeScale,
 	EEaseType easeType,
-	UCurveFloat* easeCurve)
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag)
 {
 	USceneComponent* sceneComp = Cast<USceneComponent>(Target);
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
@@ -65,7 +94,10 @@ UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::ScaleTo(
 		duration,
 		timeScale,
 		easeType,
-		easeCurve
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag
 	);
 
 	if (bIsAppend)
@@ -79,8 +111,17 @@ UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::ScaleTo(
 	return this;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::LookAt(FVector forward, bool bUseShortestPath,
-	FVector up, float duration, float timeScale, EEaseType easeType, UCurveFloat* easeCurve)
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::LookAt(
+	FVector forward,
+	bool bUseShortestPath,
+	FVector up,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag)
 {
 	return this;
 }

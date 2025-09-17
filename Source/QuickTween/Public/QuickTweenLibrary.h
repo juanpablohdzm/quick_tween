@@ -18,7 +18,13 @@ class QUICKTWEEN_API UQuickTweenLibrary : public UBlueprintFunctionLibrary
 
 public:
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "QuickTween")
-	static UQuickTweenBuilderSceneComponent* CreateQuickTweenBuilderSceneComp(USceneComponent* InTarget);
+	static UQuickTweenBuilderSceneComponent* CreateQuickTweenBuilderSceneComp(
+		USceneComponent* InTarget,
+		UObject* worldContextObject,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "");
+
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "QuickTween")
 	static UQuickTweenBuilderCameraComponent* CreateQuickTweenBuilderCameraComp(class UCameraComponent* InTarget);
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "QuickTween")

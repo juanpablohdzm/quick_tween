@@ -20,10 +20,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	UQuickTweenBuilderObject* SetUp(
+		const UObject* worldContextObject,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		const FString& tweenTag = "",
-		const UObject* worldContextObject = nullptr);
+		const FString& tweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
 	UQuickTweenBuilderObject* AppendBase();

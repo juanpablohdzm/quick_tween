@@ -22,6 +22,7 @@ void UQuickTweenManager::OnWorldBeginPlay(UWorld& inWorld)
 
 bool UQuickTweenManager::Tick(float deltaTime)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("QuickTweenManager Tick with %d tweens"), QuickTweens.Num()));
 	for (int i = QuickTweens.Num() - 1; i >= 0; --i)
 	{
 		IQuickTweenable* tweenContainer = reinterpret_cast<IQuickTweenable*>(QuickTweens[i]);
@@ -47,21 +48,21 @@ UQuickTweenManager::~UQuickTweenManager()
 
 void UQuickTweenManager::AddTween(IQuickTweenable* tween, Badge<UQuickTweenBase> badge)
 {
-	UE_LOG(LogQuickTweenManager, Verbose, TEXT("Adding tween to QuickTweenManager"));
+	UE_LOG(LogQuickTweenManager, Log, TEXT("Adding tween to QuickTweenManager"));
 	UObject* obj = reinterpret_cast<UObject*>(tween);
 	QuickTweens.Add(obj);
 }
 
 void UQuickTweenManager::AddTween(IQuickTweenable* tween, Badge<UQuickTweenSequence> badge)
 {
-	UE_LOG(LogQuickTweenManager, Verbose, TEXT("Adding tween to QuickTweenManager"));
+	UE_LOG(LogQuickTweenManager, Log, TEXT("Adding sequence to QuickTweenManager"));
 	UObject* obj = reinterpret_cast<UObject*>(tween);
 	QuickTweens.Add(obj);
 }
 
 void UQuickTweenManager::RemoveTween(class IQuickTweenable* tween, Badge<class UQuickTweenBase> badge)
 {
-	UE_LOG(LogQuickTweenManager, Verbose, TEXT("Remove tween to QuickTweenManager"));
+	UE_LOG(LogQuickTweenManager, Log, TEXT("Remove tween to QuickTweenManager"));
 	UObject* obj = reinterpret_cast<UObject*>(tween);
 	if (obj && QuickTweens.Find(obj) != INDEX_NONE)
 	{
@@ -71,7 +72,7 @@ void UQuickTweenManager::RemoveTween(class IQuickTweenable* tween, Badge<class U
 
 void UQuickTweenManager::RemoveTween(class IQuickTweenable* tween, Badge<class UQuickTweenSequence> badge)
 {
-	UE_LOG(LogQuickTweenManager, Verbose, TEXT("Remove tween to QuickTweenManager"));
+	UE_LOG(LogQuickTweenManager, Verbose, TEXT("Remove sequence to QuickTweenManager"));
 	UObject* obj = reinterpret_cast<UObject*>(tween);
 	if (obj && QuickTweens.Find(obj) != INDEX_NONE)
 	{

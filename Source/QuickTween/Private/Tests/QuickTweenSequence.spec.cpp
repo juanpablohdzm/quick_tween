@@ -20,7 +20,7 @@ void QuickTweenSequenceSpec::Define()
 		BeforeEach([this]()
 		{
 			Sequence = NewObject<UQuickTweenSequence>(GetTransientPackage());
-			Sequence->SetUp();
+			Sequence->SetUp(nullptr);
 			Sequence->AddToRoot();
 
 			Listener = NewObject<UQuickTweenSequenceTestListener>(GetTransientPackage());
@@ -215,7 +215,7 @@ void QuickTweenSequenceSpec::Define()
 			TweenA->SetUp(FVector::ZeroVector, FVector(100,100,100),
 				[&Current](const FVector& V){ Current = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
-			Sequence->SetUp(2, ELoopType::Restart);
+			Sequence->SetUp(nullptr,2, ELoopType::Restart);
 			Sequence->Append(TweenA);
 
 			Sequence->Play();
@@ -242,7 +242,7 @@ void QuickTweenSequenceSpec::Define()
 			TweenA->SetUp(FVector::ZeroVector, FVector(100,100,100),
 				[&Current](const FVector& V){ Current = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
-			Sequence->SetUp(2, ELoopType::PingPong);
+			Sequence->SetUp(nullptr,2, ELoopType::PingPong);
 			Sequence->Append(TweenA);
 
 			Sequence->Play();
@@ -331,7 +331,7 @@ void QuickTweenSequenceSpec::Define()
 			auto T3 = NewObject<UQuickVectorTween>(Sequence);
 			T3->SetUp(FVector::ZeroVector, FVector(50,50,50),   [&V3](const FVector& v){ V3 = v; }, 0.5f);
 
-			Sequence->SetUp(3, ELoopType::Restart);
+			Sequence->SetUp(nullptr,3, ELoopType::Restart);
 			Sequence->Join(T1)->Append(T2); // new group, then add parallel
 			Sequence->Join(T3);             // next group
 			Sequence->Play();
@@ -373,7 +373,7 @@ void QuickTweenSequenceSpec::Define()
 			auto T4 = NewObject<UQuickVectorTween>(Sequence);
 			T4->SetUp(FVector::ZeroVector, FVector(100,100,100), [&V4](const FVector& v){ V4 = v; }, 1.0f);
 
-			Sequence->SetUp(2, ELoopType::Restart);
+			Sequence->SetUp(nullptr,2, ELoopType::Restart);
 			Sequence->Join(T0)->Append(T1)->Append(T2)->Append(T3)->Append(T4);
 			Sequence->Play();
 
@@ -410,7 +410,7 @@ void QuickTweenSequenceSpec::Define()
 			auto TD = NewObject<UQuickVectorTween>(Sequence);
 			TD->SetUp(FVector::ZeroVector, FVector(240,240,240), [&D](const FVector& v){ D=v; }, 1.2f);
 
-			Sequence->SetUp(2, ELoopType::Restart);
+			Sequence->SetUp(nullptr,2, ELoopType::Restart);
 			Sequence->Join(TA)->Append(TB); // G1
 			Sequence->Join(TC)->Append(TD); // G2
 			Sequence->Play();
@@ -440,7 +440,7 @@ void QuickTweenSequenceSpec::Define()
 			auto TB = NewObject<UQuickVectorTween>(Sequence);
 			TB->SetUp(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.25f);
 
-			Sequence->SetUp(2, ELoopType::PingPong);
+			Sequence->SetUp(nullptr,2, ELoopType::PingPong);
 			Sequence->Join(TA); // group 1
 			Sequence->Join(TB); // group 2
 			Sequence->Play();
@@ -468,7 +468,7 @@ void QuickTweenSequenceSpec::Define()
 			auto TB = NewObject<UQuickVectorTween>(Sequence);
 			TB->SetUp(FVector::ZeroVector, FVector(200,200,200), [&B](const FVector& v){ B=v; }, 0.8f);
 
-			Sequence->SetUp(3, ELoopType::PingPong);
+			Sequence->SetUp(nullptr,3, ELoopType::PingPong);
 			Sequence->Join(TA)->Append(TB); // one group, parallel
 			Sequence->Play();
 
@@ -487,7 +487,7 @@ void QuickTweenSequenceSpec::Define()
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
 			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 1.0f);
 
-			Sequence->SetUp(2, ELoopType::Restart);
+			Sequence->SetUp(nullptr,2, ELoopType::Restart);
 			Sequence->Join(TA);
 			Sequence->Play();
 
@@ -515,7 +515,7 @@ void QuickTweenSequenceSpec::Define()
 			auto TB = NewObject<UQuickVectorTween>(Sequence);
 			TB->SetUp(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.5f);
 
-			Sequence->SetUp(2, ELoopType::Restart);
+			Sequence->SetUp(nullptr,2, ELoopType::Restart);
 			Sequence->Join(TA); // group 1
 			Sequence->Join(TB); // group 2
 			Sequence->Reverse(); // start backwards
@@ -550,7 +550,7 @@ void QuickTweenSequenceSpec::Define()
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
 			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 1.0f);
 
-			Sequence->SetUp(2, ELoopType::PingPong);
+			Sequence->SetUp(nullptr,2, ELoopType::PingPong);
 			Sequence->Join(TA);
 			Sequence->Play();
 
@@ -573,7 +573,7 @@ void QuickTweenSequenceSpec::Define()
 			auto TSlow = NewObject<UQuickVectorTween>(Sequence);
 			TSlow->SetUp(FVector::ZeroVector, FVector(100,100,100), [&Slow](const FVector& v){ Slow=v; }, 1.0f, 0.5f /*0.5x*/);
 
-			Sequence->SetUp(3, ELoopType::Restart);
+			Sequence->SetUp(nullptr,3, ELoopType::Restart);
 			Sequence->Join(TFast)->Append(TSlow); // one group, parallel
 			Sequence->Play();
 
@@ -604,7 +604,7 @@ void QuickTweenSequenceSpec::Define()
 
 			// G1: TA
 			// G2: TB + TC (parallel)
-			Sequence->SetUp(2, ELoopType::Restart);
+			Sequence->SetUp(nullptr,2, ELoopType::Restart);
 			Sequence->Join(TA);          // G1
 			Sequence->Join(TB)->Append(TC); // G2
 			Sequence->Play();
@@ -636,7 +636,7 @@ void QuickTweenSequenceSpec::Define()
 			auto TB = NewObject<UQuickVectorTween>(Sequence);
 			TB->SetUp(FVector::ZeroVector, FVector(50,50,50),     [&B](const FVector& v){ B=v; }, 0.5f);
 
-			Sequence->SetUp(2, ELoopType::Restart);
+			Sequence->SetUp(nullptr,2, ELoopType::Restart);
 			Sequence->Join(TA); // group 1
 			Sequence->Join(TB); // group 2
 			Sequence->Play();
@@ -660,7 +660,7 @@ void QuickTweenSequenceSpec::Define()
 			auto TC = NewObject<UQuickVectorTween>(Sequence);
 			TC->SetUp(FVector::ZeroVector, FVector(90,90,90),  [&C](const FVector& v){ C=v; }, 0.9f);
 
-			Sequence->SetUp(2, ELoopType::PingPong);
+			Sequence->SetUp(nullptr,2, ELoopType::PingPong);
 			Sequence->Join(TA)->Append(TB)->Append(TC); // one group, parallel
 			Sequence->Play();
 
@@ -681,7 +681,7 @@ void QuickTweenSequenceSpec::Define()
 			auto TA = NewObject<UQuickVectorTween>(Sequence);
 			TA->SetUp(FVector::ZeroVector, FVector(100,100,100), [&A](const FVector& v){ A=v; }, 0.5f);
 
-			Sequence->SetUp(2, ELoopType::Restart);
+			Sequence->SetUp(nullptr,2, ELoopType::Restart);
 			Sequence->Join(TA);
 			Sequence->Play();
 

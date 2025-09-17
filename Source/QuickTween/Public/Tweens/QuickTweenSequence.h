@@ -30,17 +30,17 @@ public:
 #pragma region Sequence Creation
 	/**
 	 * Set up the sequence with optional looping parameters.
+	 * @param worldContextObject Context object for world access (OPTIONAL ONLY FOR TESTS).
 	 * @param loops Number of times to loop the sequence (-1 = infinite).
 	 * @param loopType Type of looping behavior.
 	 * @param id Optional identifier for the sequence.
-	 * @param worldContextObject Context object for world access.
 	 * @return Reference to this sequence.
 	 */
 	UQuickTweenSequence* SetUp(
+		const UObject* worldContextObject = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		const FString& id = FString(),
-		const UObject* worldContextObject = nullptr);
+		const FString& id = FString());
 
 	/**
 	 * Joins a tween to the current group, allowing them to run in parallel.
@@ -283,5 +283,8 @@ private:
 	int32 CurrentTweenGroupIndex = 0;
 
 	bool bIsPendingKill = false;
+
+	UPROPERTY()
+	const UObject* WorldContextObject = nullptr;
 
 };

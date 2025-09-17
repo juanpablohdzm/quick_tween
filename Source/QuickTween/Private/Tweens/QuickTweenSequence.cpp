@@ -10,13 +10,14 @@
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenSequence, Log, All);
 
 
-UQuickTweenSequence* UQuickTweenSequence::SetUp(int32 loops, ELoopType loopType, const FString& id, const UObject* worldContextObject)
+UQuickTweenSequence* UQuickTweenSequence::SetUp(const UObject* worldContextObject, int32 loops, ELoopType loopType, const FString& id)
 {
 	Loops           = loops;
 	LoopType        = loopType;
 	SequenceTweenId = id;
+	WorldContextObject = worldContextObject;
 
-	UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject);
+	UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject);
 	if (!manager)
 	{
 		UE_LOG(LogQuickTweenSequence, Log, TEXT("Failed to get QuickTweenManager for QuickTweenSequence. Tweens will not be updated."));
@@ -37,9 +38,14 @@ UQuickTweenSequence* UQuickTweenSequence::Join(UQuickTweenBase* tween)
 		return this;
 	}
 
-	if (UQuickTweenManager* manager = UQuickTweenManager::Get(this))
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject))
 	{
 		manager->RemoveTween(tween, Badge<UQuickTweenSequence>());
+	}
+	else
+	{
+		UE_LOG(LogQuickTweenSequence, Log, TEXT("Failed to get QuickTweenManager when joining a tween to sequence."));
+		return this;
 	}
 	tween->SetIsInSequence(Badge<UQuickTweenSequence>(), true);
 
@@ -63,9 +69,14 @@ UQuickTweenSequence* UQuickTweenSequence::Append(UQuickTweenBase* tween)
 		return Join(tween);
 	}
 
-	if (UQuickTweenManager* manager = UQuickTweenManager::Get(this))
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject))
 	{
 		manager->RemoveTween(tween, Badge<UQuickTweenSequence>());
+	}
+	else
+	{
+		UE_LOG(LogQuickTweenSequence, Log, TEXT("Failed to get QuickTweenManager when appending a tween to sequence."));
+		return this;
 	}
 	tween->SetIsInSequence(Badge<UQuickTweenSequence>(), true);
 

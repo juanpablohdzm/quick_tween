@@ -22,7 +22,10 @@ public:
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
-		UCurveFloat* easeCurve = nullptr);
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		FString tweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
 	UQuickTweenBuilderSceneComponent* RotateTo(
@@ -31,7 +34,10 @@ public:
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
-		UCurveFloat* easeCurve = nullptr);
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		FString tweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
 	UQuickTweenBuilderSceneComponent* RotateToQuat(
@@ -40,7 +46,10 @@ public:
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
-		UCurveFloat* easeCurve = nullptr);
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		FString tweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
 	UQuickTweenBuilderSceneComponent* ScaleTo(
@@ -48,7 +57,10 @@ public:
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
-		UCurveFloat* easeCurve = nullptr);
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		FString tweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
 	UQuickTweenBuilderSceneComponent* LookAt(
@@ -58,7 +70,10 @@ public:
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
-		UCurveFloat* easeCurve = nullptr);
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		FString tweenTag = "");
 
 	UFUNCTION(BlueprintCallable)
 	UQuickTweenBuilderSceneComponent* Append();
