@@ -152,23 +152,28 @@ UQuickTweenSequence* UQuickTweenSequence::Complete()
 	ElapsedTime = !bIsReversed? GetDuration() * GetLoops() : 0.0f;
 	Progress    = 1.0f;
 	CurrentLoop = Loops;
-	CurrentTweenGroupIndex = !bIsReversed ? FMath::Max(TweenGroups.Num() -1, 0) : 0;
 
-	for (int32 groupIdx = 0; groupIdx < TweenGroups.Num(); ++groupIdx)
+	if (CurrentTweenGroupIndex >= 0 && CurrentTweenGroupIndex < TweenGroups.Num())
 	{
-		for (TWeakObjectPtr<UQuickTweenBase>& weakTween : TweenGroups[groupIdx].Tweens)
+		for (int32 groupIdx = CurrentTweenGroupIndex; groupIdx < TweenGroups.Num(); ++groupIdx)
 		{
-			if (!weakTween.IsValid())
+			for (TWeakObjectPtr<UQuickTweenBase>& weakTween : TweenGroups[groupIdx].Tweens)
 			{
-				UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Complete()"));
-				continue;
+				if (!weakTween.IsValid())
+				{
+					UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Complete()"));
+					continue;
+				}
+
+				Badge<UQuickTweenSequence> Badge;
+				weakTween->Complete(&Badge);
+
 			}
-
-			Badge<UQuickTweenSequence> Badge;
-			weakTween->Complete(&Badge);
-
 		}
 	}
+
+	CurrentTweenGroupIndex = !bIsReversed ? FMath::Max(TweenGroups.Num() -1, 0) : 0;
+
 
 	if (bAutoKill)
 	{

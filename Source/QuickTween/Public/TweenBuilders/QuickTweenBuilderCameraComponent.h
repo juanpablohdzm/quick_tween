@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TweenBuilders/QuickTweenBuilderSceneComponent.h"
+#include "QuickTweenBuilderObject.h"
 #include "QuickTweenBuilderCameraComponent.generated.h"
 
 /**

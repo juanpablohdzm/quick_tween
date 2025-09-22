@@ -238,6 +238,7 @@ UQuickTweenBase* UQuickTweenBase::Restart(Badge<UQuickTweenSequence>* badge)
 	float duration = GetLoopType() == ELoopType::PingPong ? GetDuration() : GetDuration() * GetLoops();
 	ElapsedTime = bIsReversed ? duration : 0.0f;
 	Progress    = bIsReversed ? 1.0f     : 0.0f;
+	CurrentLoop = bIsReversed ? GetLoops() : 1;
 	return this;
 }
 

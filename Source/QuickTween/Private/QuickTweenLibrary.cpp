@@ -3,36 +3,115 @@
 
 #include "QuickTweenLibrary.h"
 
-#include "Camera/CameraComponent.h"
-#include "TweenBuilders/QuickTweenBuilderCameraComponent.h"
 #include "TweenBuilders/QuickTweenBuilderMaterial.h"
-#include "TweenBuilders/QuickTweenBuilderSceneComponent.h"
+#include "Tweens/QuickVectorTween.h"
 
 
-UQuickTweenBuilderSceneComponent* UQuickTweenLibrary::CreateQuickTweenBuilderSceneComp(
-	USceneComponent* inTarget,
+UQuickTweenSequence* UQuickTweenLibrary::MakeQuickTweenSequence(
 	UObject* worldContextObject,
 	int32 loops,
 	ELoopType loopType,
 	const FString& tweenTag,
 	bool bShouldAutoKill)
 {
-	UQuickTweenBuilderSceneComponent* builder = NewObject<UQuickTweenBuilderSceneComponent>();
-	builder->Initialize(inTarget);
-	builder->SetUp(worldContextObject, loops, loopType, tweenTag, bShouldAutoKill);
-	return builder;
+	UQuickTweenSequence* sequence = NewObject<UQuickTweenSequence>();
+	sequence->SetUp(worldContextObject, loops, loopType, tweenTag, bShouldAutoKill);
+	return sequence;
 }
 
-UQuickTweenBuilderCameraComponent* UQuickTweenLibrary::CreateQuickTweenBuilderCameraComp(UCameraComponent* inTarget)
+UQuickVectorTween* UQuickTweenLibrary::MoveTo_SceneComponent(
+	UObject* worldContextObject,
+	USceneComponent* component,
+	FVector to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag,
+	bool bShouldAutoKill)
 {
-	UQuickTweenBuilderCameraComponent* builder = NewObject<UQuickTweenBuilderCameraComponent>();
-	builder->Initialize(inTarget);
-	return builder;
+
+	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
+	tween->SetUp(
+		[component]()->FVector { return component->GetComponentLocation(); },
+		to,
+		[component](const FVector& v)
+		{
+			component->SetWorldLocation(v, true, nullptr, ETeleportType::None);
+		},
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		worldContextObject,
+		bShouldAutoKill
+	);
+
+	return tween;
 }
 
-UQuickTweenBuilderMaterial* UQuickTweenLibrary::CreateQuickTweenBuilderMaterial(UMaterialInstanceDynamic* inTarget)
+UQuickVectorTween* UQuickTweenLibrary::ScaleTo_SceneComponent(
+	UObject* worldContextObject,
+	USceneComponent* component,
+	FVector to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag,
+	bool bShouldAutoKill)
 {
-	UQuickTweenBuilderMaterial* builder = NewObject<UQuickTweenBuilderMaterial>();
-	builder->Initialize(inTarget);
-	return builder;
+	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
+	tween->SetUp(
+		[component]()->FVector { return component->GetRelativeScale3D(); },
+		to,
+		[component](const FVector& v) { component->SetRelativeScale3D(v); },
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		worldContextObject,
+		bShouldAutoKill
+	);
+
+	return tween;
 }
+
+/*UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateTo(
+	FRotator to,
+	bool bUseShortestPath,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag)
+{
+	return this;
+}
+
+UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateToQuat(
+	FQuat to,
+	bool bUseShortestPath,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag)
+{
+	return this;
+}*/
+
