@@ -243,7 +243,42 @@ UQuickTweenSequence* UQuickTweenSequence::KillSequence()
 UQuickTweenSequence* UQuickTweenSequence::Reverse()
 {
 	bIsReversed = !bIsReversed;
-	return Reverse_Tweens();
+	Reverse_Tweens();
+	if (bIsReversed)
+	{
+		for (int32 i = 0; i < CurrentTweenGroupIndex; ++i)
+		{
+			for (TWeakObjectPtr<UQuickTweenBase>& weakTween : TweenGroups[i].Tweens)
+			{
+				if (!weakTween.IsValid())
+				{
+					UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Reverse()"));
+					continue;
+				}
+
+				Badge<UQuickTweenSequence> badge;
+				weakTween->Restart(&badge);
+			}
+		}
+	}
+	else
+	{
+		for (int32 i = CurrentTweenGroupIndex + 1; i < TweenGroups.Num(); ++i)
+		{
+			for (TWeakObjectPtr<UQuickTweenBase>& weakTween : TweenGroups[i].Tweens)
+			{
+				if (!weakTween.IsValid())
+				{
+					UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Reverse()"));
+					continue;
+				}
+
+				Badge<UQuickTweenSequence> badge;
+				weakTween->Restart(&badge);
+			}
+		}
+	}
+	return this;
 }
 
 UQuickTweenSequence* UQuickTweenSequence::Reverse_Tweens()
@@ -302,7 +337,7 @@ void UQuickTweenSequence::Update_Restart(float deltaTime)
 		OnUpdate.Broadcast(this);
 	}
 
-	bool shouldComplete = false;
+	bool shouldComplete;
 	if (!bIsReversed)
 	{
 		CurrentLoop = (ElapsedTime / GetDuration()) + 1;
@@ -359,13 +394,8 @@ void UQuickTweenSequence::Update_Restart(float deltaTime)
 
 	if (bShouldCompleteLoop)
 	{
-		if (bIsReversed)
-		{
-			CurrentTweenGroupIndex--;
-		}else
-		{
-			CurrentTweenGroupIndex++;
-		}
+		CurrentTweenGroupIndex += bIsReversed ? -1 : 1;
+
 		if (CurrentTweenGroupIndex >= TweenGroups.Num() || CurrentTweenGroupIndex < 0)
 		{
 			CurrentTweenGroupIndex = bIsReversed ? TweenGroups.Num() - 1 : 0;
@@ -427,13 +457,9 @@ void UQuickTweenSequence::Update_PingPong(float deltaTime)
 
 	if (bShouldCompleteLoop)
 	{
-		if (bIsBackwards)
-		{
-			CurrentTweenGroupIndex--;
-		}else
-		{
-			CurrentTweenGroupIndex++;
-		}
+		const int32 Negate = bIsReversed ? -1 : 1;
+		CurrentTweenGroupIndex += bIsBackwards ? -1 * Negate : 1 * Negate;
+
 		if (CurrentTweenGroupIndex >= TweenGroups.Num() || CurrentTweenGroupIndex < 0)
 		{
 			CurrentLoop = bIsReversed ? CurrentLoop - 1 : CurrentLoop + 1;

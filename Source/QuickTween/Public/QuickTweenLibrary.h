@@ -8,6 +8,7 @@
 #include "Utils/LoopType.h"
 #include "QuickTweenLibrary.generated.h"
 
+class UQuickTweenSequence;
 class UQuickVectorTween;
 /**
  * 

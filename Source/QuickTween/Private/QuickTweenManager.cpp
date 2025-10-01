@@ -2,6 +2,7 @@
 
 #include "QuickTweenManager.h"
 #include "QuickTweenable.h"
+#include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenManager, Log, All);
 
@@ -22,6 +23,12 @@ void UQuickTweenManager::OnWorldBeginPlay(UWorld& inWorld)
 
 bool UQuickTweenManager::Tick(float deltaTime)
 {
+	if (GetWorld()->IsPaused())
+	{
+		UE_LOG(LogQuickTweenManager, Log, TEXT("QuickTweenManager::Tick"));
+		return true;
+	}
+
 	for (int i = QuickTweens.Num() - 1; i >= 0; --i)
 	{
 		IQuickTweenable* tweenContainer = reinterpret_cast<IQuickTweenable*>(QuickTweens[i]);
