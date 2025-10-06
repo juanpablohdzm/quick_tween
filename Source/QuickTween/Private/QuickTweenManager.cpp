@@ -23,11 +23,7 @@ void UQuickTweenManager::OnWorldBeginPlay(UWorld& inWorld)
 
 bool UQuickTweenManager::Tick(float deltaTime)
 {
-	if (GetWorld()->IsPaused())
-	{
-		UE_LOG(LogQuickTweenManager, Log, TEXT("QuickTweenManager::Tick"));
-		return true;
-	}
+
 
 	for (int i = QuickTweens.Num() - 1; i >= 0; --i)
 	{
@@ -36,6 +32,11 @@ bool UQuickTweenManager::Tick(float deltaTime)
 		if (tweenContainer->GetIsPendingKill())
 		{
 			QuickTweens.RemoveAt(i);
+			continue;
+		}
+
+		if (GetWorld()->IsPaused() && !tweenContainer->GetShouldPlayWhilePaused())
+		{
 			continue;
 		}
 

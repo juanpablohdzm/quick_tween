@@ -6,26 +6,27 @@
 
 #include "CoreMinimal.h"
 #include "QuickTweenBase.h"
-#include "QuickVectorTween.generated.h"
+#include "QuickRotatorTween.generated.h"
 
 /**
  * 
  */
 UCLASS(BlueprintType)
 /**
- * Tween class for interpolating between two FVector values over time.
- * Inherits from UQuickTweenBase and provides vector-specific tweening functionality.
+ * Tween class for interpolating between two FRotator values over time.
+ * Inherits from UQuickTweenBase and provides rotator-specific tweening functionality.
  */
-class QUICKTWEEN_API UQuickVectorTween : public UQuickTweenBase
+class QUICKTWEEN_API UQuickRotatorTween : public UQuickTweenBase
 {
 	GENERATED_BODY()
 public:
 
 	/**
-	 * Set up the vector tween with the specified parameters.
+	 * Set up the rotator tween with the specified parameters.
 	 *
-	 * @param from The starting FVector value.
-	 * @param to The target FVector value.
+	 * @param from The starting FRotator value.
+	 * @param to The target FRotator value.
+	 * @param bUseShortestPath Whether to use the shortest path for interpolation.
 	 * @param setterFunction Function to apply the interpolated value.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Multiplier for the tween's speed.
@@ -39,9 +40,10 @@ public:
 	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
 	 */
 	void SetUp(
-		const FVector& from,
-		const FVector& to,
-		TFunction<void(const FVector&)>&& setterFunction,
+		const FRotator& from,
+		const FRotator& to,
+		bool bUseShortestPath,
+		TFunction<void(const FRotator&)>&& setterFunction,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -55,6 +57,7 @@ public:
 	{
 		From = from;
 		To = to;
+		bShortestPath = bUseShortestPath;
 		SetterFunction = setterFunction;
 		UQuickTweenBase::SetUp(
 			duration,
@@ -71,10 +74,11 @@ public:
 	}
 
 	/**
-	 * Set up the vector tween with the specified parameters.
+	 * Set up the rotator tween with the specified parameters.
 	 *
 	 * @param from Function to get the value.
-	 * @param to The target FVector value.
+	 * @param to The target FRotator value.
+	 * @param bUseShortestPath Whether to use the shortest path for interpolation.
 	 * @param setterFunction Function to apply the interpolated value.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Multiplier for the tween's speed.
@@ -84,11 +88,14 @@ public:
 	 * @param loopType Type of looping behavior.
 	 * @param tweenTag Optional tag for identifying the tween.
 	 * @param worldContextObject Context object for world access.
+	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
+	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
 	 */
 	void SetUp(
-		TFunction<FVector()>&& from,
-		const FVector& to,
-		TFunction<void(const FVector&)>&& setterFunction,
+		TFunction<FRotator()>&& from,
+		const FRotator& to,
+		bool bUseShortestPath,
+		TFunction<void(const FRotator&)>&& setterFunction,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -102,6 +109,7 @@ public:
 	{
 		From = from;
 		To = to;
+		bShortestPath = bUseShortestPath;
 		SetterFunction = setterFunction;
 		UQuickTweenBase::SetUp(
 			duration,
@@ -140,15 +148,17 @@ public:
 	using UQuickTweenBase::Complete;
 
 private:
-	/** Starting value or function returning FVector. */
-	std::variant<FVector, TFunction<FVector()>> From;
+	/** Starting value or function returning FRotator. */
+	std::variant<FRotator, TFunction<FRotator()>> From;
 
-	/** Target FVector value. */
-	FVector To;
+	/** Target FRotator value. */
+	FRotator To;
 
 	/** Starting value. */
-	TOptional<FVector> StartValue;
+	TOptional<FRotator> StartValue;
 
-	/** Function to set the interpolated FVector value. */
-	TFunction<void(const FVector&)> SetterFunction;
+	/** Function to set the interpolated FRotator value. */
+	TFunction<void(const FRotator&)> SetterFunction;
+
+	bool bShortestPath = true;
 };

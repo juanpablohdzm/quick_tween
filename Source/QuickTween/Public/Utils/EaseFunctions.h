@@ -3,6 +3,8 @@
 
 #include "CoreMinimal.h"
 
+//TODO: Fix for Rotators
+
 /**
  * \class FEaseFunctions
  * \brief Provides a collection of static easing functions for interpolation.

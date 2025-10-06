@@ -27,3 +27,9 @@ bool IQuickTweenable::GetIsPendingKill() const
 	ensureAlwaysMsgf(false, TEXT("GetIsPendingKill not implemented in IQuickTweenable"));
 	return false;
 }
+
+bool IQuickTweenable::GetShouldPlayWhilePaused() const
+{
+	ensureAlwaysMsgf(false, TEXT("GetShouldPlayWhilePaused not implemented in IQuickTweenable"));
+	return false;
+}

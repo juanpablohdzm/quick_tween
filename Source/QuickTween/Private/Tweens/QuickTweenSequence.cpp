@@ -15,13 +15,15 @@ UQuickTweenSequence* UQuickTweenSequence::SetUp(
 	int32 loops,
 	ELoopType loopType,
 	const FString& id,
-	bool bShouldAutoKill)
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused)
 {
 	Loops = loops;
 	LoopType = loopType;
 	SequenceTweenId	= id;
 	WorldContextObject = worldContextObject;
 	bAutoKill	= bShouldAutoKill;
+	bPlayWhilePaused = bShouldPlayWhilePaused;
 
 	UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject);
 	if (!manager)

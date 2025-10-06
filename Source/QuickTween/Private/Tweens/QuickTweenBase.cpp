@@ -15,7 +15,8 @@ void UQuickTweenBase::SetUp(
 	ELoopType loopType,
 	const FString& tweenTag,
 	const UObject* worldContextObject,
-	bool bShouldAutoKill)
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused)
 {
 	Duration = duration;
 	TimeScale = timeScale;
@@ -25,6 +26,7 @@ void UQuickTweenBase::SetUp(
 	LoopType = loopType;
 	TweenTag = tweenTag;
 	bAutoKill = bShouldAutoKill;
+	bPlayWhilePaused = bShouldPlayWhilePaused;
 
 	UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject);
 	if (!manager)

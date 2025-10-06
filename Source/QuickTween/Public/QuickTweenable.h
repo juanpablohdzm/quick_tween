@@ -15,4 +15,6 @@ public:
 
 	virtual bool GetIsPendingKill() const;
 
+	virtual bool GetShouldPlayWhilePaused() const;
+
 };

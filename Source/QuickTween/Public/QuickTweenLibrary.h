@@ -10,6 +10,7 @@
 
 class UQuickTweenSequence;
 class UQuickVectorTween;
+class UQuickRotatorTween;
 /**
  * 
  */
@@ -25,7 +26,8 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true);
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Move To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent"), Category = "QuickTween")
 	static UQuickVectorTween* MoveTo_SceneComponent(
@@ -39,7 +41,8 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		FString tweenTag = "",
-		bool bShouldAutoKill = true);
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Scale To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent"), Category = "QuickTween")
 	static UQuickVectorTween* ScaleTo_SceneComponent(
@@ -53,10 +56,13 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		FString tweenTag = "",
-		bool bShouldAutoKill = true);
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false);
 
-	/*UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* RotateTo(
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent"), Category = "QuickTween")
+	static UQuickRotatorTween* RotateTo_SceneComponent(
+		UObject* worldContextObject,
+		USceneComponent* component,
 		FRotator to,
 		bool bUseShortestPath = true,
 		float duration = 1.0f,
@@ -65,9 +71,11 @@ public:
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "");
+		FString tweenTag = "",
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false);
 
-	UFUNCTION(BlueprintCallable)
+	/*UFUNCTION(BlueprintCallable)
 	UQuickTweenBuilderSceneComponent* RotateToQuat(
 		FQuat to,
 		bool bUseShortestPath = true,

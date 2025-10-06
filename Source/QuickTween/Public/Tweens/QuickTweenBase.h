@@ -33,6 +33,8 @@ public:
 	 * @param loopType Looping behavior.
 	 * @param tweenTag Optional tag for identification.
 	 * @param worldContextObject Context object for world access.
+	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
+	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
 	 */
 	void SetUp(
 		float duration,
@@ -43,7 +45,8 @@ public:
 		ELoopType loopType,
 		const FString& tweenTag = FString(),
 		const UObject* worldContextObject = nullptr,
-		bool bShouldAutoKill = true);
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false);
 
 	/** Sets whether this tween is part of a sequence. */
 	UQuickTweenBase* SetIsInSequence(Badge<UQuickTweenSequence> badge, bool bInSequence) { bIsInSequence = bInSequence; return this; }
@@ -269,6 +272,10 @@ public:
 	/** Gets whether this tween will be removed after completion. */
 	UFUNCTION(BlueprintCallable)
 	[[nodiscard]] bool GetAutoKill() const { return bAutoKill; }
+
+	/** Gets whether this tween should play while paused. */
+	UFUNCTION(BlueprintCallable)
+	[[nodiscard]] virtual bool GetShouldPlayWhilePaused() const override {return bPlayWhilePaused;}
 #pragma endregion
 
 protected:
@@ -333,4 +340,7 @@ private:
 
 	/** If the tween should auto-kill upon completion. */
 	bool bAutoKill = true;
+
+	/** If the tween should play while the game is paused. */
+	bool bPlayWhilePaused = false;
 };

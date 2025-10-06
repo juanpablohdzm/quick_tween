@@ -34,6 +34,8 @@ public:
 	 * @param loops Number of times to loop the sequence (-1 = infinite).
 	 * @param loopType Type of looping behavior.
 	 * @param id Optional identifier for the sequence.
+	 * @param bShouldAutoKill Whether to auto-kill the sequence on completion.
+	 * @param bShouldPlayWhilePaused Whether the sequence should play while the game is paused.
 	 * @return Reference to this sequence.
 	 */
 	UQuickTweenSequence* SetUp(
@@ -41,7 +43,8 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& id = FString(),
-		bool bShouldAutoKill = true);
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false);
 
 	/**
 	 * Joins a tween to the current group, allowing them to run in parallel.
@@ -220,6 +223,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
 	[[nodiscard]] UQuickTweenBase* GetTween(int32 index) const;
+
+	/**
+	 * Gets if the sequence should play while paused.
+	 * @return True should play while paused.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
+	[[nodiscard]] virtual bool GetShouldPlayWhilePaused() const override { return bPlayWhilePaused; }
 #pragma endregion
 
 #pragma region Delegates
@@ -288,6 +298,9 @@ private:
 
 	/** If the sequence should be eliminated from the manager when completed. */
 	bool bAutoKill = true;
+
+	/** If the sequence should play while the game is paused. */
+	bool bPlayWhilePaused = false;
 
 	/** Object to do world queries. */
 	UPROPERTY()
