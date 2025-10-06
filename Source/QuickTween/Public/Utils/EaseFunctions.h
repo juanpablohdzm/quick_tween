@@ -3,16 +3,68 @@
 
 #include "CoreMinimal.h"
 
-//TODO: Fix for Rotators
+enum class QUICKTWEEN_API EEasePath : uint8
+{
+    Default,
+    Shortest,
+    Longest
+};
+
+template <typename T>
+struct TEaseLerp
+{
+    static FORCEINLINE T Lerp(const T& A, const T& B, float Alpha, EEasePath /*Path*/)
+    {
+        return FMath::Lerp(A, B, Alpha);
+    }
+};
+
+// --- Specialization for FRotator: supports Shortest/Longest/Default ---
+template <>
+struct TEaseLerp<FRotator>
+{
+    static FORCEINLINE FRotator Lerp(const FRotator& A, const FRotator& B, float Alpha, EEasePath Path)
+    {
+        Alpha = FMath::Clamp(Alpha, 0.f, 1.f);
+        if (Alpha <= 0.f) return A;
+        if (Alpha >= 1.f) return B;
+
+        const FQuat QA = A.Quaternion();
+        FQuat QB = B.Quaternion();
+
+        float Dot = QA | QB;
+
+        if (FMath::Abs(Dot) > 1.f - UE_KINDA_SMALL_NUMBER)
+        {
+            // Quats are nearly the same: use a cheap lerp and normalize.
+            FQuat R = FQuat::FastLerp(QA, QB, Alpha);
+            R.Normalize();
+            return R.Rotator();
+        }
+
+        if (Path == EEasePath::Longest)
+        {
+            // Ensure we traverse the LONG arc: we want a NEGATIVE dot for FullPath.
+            if (Dot > 0.f) { QB = -QB; Dot = -Dot; }
+            const FQuat R = FQuat::SlerpFullPath(QA, QB, Alpha);
+            return R.Rotator();
+        }
+
+        // Slerp picks the shortest arc internally (flips if dot < 0).
+        const FQuat R = FQuat::Slerp(QA, QB, Alpha);
+        return R.Rotator();
+
+    }
+};
 
 /**
- * \class FEaseFunctions
- * \brief Provides a collection of static easing functions for interpolation.
+ * @class FEaseFunctions
+ * @brief Provides a collection of static easing functions for interpolation.
  *
- * Template class for various easing functions, supporting types compatible with FMath::Lerp.
+ * Template class for various easing functions, supporting types compatible with TEaseLerp<T>::Lerp.
  * Easing functions are used to create smooth transitions and animations.
  *
- * \tparam T Type to interpolate (e.g., float, FVector).
+ * @tparam T Type to interpolate (e.g., float, FVector).
  */
 template <typename T>
 class QUICKTWEEN_API FEaseFunctions
@@ -27,51 +79,51 @@ public:
      * \param EaseType The type of easing to use.
      * \return Interpolated value.
      */
-    static T Ease(T Start, T End, float Alpha, EEaseType EaseType)
+    static T Ease(T Start, T End, float Alpha, EEaseType EaseType, EEasePath Path = EEasePath::Default)
     {
         switch (EaseType)
         {
             case EEaseType::Linear:
-                return FMath::Lerp(Start, End, Alpha);
+                return TEaseLerp<T>::Lerp(Start, End, Alpha, Path);
             case EEaseType::InSine:
-                return EaseInSine(Start, End, Alpha);
+                return EaseInSine(Start, End, Alpha, Path);
             case EEaseType::OutSine:
-                return EaseOutSine(Start, End, Alpha);
+                return EaseOutSine(Start, End, Alpha, Path);
             case EEaseType::InOutSine:
-                return EaseInOutSine(Start, End, Alpha);
+                return EaseInOutSine(Start, End, Alpha, Path);
             case EEaseType::InQuad:
-                return EaseInQuad(Start, End, Alpha);
+                return EaseInQuad(Start, End, Alpha, Path);
             case EEaseType::OutQuad:
-                return EaseOutQuad(Start, End, Alpha);
+                return EaseOutQuad(Start, End, Alpha, Path);
             case EEaseType::InOutQuad:
-                return EaseInOutQuad(Start, End, Alpha);
+                return EaseInOutQuad(Start, End, Alpha, Path);
             case EEaseType::InCubic:
-                return EaseInCubic(Start, End, Alpha);
+                return EaseInCubic(Start, End, Alpha, Path);
             case EEaseType::OutCubic:
-                return EaseOutCubic(Start, End, Alpha);
+                return EaseOutCubic(Start, End, Alpha, Path);
             case EEaseType::InOutCubic:
-                return EaseInOutCubic(Start, End, Alpha);
+                return EaseInOutCubic(Start, End, Alpha, Path);
             case EEaseType::InQuart:
-                return EaseInQuart(Start, End, Alpha);
+                return EaseInQuart(Start, End, Alpha, Path);
             case EEaseType::OutQuart:
-                return EaseOutQuart(Start, End, Alpha);
+                return EaseOutQuart(Start, End, Alpha, Path);
             case EEaseType::InOutQuart:
-                return EaseInOutQuart(Start, End, Alpha);
+                return EaseInOutQuart(Start, End, Alpha, Path);
             case EEaseType::InQuint:
-                return EaseInQuint(Start, End, Alpha);
+                return EaseInQuint(Start, End, Alpha, Path);
             case EEaseType::OutQuint:
-                return EaseOutQuint(Start, End, Alpha);
+                return EaseOutQuint(Start, End, Alpha, Path);
             case EEaseType::InOutQuint:
-                return EaseInOutQuint(Start, End, Alpha);
+                return EaseInOutQuint(Start, End, Alpha, Path);
             case EEaseType::InExpo:
-                return EaseInExpo(Start, End, Alpha);
+                return EaseInExpo(Start, End, Alpha, Path);
             case EEaseType::OutExpo:
-                return EaseOutExpo(Start, End, Alpha);
+                return EaseOutExpo(Start, End, Alpha, Path);
             case EEaseType::InOutExpo:
-                return EaseInOutExpo(Start, End, Alpha);
+                return EaseInOutExpo(Start, End, Alpha, Path);
             default: // Circ
-                return FMath::Lerp(Start, End,
-                                   1.f - FMath::Sqrt(1.f - FMath::Pow(Alpha * 2.f - 1.f, 2.f)));
+                return TEaseLerp<T>::Lerp(Start, End,
+                                   1.f - FMath::Sqrt(1.f - FMath::Pow(Alpha * 2.f - 1.f, 2.f)), Path);
         }
     }
     // ---------------------
@@ -81,25 +133,25 @@ public:
     /**
      * \brief Sine ease-in interpolation.
      */
-    static T EaseInSine(T Start, T End, float Alpha)
+    static T EaseInSine(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, 1.f - FMath::Cos(Alpha * PI / 2.f));
+        return TEaseLerp<T>::Lerp(Start, End, 1.f - FMath::Cos(Alpha * PI / 2.f), Path);
     }
 
     /**
      * \brief Sine ease-out interpolation.
      */
-    static T EaseOutSine(T Start, T End, float Alpha)
+    static T EaseOutSine(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, FMath::Sin(Alpha * PI / 2.f));
+        return TEaseLerp<T>::Lerp(Start, End, FMath::Sin(Alpha * PI / 2.f), Path);
     }
 
     /**
      * \brief Sine ease-in-out interpolation.
      */
-    static T EaseInOutSine(T Start, T End, float Alpha)
+    static T EaseInOutSine(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, 0.5f * (1.f - FMath::Cos(Alpha * PI)));
+        return TEaseLerp<T>::Lerp(Start, End, 0.5f * (1.f - FMath::Cos(Alpha * PI)), Path);
     }
 
     // ---------------------
@@ -109,28 +161,28 @@ public:
     /**
      * \brief Quadratic ease-in interpolation.
      */
-    static T EaseInQuad(T Start, T End, float Alpha)
+    static T EaseInQuad(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, Alpha * Alpha);
+        return TEaseLerp<T>::Lerp(Start, End, Alpha * Alpha, Path);
     }
 
     /**
      * \brief Quadratic ease-out interpolation.
      */
-    static T EaseOutQuad(T Start, T End, float Alpha)
+    static T EaseOutQuad(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, Alpha * (2.f - Alpha));
+        return TEaseLerp<T>::Lerp(Start, End, Alpha * (2.f - Alpha), Path);
     }
 
     /**
      * \brief Quadratic ease-in-out interpolation.
      */
-    static T EaseInOutQuad(T Start, T End, float Alpha)
+    static T EaseInOutQuad(T Start, T End, float Alpha, EEasePath Path)
     {
         float Result = (Alpha < 0.5f)
             ? 2.f * Alpha * Alpha
             : -1.f + (4.f - 2.f * Alpha) * Alpha;
-        return FMath::Lerp(Start, End, Result);
+        return TEaseLerp<T>::Lerp(Start, End, Result, Path);
     }
 
     // ---------------------
@@ -140,28 +192,28 @@ public:
     /**
      * \brief Cubic ease-in interpolation.
      */
-    static T EaseInCubic(T Start, T End, float Alpha)
+    static T EaseInCubic(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, Alpha * Alpha * Alpha);
+        return TEaseLerp<T>::Lerp(Start, End, Alpha * Alpha * Alpha, Path);
     }
 
     /**
      * \brief Cubic ease-out interpolation.
      */
-    static T EaseOutCubic(T Start, T End, float Alpha)
+    static T EaseOutCubic(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, 1.f - FMath::Pow(1.f - Alpha, 3));
+        return TEaseLerp<T>::Lerp(Start, End, 1.f - FMath::Pow(1.f - Alpha, 3), Path);
     }
 
     /**
      * \brief Cubic ease-in-out interpolation.
      */
-    static T EaseInOutCubic(T Start, T End, float Alpha)
+    static T EaseInOutCubic(T Start, T End, float Alpha, EEasePath Path)
     {
         float Result = (Alpha < 0.5f)
             ? 4.f * Alpha * Alpha * Alpha
             : 1.f - FMath::Pow(-2.f * Alpha + 2.f, 3.f) / 2.f;
-        return FMath::Lerp(Start, End, Result);
+        return TEaseLerp<T>::Lerp(Start, End, Result, Path);
     }
 
     // ---------------------
@@ -171,28 +223,28 @@ public:
     /**
      * \brief Quartic ease-in interpolation.
      */
-    static T EaseInQuart(T Start, T End, float Alpha)
+    static T EaseInQuart(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, FMath::Pow(Alpha, 4.f));
+        return TEaseLerp<T>::Lerp(Start, End, FMath::Pow(Alpha, 4.f), Path);
     }
 
     /**
      * \brief Quartic ease-out interpolation.
      */
-    static T EaseOutQuart(T Start, T End, float Alpha)
+    static T EaseOutQuart(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, 1.f - FMath::Pow(1.f - Alpha, 4.f));
+        return TEaseLerp<T>::Lerp(Start, End, 1.f - FMath::Pow(1.f - Alpha, 4.f), Path);
     }
 
     /**
      * \brief Quartic ease-in-out interpolation.
      */
-    static T EaseInOutQuart(T Start, T End, float Alpha)
+    static T EaseInOutQuart(T Start, T End, float Alpha, EEasePath Path)
     {
         float Result = (Alpha < 0.5f)
             ? 8.f * FMath::Pow(Alpha, 4.f)
             : 1.f - FMath::Pow(-2.f * Alpha + 2.f, 4.f) / 2.f;
-        return FMath::Lerp(Start, End, Result);
+        return TEaseLerp<T>::Lerp(Start, End, Result, Path);
     }
 
     // ---------------------
@@ -202,28 +254,28 @@ public:
     /**
      * \brief Quintic ease-in interpolation.
      */
-    static T EaseInQuint(T Start, T End, float Alpha)
+    static T EaseInQuint(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, FMath::Pow(Alpha, 5.f));
+        return TEaseLerp<T>::Lerp(Start, End, FMath::Pow(Alpha, 5.f), Path);
     }
 
     /**
      * \brief Quintic ease-out interpolation.
      */
-    static T EaseOutQuint(T Start, T End, float Alpha)
+    static T EaseOutQuint(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, 1.f - FMath::Pow(1.f - Alpha, 5.f));
+        return TEaseLerp<T>::Lerp(Start, End, 1.f - FMath::Pow(1.f - Alpha, 5.f), Path);
     }
 
     /**
      * \brief Quintic ease-in-out interpolation.
      */
-    static T EaseInOutQuint(T Start, T End, float Alpha)
+    static T EaseInOutQuint(T Start, T End, float Alpha, EEasePath Path)
     {
         float Result = (Alpha < 0.5f)
             ? 16.f * FMath::Pow(Alpha, 5.f)
             : 1.f - FMath::Pow(-2.f * Alpha + 2.f, 5.f) / 2.f;
-        return FMath::Lerp(Start, End, Result);
+        return TEaseLerp<T>::Lerp(Start, End, Result, Path);
     }
 
     // ---------------------
@@ -233,23 +285,23 @@ public:
     /**
      * \brief Exponential ease-in interpolation.
      */
-    static T EaseInExpo(T Start, T End, float Alpha)
+    static T EaseInExpo(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, (Alpha == 0.f) ? 0.f : FMath::Pow(2.f, 10.f * Alpha - 10.f));
+        return TEaseLerp<T>::Lerp(Start, End, (Alpha == 0.f) ? 0.f : FMath::Pow(2.f, 10.f * Alpha - 10.f), Path);
     }
 
     /**
      * \brief Exponential ease-out interpolation.
      */
-    static T EaseOutExpo(T Start, T End, float Alpha)
+    static T EaseOutExpo(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, (Alpha == 1.f) ? 1.f : 1.f - FMath::Pow(2.f, -10.f * Alpha));
+        return TEaseLerp<T>::Lerp(Start, End, (Alpha == 1.f) ? 1.f : 1.f - FMath::Pow(2.f, -10.f * Alpha), Path);
     }
 
     /**
      * \brief Exponential ease-in-out interpolation.
      */
-    static T EaseInOutExpo(T Start, T End, float Alpha)
+    static T EaseInOutExpo(T Start, T End, float Alpha, EEasePath Path)
     {
         if (Alpha == 0.f) return Start;
         if (Alpha == 1.f) return End;
@@ -258,7 +310,7 @@ public:
             ? FMath::Pow(2.f, 20.f * Alpha - 10.f) / 2.f
             : (2.f - FMath::Pow(2.f, -20.f * Alpha + 10.f)) / 2.f;
 
-        return FMath::Lerp(Start, End, Result);
+        return TEaseLerp<T>::Lerp(Start, End, Result, Path);
     }
 
     // ---------------------
@@ -268,29 +320,29 @@ public:
     /**
      * \brief Circular ease-in interpolation.
      */
-    static T EaseInCirc(T Start, T End, float Alpha)
+    static T EaseInCirc(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, 1.f - FMath::Sqrt(1.f - Alpha * Alpha));
+        return TEaseLerp<T>::Lerp(Start, End, 1.f - FMath::Sqrt(1.f - Alpha * Alpha), Path);
     }
 
     /**
      * \brief Circular ease-out interpolation.
      */
-    static T EaseOutCirc(T Start, T End, float Alpha)
+    static T EaseOutCirc(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, FMath::Sqrt(1.f - FMath::Pow(Alpha - 1.f, 2.f)));
+        return TEaseLerp<T>::Lerp(Start, End, FMath::Sqrt(1.f - FMath::Pow(Alpha - 1.f, 2.f)), Path);
     }
 
     /**
      * \brief Circular ease-in-out interpolation.
      */
-    static T EaseInOutCirc(T Start, T End, float Alpha)
+    static T EaseInOutCirc(T Start, T End, float Alpha, EEasePath Path)
     {
         float Result = (Alpha < 0.5f)
             ? (1.f - FMath::Sqrt(1.f - 4.f * Alpha * Alpha)) / 2.f
             : (FMath::Sqrt(1.f - FMath::Pow(-2.f * Alpha + 2.f, 2.f)) + 1.f) / 2.f;
 
-        return FMath::Lerp(Start, End, Result);
+        return TEaseLerp<T>::Lerp(Start, End, Result, Path);
     }
 
     // ---------------------
@@ -300,28 +352,28 @@ public:
     /**
      * \brief Back ease-in interpolation.
      */
-    static T EaseInBack(T Start, T End, float Alpha)
+    static T EaseInBack(T Start, T End, float Alpha, EEasePath Path)
     {
         constexpr float C1 = 1.70158f;
         constexpr float C3 = C1 + 1.f;
-        return FMath::Lerp(Start, End, Alpha * Alpha * (C3 * Alpha - C1));
+        return TEaseLerp<T>::Lerp(Start, End, Alpha * Alpha * (C3 * Alpha - C1), Path);
     }
 
     /**
      * \brief Back ease-out interpolation.
      */
-    static T EaseOutBack(T Start, T End, float Alpha)
+    static T EaseOutBack(T Start, T End, float Alpha, EEasePath Path)
     {
         constexpr float C1 = 1.70158f;
         constexpr float C3 = C1 + 1.f;
         float Inv = 1.f - Alpha;
-        return FMath::Lerp(Start, End, 1.f - Inv * Inv * (C3 * Inv - C1));
+        return TEaseLerp<T>::Lerp(Start, End, 1.f - Inv * Inv * (C3 * Inv - C1), Path);
     }
 
     /**
      * \brief Back ease-in-out interpolation.
      */
-    static T EaseInOutBack(T Start, T End, float Alpha)
+    static T EaseInOutBack(T Start, T End, float Alpha, EEasePath Path)
     {
         constexpr float C1 = 1.70158f;
         constexpr float C2 = C1 * 1.525f;
@@ -330,7 +382,7 @@ public:
             ? (FMath::Pow(2.f * Alpha, 2.f) * ((C2 + 1.f) * 2.f * Alpha - C2)) / 2.f
             : (FMath::Pow(2.f * Alpha - 2.f, 2.f) * ((C2 + 1.f) * (Alpha * 2.f - 2.f) + C2) + 2.f) / 2.f;
 
-        return FMath::Lerp(Start, End, Result);
+        return TEaseLerp<T>::Lerp(Start, End, Result, Path);
     }
 
     // ---------------------
@@ -340,7 +392,7 @@ public:
     /**
      * \brief Elastic ease-in interpolation.
      */
-    static T EaseInElastic(T Start, T End, float Alpha)
+    static T EaseInElastic(T Start, T End, float Alpha, EEasePath Path)
     {
         if (Alpha == 0.f) return Start;
         if (Alpha == 1.f) return End;
@@ -348,13 +400,13 @@ public:
         constexpr float C4 = (2.f * PI) / 3.f;
         float Result = -FMath::Pow(2.f, 10.f * Alpha - 10.f) * FMath::Sin((Alpha * 10.f - 10.75f) * C4);
 
-        return FMath::Lerp(Start, End, Result);
+        return TEaseLerp<T>::Lerp(Start, End, Result, Path);
     }
 
     /**
      * \brief Elastic ease-out interpolation.
      */
-    static T EaseOutElastic(T Start, T End, float Alpha)
+    static T EaseOutElastic(T Start, T End, float Alpha, EEasePath Path)
     {
         if (Alpha == 0.f) return Start;
         if (Alpha == 1.f) return End;
@@ -362,13 +414,13 @@ public:
         constexpr float C4 = (2.f * PI) / 3.f;
         float Result = FMath::Pow(2.f, -10.f * Alpha) * FMath::Sin((Alpha * 10.f - 0.75f) * C4) + 1.f;
 
-        return FMath::Lerp(Start, End, Result);
+        return TEaseLerp<T>::Lerp(Start, End, Result, Path);
     }
 
     /**
      * \brief Elastic ease-in-out interpolation.
      */
-    static T EaseInOutElastic(T Start, T End, float Alpha)
+    static T EaseInOutElastic(T Start, T End, float Alpha, EEasePath Path)
     {
         if (Alpha == 0.f) return Start;
         if (Alpha == 1.f) return End;
@@ -379,7 +431,7 @@ public:
             ? -(FMath::Pow(2.f, 20.f * Alpha - 10.f) * FMath::Sin((20.f * Alpha - 11.125f) * C5)) / 2.f
             : (FMath::Pow(2.f, -20.f * Alpha + 10.f) * FMath::Sin((20.f * Alpha - 11.125f) * C5)) / 2.f + 1.f;
 
-        return FMath::Lerp(Start, End, Result);
+        return TEaseLerp<T>::Lerp(Start, End, Result, Path);
     }
 
     // ---------------------
@@ -389,7 +441,7 @@ public:
     /**
      * \brief Bounce ease-out interpolation.
      */
-    static T EaseOutBounce(T Start, T End, float Alpha)
+    static T EaseOutBounce(T Start, T End, float Alpha, EEasePath Path)
     {
         constexpr float N1 = 7.5625f;
         constexpr float D1 = 2.75f;
@@ -416,26 +468,26 @@ public:
             Result = N1 * Alpha * Alpha + 0.984375f;
         }
 
-        return FMath::Lerp(Start, End, Result);
+        return TEaseLerp<T>::Lerp(Start, End, Result, Path);
     }
 
     /**
      * \brief Bounce ease-in interpolation.
      */
-    static T EaseInBounce(T Start, T End, float Alpha)
+    static T EaseInBounce(T Start, T End, float Alpha, EEasePath Path)
     {
-        return FMath::Lerp(Start, End, 1.f - EaseOutBounce(0.f, 1.f, 1.f - Alpha));
+        return TEaseLerp<T>::Lerp(Start, End, 1.f - EaseOutBounce(0.f, 1.f, 1.f - Alpha), Path);
     }
 
     /**
      * \brief Bounce ease-in-out interpolation.
      */
-    static T EaseInOutBounce(T Start, T End, float Alpha)
+    static T EaseInOutBounce(T Start, T End, float Alpha, EEasePath Path)
     {
         float Result = (Alpha < 0.5f)
             ? (1.f - EaseOutBounce(0.f, 1.f, 1.f - 2.f * Alpha)) / 2.f
             : (1.f + EaseOutBounce(0.f, 1.f, 2.f * Alpha - 1.f)) / 2.f;
 
-        return FMath::Lerp(Start, End, Result);
+        return TEaseLerp<T>::Lerp(Start, End, Result, Path);
     }
 };

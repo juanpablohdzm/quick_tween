@@ -47,7 +47,8 @@ void UQuickRotatorTween::Update(float deltaTime, Badge<UQuickTweenSequence>* bad
 		progress = curve->GetFloatValue(progress);
 	}
 
-	const FRotator value = FEaseFunctions<FRotator>::Ease(StartValue.GetValue(), To, progress, GetEaseType());
+	EEasePath Path = bShortestPath ? EEasePath::Shortest : EEasePath::Longest;
+	const FRotator value = FEaseFunctions<FRotator>::Ease(StartValue.GetValue(), To, progress, GetEaseType(), Path);
 	SetterFunction(value);
 	SetProgress(progress);
 }
