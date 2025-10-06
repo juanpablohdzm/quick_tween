@@ -75,9 +75,13 @@ public:
 		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false);
 
-	/*UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* RotateToQuat(
-		FQuat to,
+
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween LookAt SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent"), Category = "QuickTween")
+	static UQuickRotatorTween* LookAt_SceneComponent(
+		UObject* worldContextObject,
+		USceneComponent* component,
+		FVector to,
 		bool bUseShortestPath = true,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
@@ -85,20 +89,7 @@ public:
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "");
-
-
-
-	UFUNCTION(BlueprintCallable)
-	UQuickTweenBuilderSceneComponent* LookAt(
-		FVector forward,
-		bool bUseShortestPath = true,
-		FVector up = FVector::UpVector,
-		float duration = 1.0f,
-		float timeScale = 1.0f,
-		EEaseType easeType = EEaseType::Linear,
-		UCurveFloat* easeCurve = nullptr,
-		int32 loops = 1,
-		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "");*/
+		FString tweenTag = "",
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false);
 };

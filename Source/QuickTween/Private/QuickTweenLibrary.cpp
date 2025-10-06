@@ -129,8 +129,10 @@ UQuickRotatorTween* UQuickTweenLibrary::RotateTo_SceneComponent(
 	return tween;
 }
 
-/*UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateTo(
-	FRotator to,
+UQuickRotatorTween* UQuickTweenLibrary::LookAt_SceneComponent(
+	UObject* worldContextObject,
+	USceneComponent* component,
+	FVector to,
 	bool bUseShortestPath,
 	float duration,
 	float timeScale,
@@ -138,22 +140,33 @@ UQuickRotatorTween* UQuickTweenLibrary::RotateTo_SceneComponent(
 	UCurveFloat* easeCurve,
 	int32 loops,
 	ELoopType loopType,
-	FString tweenTag)
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused)
 {
-	return this;
+	const FVector direction = (to - component->GetComponentLocation()).GetSafeNormal();
+	FRotator targetRotation = direction.Rotation();
+
+	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
+	tween->SetUp(
+		[component]()->FRotator { return component->GetRelativeRotation(); },
+		targetRotation,
+		bUseShortestPath,
+		[component](const FRotator& v) { component->SetRelativeRotation(v); },
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		worldContextObject,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused
+	);
+
+	return tween;
 }
 
-UQuickTweenBuilderSceneComponent* UQuickTweenBuilderSceneComponent::RotateToQuat(
-	FQuat to,
-	bool bUseShortestPath,
-	float duration,
-	float timeScale,
-	EEaseType easeType,
-	UCurveFloat* easeCurve,
-	int32 loops,
-	ELoopType loopType,
-	FString tweenTag)
-{
-	return this;
-}*/
+
 
