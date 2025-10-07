@@ -5,25 +5,11 @@
 
 #include "Utils/EaseFunctions.h"
 
-namespace
-{
-	FRotator GetFromValue(std::variant<FRotator, TFunction<FRotator()>>& from)
-	{
-		return std::visit([](auto&& arg)
-		{
-			if constexpr (std::is_same_v<std::decay_t<decltype(arg)>, FRotator>)
-				return arg;
-			else
-				return arg();
-		}, from);
-	}
-}
-
 void UQuickRotatorTween::Update(float deltaTime, Badge<UQuickTweenSequence>* badge)
 {
 	if (!StartValue.IsSet())
 	{
-		StartValue = GetFromValue(From);
+		StartValue = From();
 	}
 
 	UQuickTweenBase::Update(deltaTime, badge);
@@ -48,7 +34,7 @@ void UQuickRotatorTween::Update(float deltaTime, Badge<UQuickTweenSequence>* bad
 	}
 
 	EEasePath Path = bShortestPath ? EEasePath::Shortest : EEasePath::Longest;
-	const FRotator value = FEaseFunctions<FRotator>::Ease(StartValue.GetValue(), To, progress, GetEaseType(), Path);
+	const FRotator value = FEaseFunctions<FRotator>::Ease(StartValue.GetValue(), To(), progress, GetEaseType(), Path);
 	SetterFunction(value);
 	SetProgress(progress);
 }
@@ -59,11 +45,11 @@ UQuickTweenBase* UQuickRotatorTween::Complete(Badge<UQuickTweenSequence>* badge)
 	{
 		const bool isOddLoop = GetCurrentLoop() % 2 == 1;
 		const bool toEnd = (isOddLoop && !GetIsReversed()) || (!isOddLoop && GetIsReversed());
-		SetterFunction(toEnd ? To : StartValue.GetValue());
+		SetterFunction(toEnd ? To() : StartValue.GetValue());
 	}
 	else
 	{
-		SetterFunction(GetIsReversed() ? StartValue.GetValue() : To);
+		SetterFunction(GetIsReversed() ? StartValue.GetValue() : To());
 	}
 	return Super::Complete(badge);
 }

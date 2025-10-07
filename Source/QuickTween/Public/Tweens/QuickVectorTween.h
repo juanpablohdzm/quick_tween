@@ -24,57 +24,8 @@ public:
 	/**
 	 * Set up the vector tween with the specified parameters.
 	 *
-	 * @param from The starting FVector value.
-	 * @param to The target FVector value.
-	 * @param setterFunction Function to apply the interpolated value.
-	 * @param duration Duration of the tween in seconds.
-	 * @param timeScale Multiplier for the tween's speed.
-	 * @param easeType Type of easing to apply.
-	 * @param easeCurve Optional custom curve for easing.
-	 * @param loops Number of times to loop the tween.
-	 * @param loopType Type of looping behavior.
-	 * @param tweenTag Optional tag for identifying the tween.
-	 * @param worldContextObject Context object for world access.
-	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
-	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
-	 */
-	void SetUp(
-		const FVector& from,
-		const FVector& to,
-		TFunction<void(const FVector&)>&& setterFunction,
-		float duration = 1.0f,
-		float timeScale = 1.0f,
-		EEaseType easeType = EEaseType::Linear,
-		UCurveFloat* easeCurve = nullptr,
-		int32 loops = 1,
-		ELoopType loopType = ELoopType::Restart,
-		const FString& tweenTag = FString(),
-		const UObject* worldContextObject = nullptr,
-		bool bShouldAutoKill = true,
-		bool bShouldPlayWhilePaused = false)
-	{
-		From = from;
-		To = to;
-		SetterFunction = setterFunction;
-		UQuickTweenBase::SetUp(
-			duration,
-			timeScale,
-			easeType,
-			easeCurve,
-			loops,
-			loopType,
-			tweenTag,
-			worldContextObject,
-			bShouldAutoKill,
-			bShouldPlayWhilePaused);
-
-	}
-
-	/**
-	 * Set up the vector tween with the specified parameters.
-	 *
-	 * @param from Function to get the value.
-	 * @param to The target FVector value.
+	 * @param from Function to get the FROM value.
+	 * @param to Function to get the TO value.
 	 * @param setterFunction Function to apply the interpolated value.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Multiplier for the tween's speed.
@@ -87,7 +38,7 @@ public:
 	 */
 	void SetUp(
 		TFunction<FVector()>&& from,
-		const FVector& to,
+		TFunction<FVector()>&& to,
 		TFunction<void(const FVector&)>&& setterFunction,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
@@ -140,11 +91,11 @@ public:
 	using UQuickTweenBase::Complete;
 
 private:
-	/** Starting value or function returning FVector. */
-	std::variant<FVector, TFunction<FVector()>> From;
+	/** Starting function returning FVector. */
+	TFunction<FVector()> From;
 
-	/** Target FVector value. */
-	FVector To;
+	/** Target function returning FVector. */
+	TFunction<FVector()> To;
 
 	/** Starting value. */
 	TOptional<FVector> StartValue;

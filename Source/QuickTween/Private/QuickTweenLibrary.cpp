@@ -39,7 +39,7 @@ UQuickVectorTween* UQuickTweenLibrary::MoveTo_SceneComponent(
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
 	tween->SetUp(
 		[component]()->FVector { return component->GetComponentLocation(); },
-		to,
+		[to]()->FVector{ return to; },
 		[component](const FVector& v)
 		{
 			component->SetWorldLocation(v, true, nullptr, ETeleportType::None);
@@ -76,7 +76,7 @@ UQuickVectorTween* UQuickTweenLibrary::ScaleTo_SceneComponent(
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
 	tween->SetUp(
 		[component]()->FVector { return component->GetRelativeScale3D(); },
-		to,
+		[to]()->FVector { return to; },
 		[component](const FVector& v) { component->SetRelativeScale3D(v); },
 		duration,
 		timeScale,
@@ -111,7 +111,7 @@ UQuickRotatorTween* UQuickTweenLibrary::RotateTo_SceneComponent(
 	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
 	tween->SetUp(
 		[component]()->FRotator { return component->GetRelativeRotation(); },
-		to,
+		[to]()->FRotator { return to; },
 		bUseShortestPath,
 		[component](const FRotator& v) { component->SetRelativeRotation(v); },
 		duration,
@@ -150,7 +150,7 @@ UQuickRotatorTween* UQuickTweenLibrary::LookAt_SceneComponent(
 	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
 	tween->SetUp(
 		[component]()->FRotator { return component->GetRelativeRotation(); },
-		targetRotation,
+		[targetRotation]()->FRotator{ return targetRotation;},
 		bUseShortestPath,
 		[component](const FRotator& v) { component->SetRelativeRotation(v); },
 		duration,

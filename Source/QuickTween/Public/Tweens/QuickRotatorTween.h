@@ -24,60 +24,8 @@ public:
 	/**
 	 * Set up the rotator tween with the specified parameters.
 	 *
-	 * @param from The starting FRotator value.
-	 * @param to The target FRotator value.
-	 * @param bUseShortestPath Whether to use the shortest path for interpolation.
-	 * @param setterFunction Function to apply the interpolated value.
-	 * @param duration Duration of the tween in seconds.
-	 * @param timeScale Multiplier for the tween's speed.
-	 * @param easeType Type of easing to apply.
-	 * @param easeCurve Optional custom curve for easing.
-	 * @param loops Number of times to loop the tween.
-	 * @param loopType Type of looping behavior.
-	 * @param tweenTag Optional tag for identifying the tween.
-	 * @param worldContextObject Context object for world access.
-	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
-	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
-	 */
-	void SetUp(
-		const FRotator& from,
-		const FRotator& to,
-		bool bUseShortestPath,
-		TFunction<void(const FRotator&)>&& setterFunction,
-		float duration = 1.0f,
-		float timeScale = 1.0f,
-		EEaseType easeType = EEaseType::Linear,
-		UCurveFloat* easeCurve = nullptr,
-		int32 loops = 1,
-		ELoopType loopType = ELoopType::Restart,
-		const FString& tweenTag = FString(),
-		const UObject* worldContextObject = nullptr,
-		bool bShouldAutoKill = true,
-		bool bShouldPlayWhilePaused = false)
-	{
-		From = from;
-		To = to;
-		bShortestPath = bUseShortestPath;
-		SetterFunction = setterFunction;
-		UQuickTweenBase::SetUp(
-			duration,
-			timeScale,
-			easeType,
-			easeCurve,
-			loops,
-			loopType,
-			tweenTag,
-			worldContextObject,
-			bShouldAutoKill,
-			bShouldPlayWhilePaused);
-
-	}
-
-	/**
-	 * Set up the rotator tween with the specified parameters.
-	 *
-	 * @param from Function to get the value.
-	 * @param to The target FRotator value.
+	 * @param from Function to get the FROM value.
+	 * @param to Function to get the TO value.
 	 * @param bUseShortestPath Whether to use the shortest path for interpolation.
 	 * @param setterFunction Function to apply the interpolated value.
 	 * @param duration Duration of the tween in seconds.
@@ -93,7 +41,7 @@ public:
 	 */
 	void SetUp(
 		TFunction<FRotator()>&& from,
-		const FRotator& to,
+		TFunction<FRotator()>&& to,
 		bool bUseShortestPath,
 		TFunction<void(const FRotator&)>&& setterFunction,
 		float duration = 1.0f,
@@ -149,10 +97,10 @@ public:
 
 private:
 	/** Starting value or function returning FRotator. */
-	std::variant<FRotator, TFunction<FRotator()>> From;
+	TFunction<FRotator()> From;
 
-	/** Target FRotator value. */
-	FRotator To;
+	/** Target FRotator function. */
+	TFunction<FRotator()> To;
 
 	/** Starting value. */
 	TOptional<FRotator> StartValue;
