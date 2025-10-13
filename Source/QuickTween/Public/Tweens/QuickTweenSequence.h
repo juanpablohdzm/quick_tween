@@ -9,9 +9,9 @@
 #include "QuickTweenSequence.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateTweenSequence, UQuickTweenSequence*, TweenSequence);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompleteTweenSequence, UQuickTweenSequence*, TweenSequence);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledTweenSequence, UQuickTweenSequence*, TweenSequence);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateTweenSequence, UObject*, TweenSequence);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompleteTweenSequence, UObject*, TweenSequence);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledTweenSequence, UObject*, TweenSequence);
 
 class UQuickTweenBase;
 
@@ -21,7 +21,7 @@ class UQuickTweenBase;
  * Supports looping, reversing, and querying sequence state.
  */
 UCLASS(BlueprintType)
-class QUICKTWEEN_API UQuickTweenSequence : public UObject, public IQuickTweenable
+class QUICKTWEEN_API UQuickTweenSequence : public UObject, public IQuickTweenable, public ITweenOwner
 {
 	GENERATED_BODY()
 
@@ -38,7 +38,7 @@ public:
 	 * @param bShouldPlayWhilePaused Whether the sequence should play while the game is paused.
 	 * @return Reference to this sequence.
 	 */
-	UQuickTweenSequence* SetUp(
+	void SetUp(
 		const UObject* worldContextObject = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
@@ -52,7 +52,7 @@ public:
 	 * @return Reference to this sequence.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
-	UQuickTweenSequence* Join(UQuickTweenBase* tween);
+	void Join(UObject* tween);
 
 	/**
 	 * Appends a tween to the sequence, running after previous tweens complete.
@@ -60,87 +60,46 @@ public:
 	 * @return Reference to this sequence.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
-	UQuickTweenSequence* Append(UQuickTweenBase* tween);
+	void Append(UObject* tween);
 
+	virtual void SetOwner(UObject* owner) override { Owner = owner; }
 #pragma endregion
 
 #pragma region Sequence Control
 public:
-	/**
-	 * Starts playing the sequence.
-	 * @return Reference to this sequence.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
-	UQuickTweenSequence* Play();
 
-	/**
-	 * Pauses the sequence.
-	 * @return Reference to this sequence.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
-	UQuickTweenSequence* Pause();
 
-	/**
-	 * Completes the sequence immediately.
-	 * @return Reference to this sequence.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
-	UQuickTweenSequence* Complete();
-
-	/**
-	 * Restarts the sequence from the beginning.
-	 * @return Reference to this sequence.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
-	UQuickTweenSequence* Restart();
-
-	/**
-	 * Kills the sequence and all its tweens.
-	 * @return Reference to this sequence.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
-	UQuickTweenSequence* KillSequence();
-
-	/**
-	 * Reverses the direction of the sequence.
-	 * @return Reference to this sequence.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
-	UQuickTweenSequence* Reverse();
+	virtual void Play(UObject* instigator = nullptr) override;
+	virtual void Pause(UObject* instigator = nullptr) override;
+	virtual void Stop(UObject* instigator = nullptr) override;
+	virtual void Reverse(UObject* instigator = nullptr) override;
+	virtual void Complete(UObject* instigator = nullptr) override;
+	virtual void Restart(UObject* instigator = nullptr) override;
+	virtual void Reset(UObject* instigator = nullptr) override;
+	virtual void Kill(UObject* instigator = nullptr) override;
+	virtual void Update(float deltaTime, UObject* instigator = nullptr) override;
+	virtual void SetAutoKill(bool bShouldAutoKill, UObject* instigator = nullptr) override;
 
 private:
 	/**
 	 * Reverses all tweens in the sequence.
 	 * @return Reference to this sequence.
 	 */
-	UQuickTweenSequence* Reverse_Tweens();
-public:
+	void Reverse_Tweens();
 
-	/**
-	 * Toggles the pause state of the sequence.
-	 * @return Reference to this sequence.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Control")
-	UQuickTweenSequence* TogglePause();
-
-	/**
-	 * Updates the sequence by the given delta time.
-	 * @param deltaTime Time since last update.
-	 */
-	virtual void Update(float deltaTime) override;
-
-private:
 	/**
 	 * Updates the sequence in Restart loop mode.
 	 * @param deltaTime Time since last update.
+	 * @param instigator
 	 */
-	void Update_Restart(float deltaTime);
+	void Update_Restart(float deltaTime, UObject* instigator);
 
 	/**
 	 * Updates the sequence in PingPong loop mode.
 	 * @param deltaTime Time since last update.
+	 * @param instigator
 	 */
-	void Update_PingPong(float deltaTime);
+	void Update_PingPong(float deltaTime, UObject* instigator);
 public:
 
 	/**
@@ -153,61 +112,24 @@ public:
 
 #pragma region Sequence State Queries
 public:
-	/**
-	 * Checks if the sequence is currently playing.
-	 * @return True if playing, false otherwise.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
+
+
 	[[nodiscard]] virtual bool GetIsPlaying() const override { return bIsPlaying;}
-
-	/**
-	 * Checks if the sequence has completed.
-	 * @return True if completed, false otherwise.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
+	[[nodiscard]] virtual float GetProgress() const override { return Progress; }
+	[[nodiscard]] virtual float GetTimeScale() const override { return 1.0f; }
+	[[nodiscard]] virtual bool GetIsBackwards() const override { return bIsBackwards; }
+	[[nodiscard]] virtual bool GetIsReversed() const override { return bIsReversed; }
+	[[nodiscard]] virtual EEaseType GetEaseType() const override { return EEaseType::Linear; }
+	[[nodiscard]] virtual UCurveFloat* GetEaseCurve() const override { return nullptr; }
+	[[nodiscard]] virtual bool GetAutoKill() const override { return bAutoKill; }
 	[[nodiscard]] virtual bool GetIsCompleted() const override { return bIsCompleted; }
-
-	/**
-	 * Gets the total duration of the sequence.
-	 * @return Duration in seconds.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	[[nodiscard]] float GetDuration() const;
-
-	/**
-	 * Gets the elapsed time since the sequence started.
-	 * @return Elapsed time in seconds.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	[[nodiscard]] float GetElapsedTime() const { return ElapsedTime; }
-
-	/**
-	 * Gets the number of loops set for the sequence.
-	 * @return Number of loops.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	[[nodiscard]] float GetLoops() const { return Loops; }
-
-	/**
-	 * Gets the current loop index.
-	 * @return Current loop number.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	[[nodiscard]] float GetCurrentLoop() const { return CurrentLoop; }
-
-	/**
-	 * Gets the loop type of the sequence.
-	 * @return The loop type.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	[[nodiscard]] ELoopType GetLoopType() const { return LoopType; }
-
-	/**
-	 * Gets the identifier of the sequence.
-	 * @return Sequence ID.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	[[nodiscard]] FString GetId() const { return SequenceTweenId; }
+	[[nodiscard]] virtual float GetDuration() const override;
+	[[nodiscard]] virtual float GetElapsedTime() const override { return ElapsedTime; }
+	[[nodiscard]] virtual int32 GetLoops() const override { return Loops; }
+	[[nodiscard]] virtual int32 GetCurrentLoop() const override { return CurrentLoop; }
+	[[nodiscard]] virtual ELoopType GetLoopType() const override { return LoopType; }
+	[[nodiscard]] virtual FString GetTweenTag() const override { return SequenceTweenId; }
+	[[nodiscard]] virtual bool GetShouldPlayWhilePaused() const override { return bPlayWhilePaused; }
 
 	/**
 	 * Gets the number of tweens in the sequence.
@@ -222,14 +144,8 @@ public:
 	 * @return Pointer to the tween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	[[nodiscard]] UQuickTweenBase* GetTween(int32 index) const;
+	[[nodiscard]] UObject* GetTween(int32 index) const;
 
-	/**
-	 * Gets if the sequence should play while paused.
-	 * @return True should play while paused.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	[[nodiscard]] virtual bool GetShouldPlayWhilePaused() const override { return bPlayWhilePaused; }
 #pragma endregion
 
 #pragma region Delegates
@@ -246,7 +162,12 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnKilledTweenSequence OnKilled;
 #pragma endregion
-
+protected:
+	bool InstigatorIsOwner(UObject* instigator) const
+	{
+		if (!Owner) return true; // No owner means it's not in a sequence
+		return instigator == reinterpret_cast<UObject*>(Owner);
+	};
 private:
 
 	/**
@@ -254,7 +175,7 @@ private:
 	 */
 	struct FQuickTweenSequenceGroup
 	{
-		TArray<TWeakObjectPtr<UQuickTweenBase>> Tweens;
+		TArray<IQuickTweenable*> Tweens;
 	};
 
 	/** Array of tween groups in the sequence. */
@@ -305,5 +226,8 @@ private:
 	/** Object to do world queries. */
 	UPROPERTY()
 	const UObject* WorldContextObject = nullptr;
+
+	UPROPERTY()
+	UObject* Owner = nullptr;
 
 };

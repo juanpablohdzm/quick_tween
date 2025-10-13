@@ -1,10 +1,10 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "QuickTweenLibrary.h"
+#include "Blueprint/QuickTweenLibrary.h"
 
-#include "TweenBuilders/QuickTweenBuilderMaterial.h"
 #include "Tweens/QuickRotatorTween.h"
+#include "Tweens/QuickTweenSequence.h"
 #include "Tweens/QuickVectorTween.h"
 
 

@@ -35,16 +35,11 @@ void UQuickTweenBase::SetUp(
 	}
 	else
 	{
-		manager->AddTween(this, Badge<UQuickTweenBase>());
+		manager->AddTween(this);
 	}
 }
 
-void UQuickTweenBase::Update(float deltaTime)
-{
-	Update(deltaTime, nullptr);
-}
-
-void UQuickTweenBase::Update_Restart(float deltaTime, Badge<UQuickTweenSequence>* badge)
+void UQuickTweenBase::Update_Restart(float deltaTime, UObject* instigator)
 {
 	ElapsedTime = !bIsReversed ?  ElapsedTime + deltaTime * GetTimeScale() : ElapsedTime - deltaTime * GetTimeScale();
 
@@ -77,11 +72,11 @@ void UQuickTweenBase::Update_Restart(float deltaTime, Badge<UQuickTweenSequence>
 
 	if (Loops != INFINITE_LOOPS && shouldComplete)
 	{
-		Complete(badge);
+		Complete(instigator);
 	}
 }
 
-void UQuickTweenBase::Update_PingPong(float deltaTime, Badge<UQuickTweenSequence>* badge)
+void UQuickTweenBase::Update_PingPong(float deltaTime, UObject* instigator)
 {
 	/*
 	 * !backwards & !reversed = to end
@@ -121,7 +116,7 @@ void UQuickTweenBase::Update_PingPong(float deltaTime, Badge<UQuickTweenSequence
 	{
 		if (Loops != INFINITE_LOOPS && (!bIsReversed && CurrentLoop >= Loops || bIsReversed && (CurrentLoop - 1) <= 0))
 		{
-			Complete(badge);
+			Complete(instigator);
 			return;
 		}
 
@@ -130,109 +125,86 @@ void UQuickTweenBase::Update_PingPong(float deltaTime, Badge<UQuickTweenSequence
 	}
 }
 
-void UQuickTweenBase::Update(float deltaTime, Badge<UQuickTweenSequence>* badge)
+void UQuickTweenBase::Update(float deltaTime, UObject* instigator)
 {
-	if (GetIsCompleted() || !GetIsPlaying()) return;
+	if (!InstigatorIsOwner(instigator) || GetIsCompleted() || !GetIsPlaying()) return;
 
 	if (FMath::IsNearlyZero(GetDuration()))
 	{
-		Complete(badge);
+		Complete(instigator);
 		return;
 	}
 
 	switch (LoopType)
 	{
 		case ELoopType::Restart:
-			Update_Restart(deltaTime, badge);
+			Update_Restart(deltaTime, instigator);
 			break;
 		case ELoopType::PingPong:
-			Update_PingPong(deltaTime, badge);
+			Update_PingPong(deltaTime, instigator);
 			break;
 		default:
 			ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));
 	}
 }
 
-void UQuickTweenBase::SetAutoKill(bool bShouldAutoKill)
+void UQuickTweenBase::SetAutoKill(bool bShouldAutoKill, UObject* instigator)
 {
+	if (!InstigatorIsOwner(instigator)) return;
+
 	bAutoKill = bShouldAutoKill;
-	if (GetIsCompleted() && !bIsInSequence)
+	if (GetIsCompleted())
 	{
 		bIsPendingKill = bAutoKill;
 	}
 }
 
-UQuickTweenBase* UQuickTweenBase::Play()
+void UQuickTweenBase::Play(UObject* instigator)
 {
-	return Play(nullptr);
-}
-
-UQuickTweenBase* UQuickTweenBase::Play(Badge<UQuickTweenSequence>* badge)
-{
-	if (bIsInSequence && !badge) return this;
+	if (!InstigatorIsOwner(instigator)) return;
 
 	bIsPlaying = true;
-	return this;
+	return;
 }
 
-UQuickTweenBase* UQuickTweenBase::Pause()
+void UQuickTweenBase::Pause(UObject* instigator)
 {
-	return Pause(nullptr);
-}
-
-UQuickTweenBase* UQuickTweenBase::Pause(Badge<UQuickTweenSequence>* badge)
-{
-	if (bIsInSequence && !badge) return this;
+	if (!InstigatorIsOwner(instigator)) return;
 
 	bIsPlaying = false;
-	return this;
+	return;
 }
 
-UQuickTweenBase* UQuickTweenBase::Stop()
-{
-	return Stop(nullptr);
-}
-
-UQuickTweenBase* UQuickTweenBase::Stop(Badge<UQuickTweenSequence>* badge)
+void UQuickTweenBase::Stop(UObject* instigator)
 {
 
-	if (bIsInSequence && !badge) return this;
+	if (!InstigatorIsOwner(instigator)) return;
 
 	if (!bIsPlaying && !bIsCompleted)
 	{
-		return this;
+		return;
 	}
 
 	bIsPlaying   = false;
 	bIsCompleted = true;
 	CurrentLoop  = 1;
-	Restart(badge);
+	Restart(instigator);
 
-	return this;
+	return;
 }
 
-UQuickTweenBase* UQuickTweenBase::Reverse()
+void UQuickTweenBase::Reverse(UObject* instigator)
 {
-	return Reverse(nullptr);
-}
-
-UQuickTweenBase* UQuickTweenBase::Reverse(Badge<UQuickTweenSequence>* badge)
-{
-	if (bIsInSequence && !badge) return this;
+	if (!InstigatorIsOwner(instigator)) return;
 
 	bIsReversed = !bIsReversed;
 
-	return this;
+	return;
 }
 
-UQuickTweenBase* UQuickTweenBase::Restart()
+void UQuickTweenBase::Restart(UObject* instigator)
 {
-	return Restart(nullptr);
-}
-
-UQuickTweenBase* UQuickTweenBase::Restart(Badge<UQuickTweenSequence>* badge)
-{
-	if (bIsInSequence && !badge) return this;
+	if (!InstigatorIsOwner(instigator)) return;
 
 	bIsCompleted = false;
 	bIsPlaying   = true;
@@ -241,18 +213,13 @@ UQuickTweenBase* UQuickTweenBase::Restart(Badge<UQuickTweenSequence>* badge)
 	ElapsedTime = bIsReversed ? duration : 0.0f;
 	Progress    = bIsReversed ? 1.0f     : 0.0f;
 	CurrentLoop = bIsReversed ? GetLoops() : 1;
-	return this;
+	return;
 }
 
-UQuickTweenBase* UQuickTweenBase::Complete()
+void UQuickTweenBase::Complete(UObject* instigator)
 {
-	return Complete(nullptr);
-}
-
-UQuickTweenBase* UQuickTweenBase::Complete(Badge<UQuickTweenSequence>* badge)
-{
-	if (bIsInSequence && !badge) return this;
-	if (bIsCompleted) return this;
+	if (!InstigatorIsOwner(instigator)) return;
+	if (bIsCompleted) return;
 
 	const bool toEnd = bIsReversed == bIsBackwards;
 
@@ -263,24 +230,19 @@ UQuickTweenBase* UQuickTweenBase::Complete(Badge<UQuickTweenSequence>* badge)
 	Progress    = toEnd ? 1.0f     : 0.0f;
 	if (bAutoKill)
 	{
-		Kill(badge);
+		Kill(instigator);
 	}
 
 	if (OnComplete.IsBound())
 	{
 		OnComplete.Broadcast(this);
 	}
-	return this;
+	return;
 }
 
-UQuickTweenBase* UQuickTweenBase::Reset()
+void UQuickTweenBase::Reset(UObject* instigator)
 {
-	return Reset(nullptr);
-}
-
-UQuickTweenBase* UQuickTweenBase::Reset(Badge<UQuickTweenSequence>* badge)
-{
-	if (bIsInSequence && !badge) return this;
+	if (!InstigatorIsOwner(instigator)) return;
 
 	ElapsedTime = 0.0f;
 	Progress    = 0.0f;
@@ -295,17 +257,12 @@ UQuickTweenBase* UQuickTweenBase::Reset(Badge<UQuickTweenSequence>* badge)
 	Loops       = 0;
 	LoopType    = ELoopType::Restart;
 	CurrentLoop = 1;
-	return this;
+	return;
 }
 
-void UQuickTweenBase::Kill()
+void UQuickTweenBase::Kill(UObject* instigator)
 {
-	Kill(nullptr);
-}
-
-void UQuickTweenBase::Kill(Badge<UQuickTweenSequence>* badge)
-{
-	if (bIsInSequence) return;
+	if (!InstigatorIsOwner(instigator)) return;
 	if (bIsPendingKill) return;
 
 	bIsPendingKill = true;

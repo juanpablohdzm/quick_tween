@@ -15,7 +15,7 @@ public:
 	UPROPERTY() int32 CompleteCalls= 0;
 	UPROPERTY() int32 KilledCalls  = 0;
 
-	UFUNCTION() void HandleUpdate(UQuickTweenSequence* Seq)  { ++UpdateCalls; }
-	UFUNCTION() void HandleComplete(UQuickTweenSequence* Seq){ ++CompleteCalls; }
-	UFUNCTION() void HandleKilled(UQuickTweenSequence* Seq)  { ++KilledCalls; }
+	UFUNCTION() void HandleUpdate(UObject* Seq)  { ++UpdateCalls; }
+	UFUNCTION() void HandleComplete(UObject* Seq){ ++CompleteCalls; }
+	UFUNCTION() void HandleKilled(UObject* Seq)  { ++KilledCalls; }
 };

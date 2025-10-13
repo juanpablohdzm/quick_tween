@@ -28,6 +28,12 @@ bool UQuickTweenManager::Tick(float deltaTime)
 	for (int i = QuickTweens.Num() - 1; i >= 0; --i)
 	{
 		IQuickTweenable* tweenContainer = reinterpret_cast<IQuickTweenable*>(QuickTweens[i]);
+		if (!tweenContainer)
+		{
+			UE_LOG(LogQuickTweenManager, Warning, TEXT("Null tween found in QuickTweenManager, removing it."));
+			QuickTweens.RemoveAt(i);
+			continue;
+		}
 
 		if (tweenContainer->GetIsPendingKill())
 		{
@@ -54,31 +60,14 @@ UQuickTweenManager::~UQuickTweenManager()
 	FTSTicker::RemoveTicker(TickDelegateHandler);
 }
 
-void UQuickTweenManager::AddTween(IQuickTweenable* tween, Badge<UQuickTweenBase> badge)
-{
-	UE_LOG(LogQuickTweenManager, Log, TEXT("Adding tween to QuickTweenManager"));
-	UObject* obj = reinterpret_cast<UObject*>(tween);
-	QuickTweens.Add(obj);
-}
-
-void UQuickTweenManager::AddTween(IQuickTweenable* tween, Badge<UQuickTweenSequence> badge)
+void UQuickTweenManager::AddTween(IQuickTweenable* tween)
 {
 	UE_LOG(LogQuickTweenManager, Log, TEXT("Adding sequence to QuickTweenManager"));
 	UObject* obj = reinterpret_cast<UObject*>(tween);
 	QuickTweens.Add(obj);
 }
 
-void UQuickTweenManager::RemoveTween(class IQuickTweenable* tween, Badge<class UQuickTweenBase> badge)
-{
-	UE_LOG(LogQuickTweenManager, Log, TEXT("Remove tween to QuickTweenManager"));
-	UObject* obj = reinterpret_cast<UObject*>(tween);
-	if (obj && QuickTweens.Find(obj) != INDEX_NONE)
-	{
-		QuickTweens.Remove(obj);
-	}
-}
-
-void UQuickTweenManager::RemoveTween(class IQuickTweenable* tween, Badge<class UQuickTweenSequence> badge)
+void UQuickTweenManager::RemoveTween(class IQuickTweenable* tween)
 {
 	UE_LOG(LogQuickTweenManager, Verbose, TEXT("Remove sequence to QuickTweenManager"));
 	UObject* obj = reinterpret_cast<UObject*>(tween);

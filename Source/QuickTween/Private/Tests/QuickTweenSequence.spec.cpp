@@ -80,7 +80,8 @@ void QuickTweenSequenceSpec::Define()
 			auto TweenB = NewObject<UQuickVectorTween>(Sequence);
 			TweenB->SetUp(FromB, ToB, [&BCurrent](const FVector& V){ BCurrent = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
-			Sequence->Join(TweenA)->Join(TweenB);
+			Sequence->Join(TweenA);
+			Sequence->Join(TweenB);
 
 			Sequence->Play();
 
@@ -120,7 +121,8 @@ void QuickTweenSequenceSpec::Define()
 			TweenB->SetUp(FromB, ToB, [&BCurrent](const FVector& V){ BCurrent = V; }, 2.0f, 1.0f, EEaseType::Linear);
 
 			// Start a group with A, then append B to the same group
-			Sequence->Join(TweenA)->Append(TweenB);
+			Sequence->Join(TweenA);
+			Sequence->Append(TweenB);
 
 			TestTrue("Duration should be the max of joined tweens (~2s)", FMath::IsNearlyEqual(Sequence->GetDuration(), 2.0f, 1e-3f));
 
@@ -161,7 +163,7 @@ void QuickTweenSequenceSpec::Define()
 			Sequence->Update(0.5f);
 			TestTrue("No change while paused", Current.Equals(ValueAtPause, 1e-3f));
 
-			Sequence->TogglePause(); // resume
+			Sequence->Play(); // resume
 			Sequence->Update(0.5f);
 			TestTrue("Finished after resume", Current.Equals(ToA(), 1.0f));
 			TestTrue("Sequence completed", Sequence->GetIsCompleted());
@@ -182,7 +184,8 @@ void QuickTweenSequenceSpec::Define()
 			auto TweenB = NewObject<UQuickVectorTween>(Sequence);
 			TweenB->SetUp(FromB, ToB, [&BCurrent](const FVector& V){ BCurrent = V; }, 1.0f, 1.0f, EEaseType::Linear);
 
-			Sequence->Append(TweenA)->Append(TweenB);
+			Sequence->Append(TweenA);
+			Sequence->Append(TweenB);
 			Sequence->Play();
 
 			Sequence->Update(0.3f);
@@ -235,7 +238,7 @@ void QuickTweenSequenceSpec::Define()
 			Sequence->Append(TweenA);
 
 			Sequence->Play();
-			TestEqual("CurrentLoop starts at 1", Sequence->GetCurrentLoop(), 1.0f);
+			TestEqual("CurrentLoop starts at 1", Sequence->GetCurrentLoop(), 1);
 
 			Sequence->Update(0.99f);
 			TestFalse("Not completed yet (end of loop 1)", Sequence->GetIsCompleted());
@@ -243,7 +246,7 @@ void QuickTweenSequenceSpec::Define()
 			Sequence->Update(0.01f); // cross into loop 2
 			Sequence->Update(0.01f); // tick once to apply reset value
 			TestTrue("Value reset at loop restart", Current.Equals(FromA(), 10.0f));
-			TestEqual("CurrentLoop moved to 2", Sequence->GetCurrentLoop(), 2.0f);
+			TestEqual("CurrentLoop moved to 2", Sequence->GetCurrentLoop(), 2);
 
 			Sequence->Update(1.0f);
 			TestTrue("Sequence completed after 2 loops", Sequence->GetIsCompleted());
@@ -298,7 +301,7 @@ void QuickTweenSequenceSpec::Define()
 			Sequence->Play();
 
 			Sequence->Update(0.2f);
-			Sequence->KillSequence();
+			Sequence->Kill();
 
 			TestTrue("Sequence pending kill", Sequence->GetIsPendingKill());
 			TestEqual("OnKilled fired once", Listener->KilledCalls, 1);
@@ -360,7 +363,8 @@ void QuickTweenSequenceSpec::Define()
 			T3->SetUp(From, To3, [&V3](const FVector& v){ V3 = v; }, 0.5f);
 
 			Sequence->SetUp(nullptr,3, ELoopType::Restart);
-			Sequence->Join(T1)->Append(T2); // new group, then add parallel
+			Sequence->Join(T1);
+			Sequence->Append(T2); // new group, then add parallel
 			Sequence->Join(T3);             // next group
 			Sequence->Play();
 
@@ -409,7 +413,11 @@ void QuickTweenSequenceSpec::Define()
 			T4o->SetUp(From, To4, [&V4](const FVector& v){ V4 = v; }, 1.0f);
 
 			Sequence->SetUp(nullptr,2, ELoopType::Restart);
-			Sequence->Join(T0)->Append(T1o)->Append(T2o)->Append(T3o)->Append(T4o);
+			Sequence->Join(T0);
+			Sequence->Append(T1o);
+			Sequence->Append(T2o);
+			Sequence->Append(T3o);
+			Sequence->Append(T4o);
 			Sequence->Play();
 
 			Sequence->Update(0.5f);
@@ -452,8 +460,10 @@ void QuickTweenSequenceSpec::Define()
 			TD->SetUp(From, ToD,   [&D](const FVector& v){ D=v; }, 1.2f);
 
 			Sequence->SetUp(nullptr,2, ELoopType::Restart);
-			Sequence->Join(TA)->Append(TB); // G1
-			Sequence->Join(TC)->Append(TD); // G2
+			Sequence->Join(TA);
+			Sequence->Append(TB); // G1
+			Sequence->Join(TC);
+			Sequence->Append(TD); // G2
 			Sequence->Play();
 
 			Sequence->Update(0.6f);
@@ -518,7 +528,8 @@ void QuickTweenSequenceSpec::Define()
 			TB->SetUp(From, ToB, [&B](const FVector& v){ B=v; }, 0.8f);
 
 			Sequence->SetUp(nullptr,3, ELoopType::PingPong);
-			Sequence->Join(TA)->Append(TB); // one group, parallel
+			Sequence->Join(TA);
+			Sequence->Append(TB); // one group, parallel
 			Sequence->Play();
 
 			// Forward (0.8) + Backward (0.8) + Forward (0.8)
@@ -637,7 +648,8 @@ void QuickTweenSequenceSpec::Define()
 			TSlow->SetUp(From, ToSlow, [&Slow](const FVector& v){ Slow=v; }, 1.0f, 0.5f /*0.5x*/);
 
 			Sequence->SetUp(nullptr,3, ELoopType::Restart);
-			Sequence->Join(TFast)->Append(TSlow); // one group, parallel
+			Sequence->Join(TFast);
+			Sequence->Append(TSlow); // one group, parallel
 			Sequence->Play();
 
 			Sequence->Update(0.5f);
@@ -674,7 +686,8 @@ void QuickTweenSequenceSpec::Define()
 			// G2: TB + TC (parallel)
 			Sequence->SetUp(nullptr,2, ELoopType::Restart);
 			Sequence->Join(TA);             // G1
-			Sequence->Join(TB)->Append(TC); // G2
+			Sequence->Join(TB);
+			Sequence->Append(TC); // G2
 			Sequence->Play();
 
 			Sequence->Update(0.2f);
@@ -738,7 +751,9 @@ void QuickTweenSequenceSpec::Define()
 			TC->SetUp(From, ToC,  [&C](const FVector& v){ C=v; }, 0.9f);
 
 			Sequence->SetUp(nullptr,2, ELoopType::PingPong);
-			Sequence->Join(TA)->Append(TB)->Append(TC); // one group, parallel
+			Sequence->Join(TA);
+			Sequence->Append(TB);
+			Sequence->Append(TC); // one group, parallel
 			Sequence->Play();
 
 			Sequence->Update(0.9f); // forward end (dominated by TC)
@@ -795,7 +810,8 @@ void QuickTweenSequenceSpec::Define()
 			TB->SetUp(From, ToB, [&B](const FVector& v){ B=v; },
 			          /*dur*/0.7f, /*ts*/1.0f, EEaseType::Linear, nullptr, /*loops*/2, ELoopType::PingPong); // total 1.4 (end = start)
 
-			Sequence->Join(TA)->Append(TB); // one parallel group
+			Sequence->Join(TA);
+			Sequence->Append(TB); // one parallel group
 			Sequence->Play();
 
 			// Step to just before TA's first boundary (0.6), both forward
@@ -853,7 +869,8 @@ void QuickTweenSequenceSpec::Define()
 			auto TC = NewObject<UQuickVectorTween>(Sequence);
 			TC->SetUp(From, ToC, [&C](const FVector& v){ C=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart); // 1.0
 
-			Sequence->Join(TA)->Append(TB); // G1 = 0.9
+			Sequence->Join(TA);
+			Sequence->Append(TB); // G1 = 0.9
 			Sequence->Join(TC);             // G2 = 1.0
 			Sequence->Play();
 
@@ -905,7 +922,9 @@ void QuickTweenSequenceSpec::Define()
 			auto TC = NewObject<UQuickVectorTween>(Sequence); // 0.5 total
 			TC->SetUp(From, ToC, [&C](const FVector& v){ C=v; }, 0.25f,1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
 
-			Sequence->Join(T1)->Append(T2)->Append(T3); // G1 = 0.8
+			Sequence->Join(T1);
+			Sequence->Append(T2);
+			Sequence->Append(T3); // G1 = 0.8
 			Sequence->Join(TC);                         // G2 = 0.5
 			Sequence->Play();
 
@@ -947,7 +966,8 @@ void QuickTweenSequenceSpec::Define()
 			auto TC = NewObject<UQuickVectorTween>(Sequence); // 0.5 total (end=start)
 			TC->SetUp(From, ToC, [&C](const FVector& v){ C=v; }, 0.25f,1.0f, EEaseType::Linear, nullptr, 2, ELoopType::PingPong);
 
-			Sequence->Join(TA)->Append(TB); // G1 = 1.0
+			Sequence->Join(TA);
+			Sequence->Append(TB); // G1 = 1.0
 			Sequence->Join(TC);             // G2 = 0.5
 			Sequence->Play();
 
@@ -980,7 +1000,8 @@ void QuickTweenSequenceSpec::Define()
 			auto TC = NewObject<UQuickVectorTween>(Sequence); // 3.0 total
 			TC->SetUp(From, ToC, [&C](const FVector& v){ C=v; }, 1.5f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
 
-			Sequence->Join(TA)->Append(TB); // G1 = 2.0
+			Sequence->Join(TA);
+			Sequence->Append(TB); // G1 = 2.0
 			Sequence->Join(TC);             // G2 = 3.0
 			Sequence->Play();
 
@@ -1013,7 +1034,8 @@ void QuickTweenSequenceSpec::Define()
 			auto TLong  = NewObject<UQuickVectorTween>(Sequence); // 1.5 total
 			TLong->SetUp (From, ToLong,  [&Long](const FVector& v){ Long=v; }, 0.5f, 1.0f, EEaseType::Linear, nullptr, 3, ELoopType::Restart);
 
-			Sequence->Join(TShort)->Append(TLong); // G1 = 1.5
+			Sequence->Join(TShort);
+			Sequence->Append(TLong); // G1 = 1.5
 			Sequence->Play();
 
 			// Step to 0.9 exactly: 0.3 + 0.3 + 0.3
@@ -1084,7 +1106,8 @@ void QuickTweenSequenceSpec::Define()
 			auto TC = NewObject<UQuickVectorTween>(Sequence);
 			TC->SetUp(From, ToC, [&C](const FVector& v){ C=v; }, 0.3f, 1.0f, EEaseType::Linear, nullptr, 2, ELoopType::Restart);
 
-			Sequence->Join(TA)->Append(TB); // G1 total = 0.8
+			Sequence->Join(TA);
+			Sequence->Append(TB); // G1 total = 0.8
 			Sequence->Join(TC);             // G2 total = 0.6
 			Sequence->Play();
 

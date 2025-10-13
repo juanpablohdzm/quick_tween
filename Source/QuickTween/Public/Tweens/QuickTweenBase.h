@@ -4,14 +4,13 @@
 #include "QuickTweenable.h"
 #include "../Utils/EaseType.h"
 #include "../Utils/LoopType.h"
-#include "Utils/Badge.h"
 #include "QuickTweenBase.generated.h"
 
 class UQuickTweenSequence;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStartTween, UQuickTweenBase*, Tween);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateTween, UQuickTweenBase*, Tween, float, Progress);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompleteTween, UQuickTweenBase*, Tween);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledTween, UQuickTweenBase*, Tween);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStartTween, UObject*, Tween);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateTween, UObject*, Tween, float, Progress);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompleteTween, UObject*, Tween);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledTween, UObject*, Tween);
 
 /**
  * Base class for all QuickTween tweens.
@@ -49,164 +48,42 @@ public:
 		bool bShouldPlayWhilePaused = false);
 
 	/** Sets whether this tween is part of a sequence. */
-	UQuickTweenBase* SetIsInSequence(Badge<UQuickTweenSequence> badge, bool bInSequence) { bIsInSequence = bInSequence; return this; }
+	virtual void SetOwner(UObject* owner) override { Owner = owner; }
 
 protected:
 	/** Sets the progress of the tween (0-1). */
-	UQuickTweenBase* SetProgress(float progress) { Progress = progress; return this; }
+	void SetProgress(float progress) { Progress = progress; }
 
 #pragma endregion
 
 #pragma region Tween Control
 public:
-	/**
-	 * Starts or resumes the tween.
-	 * @return This tween instance.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
-	virtual UQuickTweenBase* Play();
 
-	/**
-	 * Starts or resumes the tween from a sequence.
-	 * @param badge Badge pointer to allow internal calls from sequences.
-	 * @return This tween instance.
-	 */
-	virtual UQuickTweenBase* Play(Badge<UQuickTweenSequence>* badge);
+	virtual void Play(UObject* instigator = nullptr) override;
 
-	/**
-	 * Pauses the tween.
-	 * @return This tween instance.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
-	virtual UQuickTweenBase* Pause();
+	virtual void Pause(UObject* instigator = nullptr) override;
 
-	/**
-	 *
-	 * Pauses the tween from a sequence.
-	 * @param badge Bagde pointer to allow internal calls from sequences.
-	 * @return This tween instance.
-	 */
-	virtual UQuickTweenBase* Pause(Badge<UQuickTweenSequence>* badge);
+	virtual void Stop(UObject* instigator = nullptr) override;
 
-	/**
-	 * Stops the tween and resets its progress.
-	 * @return This tween instance.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
-	virtual UQuickTweenBase* Stop();
+	virtual void Reverse(UObject* instigator = nullptr) override;
 
-	/**
-	 * Stops the tween from a sequence and resets its progress.
-	 * @param badge Badge pointer to allow internal calls from sequences.
-	 * @return This tween instance.
-	 */
-	virtual UQuickTweenBase* Stop(Badge<UQuickTweenSequence>* badge);
+	virtual void Restart(UObject* instigator = nullptr) override;
 
-	/**
-	 * Reverses the direction of the tween.
-	 * @return This tween instance.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
-	virtual UQuickTweenBase* Reverse();
+	virtual void Complete(UObject* instigator = nullptr) override;
 
-	/**
-	 * Reverses the direction of the tween from a sequence.
-	 * @param badge
-	 * @return
-	 */
-	virtual UQuickTweenBase* Reverse(Badge<UQuickTweenSequence>* badge);
+	virtual void Reset(UObject* instigator = nullptr) override;
 
-	/**
-	 * Restarts the tween from the beginning.
-	 * @return This tween instance.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
-	virtual UQuickTweenBase* Restart();
+	virtual void Kill(UObject* instigator = nullptr) override;
 
-	/**
-	 *
-	 * Restarts the tween from a sequence.
-	 * @param badge Badge pointer to allow internal calls from sequences.
-	 * @return This tween instance.
-	 */
-	virtual UQuickTweenBase* Restart(Badge<UQuickTweenSequence>* badge);
+	virtual void Update(float deltaTime, UObject* instigator = nullptr) override;
 
-	/**
-	 * Completes the tween immediately.
-	 * @return This tween instance.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
-	virtual UQuickTweenBase* Complete();
-
-	/**
-	 * Completes the tween immediately from a sequence.
-	 * @param badge Badge pointer to allow internal calls from sequences.
-	 * @return This tween instance.
-	 */
-	virtual UQuickTweenBase* Complete(Badge<UQuickTweenSequence>* badge);
-
-	/**
-	 * Resets the tween to its initial state.
-	 * @return This tween instance.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
-	virtual UQuickTweenBase* Reset();
-
-
-	/**
-	 * Resets the tween to its initial state from a sequence.
-	 * @param badge Badge pointer to allow internal calls from sequences.
-	 * @return This tween instance.
-	 */
-	virtual UQuickTweenBase* Reset(Badge<UQuickTweenSequence>* badge);
-
-	/**
-	 * Kills the tween, stopping all updates and events.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Control")
-	virtual void Kill();
-
-	/**
-	 * Kills the tween from a sequence, stopping all updates and events.
-	 * @param badge Badge pointer to allow internal calls from sequences.
-	 */
-	virtual void Kill(Badge<UQuickTweenSequence>* badge);
-
-	/**
-	 * Updates the tween by the given delta time.
-	 * @param deltaTime Time since last update.
-	 * @return True if the tween is still active, false if completed or killed.
-	 */
-	virtual void Update(float deltaTime) override;
-
+	virtual void SetAutoKill(bool bShouldAutoKill, UObject* instigator = nullptr) override;
 private:
-	/**
-	 * Updates the tween in Restart loop mode.
-	 * @param deltaTime Time since last update.
-	 * @param badge Badge pointer to allow internal calls from sequences.
-	 */
-	void Update_Restart(float deltaTime, Badge<UQuickTweenSequence>* badge);
 
-	/**
-	 * Updates the tween in PingPong loop mode.
-	 * @param deltaTime Time since last update.
-	 * @param badge Badge pointer to allow internal calls from sequences.
-	 */
-	void Update_PingPong(float deltaTime, Badge<UQuickTweenSequence>* badge);
+	void Update_Restart(float deltaTime, UObject* instigator);
 
-public:
-	/**
-	 * Updates the tween by the given delta time from a sequence.
-	 * @param deltaTime Time since last update.
-	 * @param badge Badge pointer to allow internal calls from sequences.
-	 */
-	virtual void Update(float deltaTime, Badge<UQuickTweenSequence>* badge);
 
-	/**
-	 * Sets whether this tween will be removed after completion.
-	 * @param bShouldAutoKill Value to set.
-	 */
-	virtual void SetAutoKill(bool bShouldAutoKill);
+	void Update_PingPong(float deltaTime, UObject* instigator);
 
 #pragma endregion
 
@@ -220,15 +97,17 @@ public:
 
 	/** Gets the duration of the tween. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] float GetDuration() const { return Duration;}
+	[[nodiscard]] virtual float GetDuration() const override { return Duration;}
 
 	/** Gets the current progress of the tween (0-1). */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] float GetProgress() const { return Progress; }
+	[[nodiscard]] virtual float GetProgress() const override { return Progress; }
+
+	[[nodiscard]] virtual float GetElapsedTime() const override { return ElapsedTime; }
 
 	/** Gets the time scale of the tween. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] float GetTimeScale() const { return TimeScale; }
+	[[nodiscard]] virtual float GetTimeScale() const override { return TimeScale; }
 
 	/** Returns true if the tween is currently playing. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
@@ -240,38 +119,38 @@ public:
 
 	/** Returns true if the tween is playing backwards. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] bool GetIsBackwards() const { return bIsBackwards; }
+	[[nodiscard]] virtual bool GetIsBackwards() const override { return bIsBackwards; }
 
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] bool GetIsReversed() const { return bIsReversed; }
+	[[nodiscard]] virtual bool GetIsReversed() const override { return bIsReversed; }
 
 	/** Gets the ease type of the tween. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] EEaseType GetEaseType() const { return EaseType; }
+	[[nodiscard]] virtual EEaseType GetEaseType() const override { return EaseType; }
 
 	/** Gets the custom ease curve of the tween, if any. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] UCurveFloat* GetEaseCurve() const { return EaseCurve; }
+	[[nodiscard]] virtual UCurveFloat* GetEaseCurve() const override { return EaseCurve; }
 
 	/** Gets the number of loops for the tween. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] int32 GetLoops() const { return Loops; }
+	[[nodiscard]] virtual int32 GetLoops() const override{ return Loops; }
 
 	/** Gets the loop type of the tween. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] ELoopType GetLoopType() const { return LoopType; }
+	[[nodiscard]] virtual ELoopType GetLoopType() const override { return LoopType; }
 
 	/** Gets the tag assigned to the tween. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] FString GetTweenTag() const { return TweenTag; }
+	[[nodiscard]] virtual FString GetTweenTag() const override { return TweenTag; }
 
 	/** Gets the current loop index (1-based). */
 	UFUNCTION(BlueprintCallable)
-	[[nodiscard]] int32 GetCurrentLoop() const { return CurrentLoop; }
+	[[nodiscard]] virtual int32 GetCurrentLoop() const override { return CurrentLoop; }
 
 	/** Gets whether this tween will be removed after completion. */
 	UFUNCTION(BlueprintCallable)
-	[[nodiscard]] bool GetAutoKill() const { return bAutoKill; }
+	[[nodiscard]] virtual bool GetAutoKill() const override { return bAutoKill; }
 
 	/** Gets whether this tween should play while paused. */
 	UFUNCTION(BlueprintCallable)
@@ -279,6 +158,11 @@ public:
 #pragma endregion
 
 protected:
+	bool InstigatorIsOwner(UObject* instigator) const
+	{
+		if (!Owner) return true; // No owner means it's not in a sequence
+		return instigator == Owner;
+	};
 
 	/** Event triggered when the tween starts. */
 	UPROPERTY(BlueprintAssignable)
@@ -332,8 +216,9 @@ private:
 	/** Optional tag for identifying the tween. */
 	FString TweenTag;
 
-	/** If this tween is part of a sequence */
-	bool bIsInSequence = false;
+	/** If this tween has an owner */
+	UPROPERTY()
+	UObject* Owner = nullptr;
 
 	/** If this tween should be eliminated from the manager. */
 	bool bIsPendingKill = false;

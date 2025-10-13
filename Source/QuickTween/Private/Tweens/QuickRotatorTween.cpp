@@ -5,14 +5,16 @@
 
 #include "Utils/EaseFunctions.h"
 
-void UQuickRotatorTween::Update(float deltaTime, Badge<UQuickTweenSequence>* badge)
+void UQuickRotatorTween::Update(float deltaTime, UObject* instigator)
 {
+	if (!InstigatorIsOwner(instigator)) return;
+
 	if (!StartValue.IsSet())
 	{
 		StartValue = From();
 	}
 
-	UQuickTweenBase::Update(deltaTime, badge);
+	UQuickTweenBase::Update(deltaTime, instigator);
 
 	if (GetIsCompleted() || !GetIsPlaying()) return;
 
@@ -39,8 +41,10 @@ void UQuickRotatorTween::Update(float deltaTime, Badge<UQuickTweenSequence>* bad
 	SetProgress(progress);
 }
 
-UQuickTweenBase* UQuickRotatorTween::Complete(Badge<UQuickTweenSequence>* badge)
+void UQuickRotatorTween::Complete(UObject* instigator)
 {
+	if (!InstigatorIsOwner(instigator)) return;
+
 	if (GetLoopType() == ELoopType::PingPong )
 	{
 		const bool isOddLoop = GetCurrentLoop() % 2 == 1;
@@ -51,5 +55,5 @@ UQuickTweenBase* UQuickRotatorTween::Complete(Badge<UQuickTweenSequence>* badge)
 	{
 		SetterFunction(GetIsReversed() ? StartValue.GetValue() : To());
 	}
-	return Super::Complete(badge);
+	return Super::Complete(instigator);
 }

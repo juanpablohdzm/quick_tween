@@ -10,7 +10,7 @@
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenSequence, Log, All);
 
 
-UQuickTweenSequence* UQuickTweenSequence::SetUp(
+void UQuickTweenSequence::SetUp(
 	const UObject* worldContextObject,
 	int32 loops,
 	ELoopType loopType,
@@ -32,43 +32,44 @@ UQuickTweenSequence* UQuickTweenSequence::SetUp(
 	}
 	else
 	{
-		manager->AddTween(this, Badge<UQuickTweenSequence>());
+		manager->AddTween(this);
 	}
-	return this;
+	return;
 }
 
-UQuickTweenSequence* UQuickTweenSequence::Join(UQuickTweenBase* tween)
+void UQuickTweenSequence::Join(UObject* tween)
 {
-	ensureAlwaysMsgf(tween, TEXT("Join called with a null tween. This should never happen."));
-	if (tween->GetLoops()  == INFINITE_LOOPS)
+	IQuickTweenable* tweenInterface = Cast<IQuickTweenable>(tween);
+	ensureAlwaysMsgf(tweenInterface, TEXT("Join called with a null tween. This should never happen."));
+	if (tweenInterface->GetLoops()  == INFINITE_LOOPS)
 	{
 		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Joining a tween with infinite loops is not allowed. Please set a finite number of loops."));
-		return this;
+		return;
 	}
 
 	if (UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject))
 	{
-		manager->RemoveTween(tween, Badge<UQuickTweenSequence>());
+		manager->RemoveTween(tweenInterface);
 	}
 	else
 	{
 		UE_LOG(LogQuickTweenSequence, Log, TEXT("Failed to get QuickTweenManager when joining a tween to sequence."));
 	}
-	tween->SetIsInSequence(Badge<UQuickTweenSequence>(), true);
+	tweenInterface->SetOwner(this);
 
 	FQuickTweenSequenceGroup group;
-	group.Tweens.Add(tween);
+	group.Tweens.Add(tweenInterface);
 	TweenGroups.Add(group);
-	return this;
 }
 
-UQuickTweenSequence* UQuickTweenSequence::Append(UQuickTweenBase* tween)
+void UQuickTweenSequence::Append(UObject* tween)
 {
-	ensureAlwaysMsgf(tween, TEXT("Append called with a null tween. This should never happen."));
-	if (tween->GetLoops()  == INFINITE_LOOPS)
+	IQuickTweenable* tweenInterface = Cast<IQuickTweenable>(tween);
+	ensureAlwaysMsgf(tweenInterface, TEXT("Append called with a null tween. This should never happen."));
+	if (tweenInterface->GetLoops()  == INFINITE_LOOPS)
 	{
 		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Joining a tween with infinite loops is not allowed. Please set a finite number of loops."));
-		return this;
+		return;
 	}
 
 	if (TweenGroups.Num() == 0)
@@ -78,74 +79,76 @@ UQuickTweenSequence* UQuickTweenSequence::Append(UQuickTweenBase* tween)
 
 	if (UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject))
 	{
-		manager->RemoveTween(tween, Badge<UQuickTweenSequence>());
+		manager->RemoveTween(tweenInterface);
 	}
 	else
 	{
 		UE_LOG(LogQuickTweenSequence, Log, TEXT("Failed to get QuickTweenManager when appending a tween to sequence."));
 	}
-	tween->SetIsInSequence(Badge<UQuickTweenSequence>(), true);
+	tweenInterface->SetOwner(this);
 
 	FQuickTweenSequenceGroup& lastGroup = TweenGroups.Last();
-	lastGroup.Tweens.Add(tween);
-	return this;
+	lastGroup.Tweens.Add(tweenInterface);
 }
 
-UQuickTweenSequence* UQuickTweenSequence::Play()
+void UQuickTweenSequence::Play(UObject* instigator)
 {
+	if (!InstigatorIsOwner(instigator)) return;
+	
 	if (bIsCompleted || bIsPendingKill)
 	{
-		return this;
+		return;
 	}
 
 	bIsPlaying = true;
 	for (auto [tweens] : TweenGroups)
 	{
-		for (TWeakObjectPtr<UQuickTweenBase>& weakTween : tweens)
+		for (IQuickTweenable* weakTween : tweens)
 		{
-			if (!weakTween.IsValid())
-			{
-				UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Play()"));
-				continue;
-			}
-
-			Badge<UQuickTweenSequence> badge;
-			weakTween->Play(&badge);
+			weakTween->Play(this);
 		}
 	}
-	return this;
 }
 
-UQuickTweenSequence* UQuickTweenSequence::Pause()
+void UQuickTweenSequence::Pause(UObject* instigator)
 {
+	if (!InstigatorIsOwner(instigator)) return;
+
 	if (bIsCompleted || bIsPendingKill)
 	{
-		return this;
+		return;
 	}
 
 	bIsPlaying = false;
 	for (auto [tweens] : TweenGroups)
 	{
-		for (TWeakObjectPtr<UQuickTweenBase>& weakTween : tweens)
+		for (IQuickTweenable* weakTween : tweens)
 		{
-			if (!weakTween.IsValid())
-			{
-				UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Pause()"));
-				continue;
-			}
-
-			Badge<UQuickTweenSequence> badge;
-			weakTween->Pause(&badge);
+			weakTween->Pause(this);
 		}
 	}
-	return this;
 }
 
-UQuickTweenSequence* UQuickTweenSequence::Complete()
+void UQuickTweenSequence::Stop(UObject* instigator)
 {
+	if (!InstigatorIsOwner(instigator)) return;
+
+	if (CurrentTweenGroupIndex < TweenGroups.Num() && CurrentTweenGroupIndex >= 0)
+	{
+		for (IQuickTweenable* tween : TweenGroups[CurrentTweenGroupIndex].Tweens)
+		{
+			tween->Stop(this);
+		}
+	}
+}
+
+void UQuickTweenSequence::Complete(UObject* instigator)
+{
+	if (!InstigatorIsOwner(instigator)) return;
+
 	if (bIsCompleted || bIsPendingKill)
 	{
-		return this;
+		return;
 	}
 
 	bIsPlaying   = false;
@@ -157,19 +160,11 @@ UQuickTweenSequence* UQuickTweenSequence::Complete()
 
 	if (CurrentTweenGroupIndex >= 0 && CurrentTweenGroupIndex < TweenGroups.Num())
 	{
-		auto completeGroup = [](TArray<TWeakObjectPtr<UQuickTweenBase>>& tweens)
+		auto completeGroup = [&](TArray<IQuickTweenable*>& tweens)
 		{
-			for (TWeakObjectPtr<UQuickTweenBase>& weakTween : tweens)
+			for (IQuickTweenable* weakTween : tweens)
 			{
-				if (!weakTween.IsValid())
-				{
-					UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Complete()"));
-					continue;
-				}
-
-				Badge<UQuickTweenSequence> Badge;
-				weakTween->Complete(&Badge);
-
+				weakTween->Complete(this);
 			}
 		};
 
@@ -194,17 +189,22 @@ UQuickTweenSequence* UQuickTweenSequence::Complete()
 
 	if (bAutoKill)
 	{
-		KillSequence();
+		Kill(instigator);
 	}
 
 	OnComplete.Broadcast(this);
-
-	return this;
 }
 
 
-UQuickTweenSequence* UQuickTweenSequence::Restart()
+void UQuickTweenSequence::Restart(UObject* instigator)
 {
+	if (!InstigatorIsOwner(instigator)) return;
+
+	if (bIsPendingKill)
+	{
+		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Cannot restart a sequence that is pending kill."));
+		return;
+	}
 	bIsPlaying   = true;
 	bIsCompleted = false;
 	bIsBackwards = false;
@@ -217,36 +217,41 @@ UQuickTweenSequence* UQuickTweenSequence::Restart()
 
 	for (FQuickTweenSequenceGroup& group : TweenGroups)
 	{
-		for (TWeakObjectPtr<UQuickTweenBase>& tween : group.Tweens)
+		for (IQuickTweenable* tween : group.Tweens)
 		{
-			if (tween.IsValid())
-			{
-				Badge<UQuickTweenSequence> badge;
-				tween->Restart(&badge);
-			}
-			else
-			{
-				UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid during restart. This should not happen."));
-			}
+			tween->Restart(this);
 		}
 	}
-
-	return this;
 }
 
-UQuickTweenSequence* UQuickTweenSequence::KillSequence()
+void UQuickTweenSequence::Reset(UObject* instigator)
 {
+	if (!InstigatorIsOwner(instigator)) return;
+
+
+	ElapsedTime = 0.0f;
+	Progress    = 0.0f;
+	bIsPlaying  = false;
+	bIsCompleted= false;
+	bIsBackwards= false;
+	bIsReversed = false;
+	Loops       = 0;
+	LoopType    = ELoopType::Restart;
+	CurrentLoop = 1;
+	CurrentTweenGroupIndex = 0;
+	TweenGroups.Empty();
+}
+
+void UQuickTweenSequence::Kill(UObject* instigator)
+{
+	if (!InstigatorIsOwner(instigator)) return;
+
+	if (bIsPendingKill) return;
+
 	bIsPlaying = false;
 	bIsCompleted = true;
 
-	if (CurrentTweenGroupIndex < TweenGroups.Num() && CurrentTweenGroupIndex >= 0)
-	{
-		for (TWeakObjectPtr<UQuickTweenBase> tween : TweenGroups[CurrentTweenGroupIndex].Tweens)
-		{
-			Badge<UQuickTweenSequence> badge;
-			tween->Stop(&badge);
-		}
-	}
+	Stop(instigator);
 	CurrentTweenGroupIndex = 0;
 
 	bIsPendingKill = true;
@@ -254,26 +259,26 @@ UQuickTweenSequence* UQuickTweenSequence::KillSequence()
 	{
 		OnKilled.Broadcast(this);
 	}
-	return this;
 }
 
-UQuickTweenSequence* UQuickTweenSequence::Reverse()
+void UQuickTweenSequence::Reverse(UObject* instigator)
 {
+	if (!InstigatorIsOwner(instigator)) return;
+
+	if (bIsCompleted || bIsPendingKill)
+	{
+		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Cannot reverse a sequence that is completed or pending kill."));
+		return;
+	}
+
 	bIsReversed = !bIsReversed;
 	Reverse_Tweens();
 
-	const auto restartGroup = [](TArray<TWeakObjectPtr<UQuickTweenBase>>& tweens)
+	const auto restartGroup = [&](TArray<IQuickTweenable*>& tweens)
 	{
-		for (TWeakObjectPtr<UQuickTweenBase>& weakTween : tweens)
+		for (IQuickTweenable* weakTween : tweens)
 		{
-			if (!weakTween.IsValid())
-			{
-				UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Reverse()"));
-				continue;
-			}
-
-			Badge<UQuickTweenSequence> badge;
-			weakTween->Restart(&badge);
+			weakTween->Restart(this);
 		}
 	};
 
@@ -291,57 +296,49 @@ UQuickTweenSequence* UQuickTweenSequence::Reverse()
 			restartGroup(TweenGroups[i].Tweens);
 		}
 	}
-	return this;
 }
 
-UQuickTweenSequence* UQuickTweenSequence::Reverse_Tweens()
+void UQuickTweenSequence::Reverse_Tweens()
 {
 	for (auto [tweens] : TweenGroups)
 	{
-		for (TWeakObjectPtr<UQuickTweenBase>& weakTween : tweens)
+		for (IQuickTweenable* weakTween : tweens)
 		{
-			if (!weakTween.IsValid())
-			{
-				UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid tween in sequence during Reverse()"));
-				continue;
-			}
-
-			Badge<UQuickTweenSequence> badge;
-			weakTween->Reverse(&badge);
+			weakTween->Reverse(this);
 		}
 	}
-	return this;
 }
 
-UQuickTweenSequence* UQuickTweenSequence::TogglePause()
+void UQuickTweenSequence::Update(float deltaTime, UObject* instigator)
 {
-	if (bIsPlaying)
-	{
-		Pause();
-	}
-	else
-	{
-		Play();
-	}
-	return this;
-}
 
-void UQuickTweenSequence::Update(float deltaTime)
-{
+	if (!InstigatorIsOwner(instigator)) return;
+
 	if (GetIsCompleted() || !GetIsPlaying()) return;
 
 	switch (LoopType)
 	{
 		case ELoopType::Restart:
-			Update_Restart(deltaTime);
+			Update_Restart(deltaTime, instigator);
 			break;
 		case ELoopType::PingPong:
-			Update_PingPong(deltaTime);
+			Update_PingPong(deltaTime, instigator);
 			break;
 	}
 }
 
-void UQuickTweenSequence::Update_Restart(float deltaTime)
+void UQuickTweenSequence::SetAutoKill(bool bShouldAutoKill, UObject* instigator)
+{
+	if (!InstigatorIsOwner(instigator)) return;
+
+	bAutoKill = bShouldAutoKill;
+	if (GetIsCompleted())
+	{
+		bIsPendingKill = bAutoKill;
+	}
+}
+
+void UQuickTweenSequence::Update_Restart(float deltaTime, UObject* instigator)
 {
 	ElapsedTime = !bIsReversed ?  ElapsedTime + deltaTime : ElapsedTime - deltaTime;
 
@@ -373,7 +370,7 @@ void UQuickTweenSequence::Update_Restart(float deltaTime)
 
 	if (Loops != INFINITE_LOOPS && shouldComplete)
 	{
-		Complete();
+		Complete(instigator);
 		return;
 	}
 
@@ -384,21 +381,12 @@ void UQuickTweenSequence::Update_Restart(float deltaTime)
 	{
 		const FQuickTweenSequenceGroup& currentGroup = TweenGroups[CurrentTweenGroupIndex];
 		uint32 completedTweens = 0;
-		for (TWeakObjectPtr<UQuickTweenBase> tween : currentGroup.Tweens)
+		for (IQuickTweenable* tween : currentGroup.Tweens)
 		{
-			if (tween.IsValid())
-			{
-				Badge<UQuickTweenSequence> badge;
-				tween->Update(deltaTime, &badge);
+			tween->Update(deltaTime, this);
 
-				if (tween->GetIsCompleted())
-				{
-					completedTweens++;
-				}
-			}
-			else
+			if (tween->GetIsCompleted())
 			{
-				UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid. This should not happen. Considering it as completed."));
 				completedTweens++;
 			}
 		}
@@ -414,17 +402,9 @@ void UQuickTweenSequence::Update_Restart(float deltaTime)
 			CurrentTweenGroupIndex = bIsReversed ? TweenGroups.Num() - 1 : 0;
 			for (auto [tweens] : TweenGroups)
 			{
-				for (TWeakObjectPtr<UQuickTweenBase> tween : tweens)
+				for (IQuickTweenable* tween : tweens)
 				{
-					if (tween.IsValid())
-					{
-						Badge<UQuickTweenSequence> badge;
-						tween->Restart(&badge);
-					}
-					else
-					{
-						UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid. This should not happen."));
-					}
+					tween->Restart(this);
 				}
 			}
 			CurrentLoop = bIsReversed ? CurrentLoop - 1 : CurrentLoop + 1;
@@ -432,7 +412,7 @@ void UQuickTweenSequence::Update_Restart(float deltaTime)
 	}
 }
 
-void UQuickTweenSequence::Update_PingPong(float deltaTime)
+void UQuickTweenSequence::Update_PingPong(float deltaTime, UObject* instigator)
 {
 	ElapsedTime = !bIsReversed ?  ElapsedTime + deltaTime : ElapsedTime - deltaTime;
 
@@ -447,21 +427,12 @@ void UQuickTweenSequence::Update_PingPong(float deltaTime)
 	{
 		const FQuickTweenSequenceGroup& currentGroup = TweenGroups[CurrentTweenGroupIndex];
 		uint32 completedTweens = 0;
-		for (TWeakObjectPtr<UQuickTweenBase> tween : currentGroup.Tweens)
+		for (IQuickTweenable* tween : currentGroup.Tweens)
 		{
-			if (tween.IsValid())
-			{
-				Badge<UQuickTweenSequence> badge;
-				tween->Update(deltaTime, &badge);
+			tween->Update(deltaTime, this);
 
-				if (tween->GetIsCompleted())
-				{
-					completedTweens++;
-				}
-			}
-			else
+			if (tween->GetIsCompleted())
 			{
-				UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid. This should not happen. Considering it as completed."));
 				completedTweens++;
 			}
 		}
@@ -478,24 +449,16 @@ void UQuickTweenSequence::Update_PingPong(float deltaTime)
 			CurrentLoop = bIsReversed ? CurrentLoop - 1 : CurrentLoop + 1;
 			if (Loops != INFINITE_LOOPS && (!bIsReversed && CurrentLoop > Loops || bIsReversed && (CurrentLoop - 1) <= 0))
 			{
-				Complete();
+				Complete(instigator);
 				return;
 			}
 
 			Reverse_Tweens();
 			for (auto [tweens] : TweenGroups)
 			{
-				for (TWeakObjectPtr<UQuickTweenBase> tween : tweens)
+				for (IQuickTweenable* tween : tweens)
 				{
-					if (tween.IsValid())
-					{
-						Badge<UQuickTweenSequence> badge;
-						tween->Restart(&badge);
-					}
-					else
-					{
-						UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid. This should not happen."));
-					}
+					tween->Restart(this);
 				}
 			}
 			bIsBackwards = !bIsBackwards;
@@ -510,16 +473,9 @@ float UQuickTweenSequence::GetDuration() const
 	for (const FQuickTweenSequenceGroup& group : TweenGroups)
 	{
 		float groupMaxDuration = 0.0f;
-		for (const TWeakObjectPtr<UQuickTweenBase>& tween : group.Tweens)
+		for (const IQuickTweenable* tween : group.Tweens)
 		{
-			if (tween.IsValid())
-			{
-				groupMaxDuration  = FMath::Max(groupMaxDuration, tween->GetDuration() * tween->GetLoops() / tween->GetTimeScale());
-			}
-			else
-			{
-				UE_LOG(LogQuickTweenSequence, Warning, TEXT("A tween in the sequence is invalid. This should not happen."));
-			}
+			groupMaxDuration  = FMath::Max(groupMaxDuration, tween->GetDuration() * tween->GetLoops() / tween->GetTimeScale());
 		}
 		totalDuration += groupMaxDuration;
 	}
@@ -536,14 +492,14 @@ int32 UQuickTweenSequence::GetNumTweens() const
 	return count;
 }
 
-UQuickTweenBase* UQuickTweenSequence::GetTween(int32 index) const
+UObject* UQuickTweenSequence::GetTween(int32 index) const
 {
 	int32 currentTweenIndex = 0;
 	for (const FQuickTweenSequenceGroup& group : TweenGroups)
 	{
 		if (index < currentTweenIndex + group.Tweens.Num())
 		{
-			return group.Tweens[index - currentTweenIndex].Get();
+			return Cast<UObject>(group.Tweens[index - currentTweenIndex]);
 		}
 		currentTweenIndex += group.Tweens.Num();
 	}
