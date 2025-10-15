@@ -230,7 +230,7 @@ void UQuickTweenBase::Complete(UObject* instigator)
 	Progress    = toEnd ? 1.0f     : 0.0f;
 	if (bAutoKill)
 	{
-		Kill(instigator);
+		Kill(nullptr);
 	}
 
 	if (OnComplete.IsBound())

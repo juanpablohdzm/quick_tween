@@ -189,7 +189,7 @@ void UQuickTweenSequence::Complete(UObject* instigator)
 
 	if (bAutoKill)
 	{
-		Kill(instigator);
+		Kill(nullptr);
 	}
 
 	OnComplete.Broadcast(this);
