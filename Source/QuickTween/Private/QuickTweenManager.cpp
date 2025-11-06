@@ -15,16 +15,37 @@ UQuickTweenManager* UQuickTweenManager::Get(const UObject* worldContextObject)
 	return nullptr;
 }
 
-void UQuickTweenManager::OnWorldBeginPlay(UWorld& inWorld)
+UWorld* UQuickTweenManager::GetTickableGameObjectWorld() const
 {
-	Super::OnWorldBeginPlay(inWorld);
-	TickDelegateHandler = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UQuickTweenManager::Tick), 0.0f);
+	return GetWorld();
 }
 
-bool UQuickTweenManager::Tick(float deltaTime)
+void UQuickTweenManager::Initialize(FSubsystemCollectionBase& Collection)
 {
+	check(!bIsInitialized)
+	bIsInitialized = true;
 
+	// Refresh the tick type after initialization
+	SetTickableTickType(GetTickableTickType());
+}
 
+void UQuickTweenManager::Deinitialize()
+{
+	check(bIsInitialized);
+	bIsInitialized = false;
+
+	// Always cancel tick as this is about to be destroyed
+	SetTickableTickType(ETickableTickType::Never);
+}
+
+void UQuickTweenManager::Tick(float deltaTime)
+{
+	if (!bIsInitialized)
+	{
+		return;
+	}
+
+	UE_LOG(LogQuickTweenManager, Verbose, TEXT("QuickTweenManager Tick called with deltaTime: %f"), deltaTime);
 	for (int i = QuickTweens.Num() - 1; i >= 0; --i)
 	{
 		IQuickTweenable* tweenContainer = reinterpret_cast<IQuickTweenable*>(QuickTweens[i]);
@@ -52,12 +73,11 @@ bool UQuickTweenManager::Tick(float deltaTime)
 		}
 
 	}
-	return true;
 }
 
-UQuickTweenManager::~UQuickTweenManager()
+TStatId UQuickTweenManager::GetStatId() const
 {
-	FTSTicker::RemoveTicker(TickDelegateHandler);
+	RETURN_QUICK_DECLARE_CYCLE_STAT(UQuickTweenManager, STATGROUP_Tickables);
 }
 
 void UQuickTweenManager::AddTween(IQuickTweenable* tween)

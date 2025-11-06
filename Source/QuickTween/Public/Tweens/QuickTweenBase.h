@@ -21,6 +21,7 @@ class QUICKTWEEN_API UQuickTweenBase : public UObject, public IQuickTweenable
 {
 	GENERATED_BODY()
 public:
+	virtual ~UQuickTweenBase();
 #pragma region Tween Creation
 	/**
 	 * Set up the tween with the specified parameters.
@@ -228,4 +229,7 @@ private:
 
 	/** If the tween should play while the game is paused. */
 	bool bPlayWhilePaused = false;
+
+	UPROPERTY()
+	const UObject* WorldContextObject = nullptr;
 };

@@ -10,6 +10,19 @@
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenSequence, Log, All);
 
 
+UQuickTweenSequence::~UQuickTweenSequence()
+{
+	if (!WorldContextObject || Owner)
+	{
+		return;
+	}
+
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject))
+	{
+		manager->RemoveTween(this);
+	}
+}
+
 void UQuickTweenSequence::SetUp(
 	const UObject* worldContextObject,
 	int32 loops,

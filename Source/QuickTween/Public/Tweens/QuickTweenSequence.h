@@ -26,6 +26,7 @@ class QUICKTWEEN_API UQuickTweenSequence : public UObject, public IQuickTweenabl
 	GENERATED_BODY()
 
 public:
+	virtual ~UQuickTweenSequence();
 
 #pragma region Sequence Creation
 	/**

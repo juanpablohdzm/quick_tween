@@ -6,6 +6,19 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenBase, Log, All);
 
+UQuickTweenBase::~UQuickTweenBase()
+{
+	if (!WorldContextObject || Owner)
+	{
+		return;
+	}
+
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject))
+	{
+		manager->RemoveTween(this);
+	}
+}
+
 void UQuickTweenBase::SetUp(
 	float duration,
 	float timeScale,
@@ -27,8 +40,9 @@ void UQuickTweenBase::SetUp(
 	TweenTag = tweenTag;
 	bAutoKill = bShouldAutoKill;
 	bPlayWhilePaused = bShouldPlayWhilePaused;
+	WorldContextObject = worldContextObject;
 
-	UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject);
+	UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject);
 	if (!manager)
 	{
 		UE_LOG(LogQuickTweenBase, Log, TEXT("Failed to get QuickTweenManager for QuickTweenBase. Tweens will not be updated."));
