@@ -219,6 +219,10 @@ void UQuickTweenSequence::Restart(UObject* instigator)
 	{
 		for (IQuickTweenable* tween : group.Tweens)
 		{
+			if (tween->GetIsReversed() != bIsReversed)
+			{
+				tween->Reverse(this);
+			}
 			tween->Restart(this);
 		}
 	}
@@ -264,12 +268,6 @@ void UQuickTweenSequence::Kill(UObject* instigator)
 void UQuickTweenSequence::Reverse(UObject* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
-
-	if (bIsCompleted || bIsPendingKill)
-	{
-		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Cannot reverse a sequence that is completed or pending kill."));
-		return;
-	}
 
 	bIsReversed = !bIsReversed;
 	Reverse_Tweens();
@@ -453,14 +451,18 @@ void UQuickTweenSequence::Update_PingPong(float deltaTime, UObject* instigator)
 				return;
 			}
 
-			Reverse_Tweens();
 			for (auto [tweens] : TweenGroups)
 			{
 				for (IQuickTweenable* tween : tweens)
 				{
+					if (!(tween->GetLoopType() == ELoopType::PingPong && tween->GetLoops() % 2 == 0))
+					{
+						tween->Reverse(this);
+					}
 					tween->Restart(this);
 				}
 			}
+
 			bIsBackwards = !bIsBackwards;
 			CurrentTweenGroupIndex = bIsBackwards ? TweenGroups.Num() - 1 : 0;
 		}
