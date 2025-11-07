@@ -53,7 +53,7 @@ void UQuickTweenBase::SetUp(
 	}
 }
 
-void UQuickTweenBase::Update_Restart(float deltaTime, UObject* instigator)
+void UQuickTweenBase::Update_Restart(float deltaTime, UQuickTweenable* instigator)
 {
 	ElapsedTime = !bIsReversed ?  ElapsedTime + deltaTime * GetTimeScale() : ElapsedTime - deltaTime * GetTimeScale();
 
@@ -90,7 +90,7 @@ void UQuickTweenBase::Update_Restart(float deltaTime, UObject* instigator)
 	}
 }
 
-void UQuickTweenBase::Update_PingPong(float deltaTime, UObject* instigator)
+void UQuickTweenBase::Update_PingPong(float deltaTime, UQuickTweenable* instigator)
 {
 	/*
 	 * !backwards & !reversed = to end
@@ -139,7 +139,7 @@ void UQuickTweenBase::Update_PingPong(float deltaTime, UObject* instigator)
 	}
 }
 
-void UQuickTweenBase::Update(float deltaTime, UObject* instigator)
+void UQuickTweenBase::Update(float deltaTime, UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator) || GetIsCompleted() || !GetIsPlaying()) return;
 
@@ -162,7 +162,7 @@ void UQuickTweenBase::Update(float deltaTime, UObject* instigator)
 	}
 }
 
-void UQuickTweenBase::SetAutoKill(bool bShouldAutoKill, UObject* instigator)
+void UQuickTweenBase::SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -173,7 +173,7 @@ void UQuickTweenBase::SetAutoKill(bool bShouldAutoKill, UObject* instigator)
 	}
 }
 
-void UQuickTweenBase::Play(UObject* instigator)
+void UQuickTweenBase::Play(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -181,7 +181,7 @@ void UQuickTweenBase::Play(UObject* instigator)
 	return;
 }
 
-void UQuickTweenBase::Pause(UObject* instigator)
+void UQuickTweenBase::Pause(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -189,7 +189,7 @@ void UQuickTweenBase::Pause(UObject* instigator)
 	return;
 }
 
-void UQuickTweenBase::Stop(UObject* instigator)
+void UQuickTweenBase::Stop(UQuickTweenable* instigator)
 {
 
 	if (!InstigatorIsOwner(instigator)) return;
@@ -207,7 +207,7 @@ void UQuickTweenBase::Stop(UObject* instigator)
 	return;
 }
 
-void UQuickTweenBase::Reverse(UObject* instigator)
+void UQuickTweenBase::Reverse(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -216,7 +216,7 @@ void UQuickTweenBase::Reverse(UObject* instigator)
 	return;
 }
 
-void UQuickTweenBase::Restart(UObject* instigator)
+void UQuickTweenBase::Restart(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -230,7 +230,7 @@ void UQuickTweenBase::Restart(UObject* instigator)
 	return;
 }
 
-void UQuickTweenBase::Complete(UObject* instigator)
+void UQuickTweenBase::Complete(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 	if (bIsCompleted) return;
@@ -254,7 +254,7 @@ void UQuickTweenBase::Complete(UObject* instigator)
 	return;
 }
 
-void UQuickTweenBase::Reset(UObject* instigator)
+void UQuickTweenBase::Reset(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -274,7 +274,7 @@ void UQuickTweenBase::Reset(UObject* instigator)
 	return;
 }
 
-void UQuickTweenBase::Kill(UObject* instigator)
+void UQuickTweenBase::Kill(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 	if (bIsPendingKill) return;

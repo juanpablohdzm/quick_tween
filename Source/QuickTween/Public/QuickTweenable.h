@@ -8,53 +8,43 @@
 #include "Utils/LoopType.h"
 #include "QuickTweenable.generated.h"
 
-class QUICKTWEEN_API ITweenOwner
-{
-
-};
-
-UINTERFACE(BlueprintType, NotBlueprintable)
-class QUICKTWEEN_API UQuickTweenable : public UInterface
-{
-	GENERATED_BODY()
-};
-
-class QUICKTWEEN_API IQuickTweenable
+UCLASS(BlueprintType)
+class QUICKTWEEN_API UQuickTweenable : public UObject
 {
 	GENERATED_BODY()
 public:
 
-	virtual void SetOwner(UObject* owner);
+	virtual void SetOwner(UQuickTweenable* owner);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void Play(UObject* instigator = nullptr);
+	virtual void Play(UQuickTweenable* instigator = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void Pause(UObject* instigator = nullptr);
+	virtual void Pause(UQuickTweenable* instigator = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void Stop(UObject* instigator = nullptr);
+	virtual void Stop(UQuickTweenable* instigator = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void Reverse(UObject* instigator = nullptr);
+	virtual void Reverse(UQuickTweenable* instigator = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void Restart(UObject* instigator = nullptr);
+	virtual void Restart(UQuickTweenable* instigator = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void Complete(UObject* instigator = nullptr);
+	virtual void Complete(UQuickTweenable* instigator = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void Reset(UObject* instigator = nullptr);
+	virtual void Reset(UQuickTweenable* instigator = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void Kill(UObject* instigator = nullptr);
+	virtual void Kill(UQuickTweenable* instigator = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void Update(float deltaTime, UObject* instigator = nullptr);
+	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void SetAutoKill(bool bShouldAutoKill, UObject* instigator = nullptr);
+	virtual void SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator = nullptr);
 
 	/**
 	 * If this tween should be eliminated from the manager.

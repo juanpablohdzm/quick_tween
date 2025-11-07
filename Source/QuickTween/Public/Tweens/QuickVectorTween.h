@@ -69,9 +69,9 @@ public:
 	}
 
 
-	virtual void Update(float deltaTime, UObject* instigator = nullptr) override;
+	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Complete(UObject* instigator = nullptr) override;
+	virtual void Complete(UQuickTweenable* instigator = nullptr) override;
 
 private:
 	/** Starting function returning FVector. */

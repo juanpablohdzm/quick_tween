@@ -50,11 +50,10 @@ void UQuickTweenSequence::SetUp(
 	return;
 }
 
-void UQuickTweenSequence::Join(UObject* tween)
+void UQuickTweenSequence::Join(UQuickTweenable* tween)
 {
-	IQuickTweenable* tweenInterface = Cast<IQuickTweenable>(tween);
-	ensureAlwaysMsgf(tweenInterface, TEXT("Join called with a null tween. This should never happen."));
-	if (tweenInterface->GetLoops()  == INFINITE_LOOPS)
+	ensureAlwaysMsgf(tween, TEXT("Join called with a null tween. This should never happen."));
+	if (tween->GetLoops()  == INFINITE_LOOPS)
 	{
 		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Joining a tween with infinite loops is not allowed. Please set a finite number of loops."));
 		return;
@@ -62,24 +61,23 @@ void UQuickTweenSequence::Join(UObject* tween)
 
 	if (UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject))
 	{
-		manager->RemoveTween(tweenInterface);
+		manager->RemoveTween(tween);
 	}
 	else
 	{
 		UE_LOG(LogQuickTweenSequence, Log, TEXT("Failed to get QuickTweenManager when joining a tween to sequence."));
 	}
-	tweenInterface->SetOwner(this);
+	tween->SetOwner(this);
 
 	FQuickTweenSequenceGroup group;
-	group.Tweens.Add(tweenInterface);
+	group.Tweens.Add(tween);
 	TweenGroups.Add(group);
 }
 
-void UQuickTweenSequence::Append(UObject* tween)
+void UQuickTweenSequence::Append(UQuickTweenable* tween)
 {
-	IQuickTweenable* tweenInterface = Cast<IQuickTweenable>(tween);
-	ensureAlwaysMsgf(tweenInterface, TEXT("Append called with a null tween. This should never happen."));
-	if (tweenInterface->GetLoops()  == INFINITE_LOOPS)
+	ensureAlwaysMsgf(tween, TEXT("Append called with a null tween. This should never happen."));
+	if (tween->GetLoops()  == INFINITE_LOOPS)
 	{
 		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Joining a tween with infinite loops is not allowed. Please set a finite number of loops."));
 		return;
@@ -92,19 +90,19 @@ void UQuickTweenSequence::Append(UObject* tween)
 
 	if (UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject))
 	{
-		manager->RemoveTween(tweenInterface);
+		manager->RemoveTween(tween);
 	}
 	else
 	{
 		UE_LOG(LogQuickTweenSequence, Log, TEXT("Failed to get QuickTweenManager when appending a tween to sequence."));
 	}
-	tweenInterface->SetOwner(this);
+	tween->SetOwner(this);
 
 	FQuickTweenSequenceGroup& lastGroup = TweenGroups.Last();
-	lastGroup.Tweens.Add(tweenInterface);
+	lastGroup.Tweens.Add(tween);
 }
 
-void UQuickTweenSequence::Play(UObject* instigator)
+void UQuickTweenSequence::Play(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 	
@@ -116,14 +114,14 @@ void UQuickTweenSequence::Play(UObject* instigator)
 	bIsPlaying = true;
 	for (auto [tweens] : TweenGroups)
 	{
-		for (IQuickTweenable* weakTween : tweens)
+		for (UQuickTweenable* weakTween : tweens)
 		{
 			weakTween->Play(this);
 		}
 	}
 }
 
-void UQuickTweenSequence::Pause(UObject* instigator)
+void UQuickTweenSequence::Pause(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -135,27 +133,27 @@ void UQuickTweenSequence::Pause(UObject* instigator)
 	bIsPlaying = false;
 	for (auto [tweens] : TweenGroups)
 	{
-		for (IQuickTweenable* weakTween : tweens)
+		for (UQuickTweenable* weakTween : tweens)
 		{
 			weakTween->Pause(this);
 		}
 	}
 }
 
-void UQuickTweenSequence::Stop(UObject* instigator)
+void UQuickTweenSequence::Stop(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
 	if (CurrentTweenGroupIndex < TweenGroups.Num() && CurrentTweenGroupIndex >= 0)
 	{
-		for (IQuickTweenable* tween : TweenGroups[CurrentTweenGroupIndex].Tweens)
+		for (UQuickTweenable* tween : TweenGroups[CurrentTweenGroupIndex].Tweens)
 		{
 			tween->Stop(this);
 		}
 	}
 }
 
-void UQuickTweenSequence::Complete(UObject* instigator)
+void UQuickTweenSequence::Complete(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -173,9 +171,9 @@ void UQuickTweenSequence::Complete(UObject* instigator)
 
 	if (CurrentTweenGroupIndex >= 0 && CurrentTweenGroupIndex < TweenGroups.Num())
 	{
-		auto completeGroup = [&](TArray<IQuickTweenable*>& tweens)
+		auto completeGroup = [&](TArray<UQuickTweenable*>& tweens)
 		{
-			for (IQuickTweenable* weakTween : tweens)
+			for (UQuickTweenable* weakTween : tweens)
 			{
 				weakTween->Complete(this);
 			}
@@ -209,7 +207,7 @@ void UQuickTweenSequence::Complete(UObject* instigator)
 }
 
 
-void UQuickTweenSequence::Restart(UObject* instigator)
+void UQuickTweenSequence::Restart(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -230,7 +228,7 @@ void UQuickTweenSequence::Restart(UObject* instigator)
 
 	for (FQuickTweenSequenceGroup& group : TweenGroups)
 	{
-		for (IQuickTweenable* tween : group.Tweens)
+		for (UQuickTweenable* tween : group.Tweens)
 		{
 			if (tween->GetIsReversed() != bIsReversed)
 			{
@@ -241,7 +239,7 @@ void UQuickTweenSequence::Restart(UObject* instigator)
 	}
 }
 
-void UQuickTweenSequence::Reset(UObject* instigator)
+void UQuickTweenSequence::Reset(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -259,7 +257,7 @@ void UQuickTweenSequence::Reset(UObject* instigator)
 	TweenGroups.Empty();
 }
 
-void UQuickTweenSequence::Kill(UObject* instigator)
+void UQuickTweenSequence::Kill(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -278,16 +276,16 @@ void UQuickTweenSequence::Kill(UObject* instigator)
 	}
 }
 
-void UQuickTweenSequence::Reverse(UObject* instigator)
+void UQuickTweenSequence::Reverse(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
 	bIsReversed = !bIsReversed;
 	Reverse_Tweens();
 
-	const auto restartGroup = [&](TArray<IQuickTweenable*>& tweens)
+	const auto restartGroup = [&](TArray<UQuickTweenable*>& tweens)
 	{
-		for (IQuickTweenable* weakTween : tweens)
+		for (UQuickTweenable* weakTween : tweens)
 		{
 			weakTween->Restart(this);
 		}
@@ -313,14 +311,14 @@ void UQuickTweenSequence::Reverse_Tweens()
 {
 	for (auto [tweens] : TweenGroups)
 	{
-		for (IQuickTweenable* weakTween : tweens)
+		for (UQuickTweenable* weakTween : tweens)
 		{
 			weakTween->Reverse(this);
 		}
 	}
 }
 
-void UQuickTweenSequence::Update(float deltaTime, UObject* instigator)
+void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
 {
 
 	if (!InstigatorIsOwner(instigator)) return;
@@ -338,7 +336,7 @@ void UQuickTweenSequence::Update(float deltaTime, UObject* instigator)
 	}
 }
 
-void UQuickTweenSequence::SetAutoKill(bool bShouldAutoKill, UObject* instigator)
+void UQuickTweenSequence::SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -349,7 +347,7 @@ void UQuickTweenSequence::SetAutoKill(bool bShouldAutoKill, UObject* instigator)
 	}
 }
 
-void UQuickTweenSequence::Update_Restart(float deltaTime, UObject* instigator)
+void UQuickTweenSequence::Update_Restart(float deltaTime, UQuickTweenable* instigator)
 {
 	ElapsedTime = !bIsReversed ?  ElapsedTime + deltaTime : ElapsedTime - deltaTime;
 
@@ -392,7 +390,7 @@ void UQuickTweenSequence::Update_Restart(float deltaTime, UObject* instigator)
 	{
 		const FQuickTweenSequenceGroup& currentGroup = TweenGroups[CurrentTweenGroupIndex];
 		uint32 completedTweens = 0;
-		for (IQuickTweenable* tween : currentGroup.Tweens)
+		for (UQuickTweenable* tween : currentGroup.Tweens)
 		{
 			tween->Update(deltaTime, this);
 
@@ -413,7 +411,7 @@ void UQuickTweenSequence::Update_Restart(float deltaTime, UObject* instigator)
 			CurrentTweenGroupIndex = bIsReversed ? TweenGroups.Num() - 1 : 0;
 			for (auto [tweens] : TweenGroups)
 			{
-				for (IQuickTweenable* tween : tweens)
+				for (UQuickTweenable* tween : tweens)
 				{
 					tween->Restart(this);
 				}
@@ -423,7 +421,7 @@ void UQuickTweenSequence::Update_Restart(float deltaTime, UObject* instigator)
 	}
 }
 
-void UQuickTweenSequence::Update_PingPong(float deltaTime, UObject* instigator)
+void UQuickTweenSequence::Update_PingPong(float deltaTime, UQuickTweenable* instigator)
 {
 	ElapsedTime = !bIsReversed ?  ElapsedTime + deltaTime : ElapsedTime - deltaTime;
 
@@ -438,7 +436,7 @@ void UQuickTweenSequence::Update_PingPong(float deltaTime, UObject* instigator)
 	{
 		const FQuickTweenSequenceGroup& currentGroup = TweenGroups[CurrentTweenGroupIndex];
 		uint32 completedTweens = 0;
-		for (IQuickTweenable* tween : currentGroup.Tweens)
+		for (UQuickTweenable* tween : currentGroup.Tweens)
 		{
 			tween->Update(deltaTime, this);
 
@@ -466,7 +464,7 @@ void UQuickTweenSequence::Update_PingPong(float deltaTime, UObject* instigator)
 
 			for (auto [tweens] : TweenGroups)
 			{
-				for (IQuickTweenable* tween : tweens)
+				for (UQuickTweenable* tween : tweens)
 				{
 					if (!(tween->GetLoopType() == ELoopType::PingPong && tween->GetLoops() % 2 == 0))
 					{
@@ -488,7 +486,7 @@ float UQuickTweenSequence::GetDuration() const
 	for (const FQuickTweenSequenceGroup& group : TweenGroups)
 	{
 		float groupMaxDuration = 0.0f;
-		for (const IQuickTweenable* tween : group.Tweens)
+		for (const UQuickTweenable* tween : group.Tweens)
 		{
 			groupMaxDuration  = FMath::Max(groupMaxDuration, tween->GetDuration() * tween->GetLoops() / tween->GetTimeScale());
 		}

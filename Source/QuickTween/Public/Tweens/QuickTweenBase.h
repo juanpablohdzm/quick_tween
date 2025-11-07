@@ -17,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledTween, UObject*, Tween);
  * Provides core tweening functionality, state, and events.
  */
 UCLASS(Blueprintable, BlueprintType, Abstract)
-class QUICKTWEEN_API UQuickTweenBase : public UObject, public IQuickTweenable
+class QUICKTWEEN_API UQuickTweenBase : public UQuickTweenable
 {
 	GENERATED_BODY()
 public:
@@ -49,7 +49,7 @@ public:
 		bool bShouldPlayWhilePaused = false);
 
 	/** Sets whether this tween is part of a sequence. */
-	virtual void SetOwner(UObject* owner) override { Owner = owner; }
+	virtual void SetOwner(UQuickTweenable* owner) override { Owner = owner; }
 
 protected:
 	/** Sets the progress of the tween (0-1). */
@@ -60,31 +60,31 @@ protected:
 #pragma region Tween Control
 public:
 
-	virtual void Play(UObject* instigator = nullptr) override;
+	virtual void Play(UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Pause(UObject* instigator = nullptr) override;
+	virtual void Pause(UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Stop(UObject* instigator = nullptr) override;
+	virtual void Stop(UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Reverse(UObject* instigator = nullptr) override;
+	virtual void Reverse(UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Restart(UObject* instigator = nullptr) override;
+	virtual void Restart(UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Complete(UObject* instigator = nullptr) override;
+	virtual void Complete(UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Reset(UObject* instigator = nullptr) override;
+	virtual void Reset(UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Kill(UObject* instigator = nullptr) override;
+	virtual void Kill(UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Update(float deltaTime, UObject* instigator = nullptr) override;
+	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
 
-	virtual void SetAutoKill(bool bShouldAutoKill, UObject* instigator = nullptr) override;
+	virtual void SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator = nullptr) override;
 private:
 
-	void Update_Restart(float deltaTime, UObject* instigator);
+	void Update_Restart(float deltaTime, UQuickTweenable* instigator);
 
 
-	void Update_PingPong(float deltaTime, UObject* instigator);
+	void Update_PingPong(float deltaTime, UQuickTweenable* instigator);
 
 #pragma endregion
 
@@ -97,69 +97,54 @@ public:
 	virtual bool GetIsPendingKill() const override { return bIsPendingKill; }
 
 	/** Gets the duration of the tween. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual float GetDuration() const override { return Duration;}
 
 	/** Gets the current progress of the tween (0-1). */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual float GetProgress() const override { return Progress; }
 
 	[[nodiscard]] virtual float GetElapsedTime() const override { return ElapsedTime; }
 
 	/** Gets the time scale of the tween. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual float GetTimeScale() const override { return TimeScale; }
 
 	/** Returns true if the tween is currently playing. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual bool GetIsPlaying() const override { return bIsPlaying; }
 
 	/** Returns true if the tween is completed. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual bool GetIsCompleted() const override { return bIsCompleted; }
 
 	/** Returns true if the tween is playing backwards. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual bool GetIsBackwards() const override { return bIsBackwards; }
 
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual bool GetIsReversed() const override { return bIsReversed; }
 
 	/** Gets the ease type of the tween. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual EEaseType GetEaseType() const override { return EaseType; }
 
 	/** Gets the custom ease curve of the tween, if any. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual UCurveFloat* GetEaseCurve() const override { return EaseCurve; }
 
 	/** Gets the number of loops for the tween. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual int32 GetLoops() const override{ return Loops; }
 
 	/** Gets the loop type of the tween. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual ELoopType GetLoopType() const override { return LoopType; }
 
 	/** Gets the tag assigned to the tween. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual FString GetTweenTag() const override { return TweenTag; }
 
 	/** Gets the current loop index (1-based). */
-	UFUNCTION(BlueprintCallable)
 	[[nodiscard]] virtual int32 GetCurrentLoop() const override { return CurrentLoop; }
 
 	/** Gets whether this tween will be removed after completion. */
-	UFUNCTION(BlueprintCallable)
 	[[nodiscard]] virtual bool GetAutoKill() const override { return bAutoKill; }
 
 	/** Gets whether this tween should play while paused. */
-	UFUNCTION(BlueprintCallable)
 	[[nodiscard]] virtual bool GetShouldPlayWhilePaused() const override {return bPlayWhilePaused;}
 #pragma endregion
 
 protected:
-	bool InstigatorIsOwner(UObject* instigator) const
+	bool InstigatorIsOwner(UQuickTweenable* instigator) const
 	{
 		if (!Owner) return true; // No owner means it's not in a sequence
 		return instigator == Owner;
@@ -219,7 +204,7 @@ private:
 
 	/** If this tween has an owner */
 	UPROPERTY()
-	UObject* Owner = nullptr;
+	UQuickTweenable* Owner = nullptr;
 
 	/** If this tween should be eliminated from the manager. */
 	bool bIsPendingKill = false;

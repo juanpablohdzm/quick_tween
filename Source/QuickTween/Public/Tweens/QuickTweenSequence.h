@@ -16,12 +16,22 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledTweenSequence, UObject*, Tw
 class UQuickTweenBase;
 
 /**
+ * Represents a group of tweens that run in parallel.
+ */
+USTRUCT()
+struct FQuickTweenSequenceGroup
+{
+	GENERATED_BODY()
+	TArray<UQuickTweenable*> Tweens;
+};
+
+/**
  * UQuickTweenSequence manages a sequence of tween animations.
  * Allows joining, appending, and controlling multiple tweens as a group.
  * Supports looping, reversing, and querying sequence state.
  */
 UCLASS(BlueprintType)
-class QUICKTWEEN_API UQuickTweenSequence : public UObject, public IQuickTweenable, public ITweenOwner
+class QUICKTWEEN_API UQuickTweenSequence : public UQuickTweenable
 {
 	GENERATED_BODY()
 
@@ -53,7 +63,7 @@ public:
 	 * @return Reference to this sequence.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
-	void Join(UObject* tween);
+	void Join(UQuickTweenable* tween);
 
 	/**
 	 * Appends a tween to the sequence, running after previous tweens complete.
@@ -61,25 +71,25 @@ public:
 	 * @return Reference to this sequence.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
-	void Append(UObject* tween);
+	void Append(UQuickTweenable* tween);
 
-	virtual void SetOwner(UObject* owner) override { Owner = owner; }
+	virtual void SetOwner(UQuickTweenable* owner) override { Owner = owner; }
 #pragma endregion
 
 #pragma region Sequence Control
 public:
 
 
-	virtual void Play(UObject* instigator = nullptr) override;
-	virtual void Pause(UObject* instigator = nullptr) override;
-	virtual void Stop(UObject* instigator = nullptr) override;
-	virtual void Reverse(UObject* instigator = nullptr) override;
-	virtual void Complete(UObject* instigator = nullptr) override;
-	virtual void Restart(UObject* instigator = nullptr) override;
-	virtual void Reset(UObject* instigator = nullptr) override;
-	virtual void Kill(UObject* instigator = nullptr) override;
-	virtual void Update(float deltaTime, UObject* instigator = nullptr) override;
-	virtual void SetAutoKill(bool bShouldAutoKill, UObject* instigator = nullptr) override;
+	virtual void Play(UQuickTweenable* instigator = nullptr) override;
+	virtual void Pause(UQuickTweenable* instigator = nullptr) override;
+	virtual void Stop(UQuickTweenable* instigator = nullptr) override;
+	virtual void Reverse(UQuickTweenable* instigator = nullptr) override;
+	virtual void Complete(UQuickTweenable* instigator = nullptr) override;
+	virtual void Restart(UQuickTweenable* instigator = nullptr) override;
+	virtual void Reset(UQuickTweenable* instigator = nullptr) override;
+	virtual void Kill(UQuickTweenable* instigator = nullptr) override;
+	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
+	virtual void SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator = nullptr) override;
 
 private:
 	/**
@@ -93,14 +103,14 @@ private:
 	 * @param deltaTime Time since last update.
 	 * @param instigator
 	 */
-	void Update_Restart(float deltaTime, UObject* instigator);
+	void Update_Restart(float deltaTime, UQuickTweenable* instigator);
 
 	/**
 	 * Updates the sequence in PingPong loop mode.
 	 * @param deltaTime Time since last update.
 	 * @param instigator
 	 */
-	void Update_PingPong(float deltaTime, UObject* instigator);
+	void Update_PingPong(float deltaTime, UQuickTweenable* instigator);
 public:
 
 	/**
@@ -164,22 +174,17 @@ public:
 	FOnKilledTweenSequence OnKilled;
 #pragma endregion
 protected:
-	bool InstigatorIsOwner(UObject* instigator) const
+	bool InstigatorIsOwner(UQuickTweenable* instigator) const
 	{
 		if (!Owner) return true; // No owner means it's not in a sequence
-		return instigator == reinterpret_cast<UObject*>(Owner);
+		return instigator == Owner;
 	};
 private:
 
-	/**
-	 * Represents a group of tweens that run in parallel.
-	 */
-	struct FQuickTweenSequenceGroup
-	{
-		TArray<IQuickTweenable*> Tweens;
-	};
+
 
 	/** Array of tween groups in the sequence. */
+	UPROPERTY(Transient)
 	TArray<FQuickTweenSequenceGroup> TweenGroups;
 
 	/** Elapsed time since the sequence started. */
@@ -229,6 +234,6 @@ private:
 	const UObject* WorldContextObject = nullptr;
 
 	UPROPERTY()
-	UObject* Owner = nullptr;
+	UQuickTweenable* Owner = nullptr;
 
 };

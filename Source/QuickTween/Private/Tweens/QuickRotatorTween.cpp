@@ -5,7 +5,7 @@
 
 #include "Utils/EaseFunctions.h"
 
-void UQuickRotatorTween::Update(float deltaTime, UObject* instigator)
+void UQuickRotatorTween::Update(float deltaTime, UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -41,7 +41,7 @@ void UQuickRotatorTween::Update(float deltaTime, UObject* instigator)
 	SetProgress(progress);
 }
 
-void UQuickRotatorTween::Complete(UObject* instigator)
+void UQuickRotatorTween::Complete(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 

@@ -23,13 +23,13 @@ public:
 	virtual bool IsTickableInEditor() const override { return false; }
 	virtual bool IsTickableWhenPaused() const override { return true; }
 
-	void AddTween(class IQuickTweenable* tween);
-	void RemoveTween(class IQuickTweenable* tween);
+	void AddTween(class UQuickTweenable* tween);
+	void RemoveTween(class UQuickTweenable* tween);
 
 private:
 
 	UPROPERTY(Transient)
-	TArray<UObject*> QuickTweens = {};
+	TArray<UQuickTweenable*> QuickTweens = {};
 
 	bool bIsInitialized = false;
 };
