@@ -22,6 +22,8 @@ USTRUCT()
 struct FQuickTweenSequenceGroup
 {
 	GENERATED_BODY()
+
+	UPROPERTY()
 	TArray<UQuickTweenable*> Tweens;
 };
 
@@ -230,10 +232,10 @@ private:
 	bool bPlayWhilePaused = false;
 
 	/** Object to do world queries. */
-	UPROPERTY()
+	UPROPERTY(Transient)
 	const UObject* WorldContextObject = nullptr;
 
-	UPROPERTY()
+	UPROPERTY(Transient)
 	UQuickTweenable* Owner = nullptr;
 
 };
