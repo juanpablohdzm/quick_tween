@@ -38,7 +38,7 @@ class QUICKTWEEN_API UQuickTweenSequence : public UQuickTweenable
 	GENERATED_BODY()
 
 public:
-	virtual ~UQuickTweenSequence();
+	virtual ~UQuickTweenSequence() override;
 
 #pragma region Sequence Creation
 	/**

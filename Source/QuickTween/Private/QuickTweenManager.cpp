@@ -8,9 +8,12 @@ DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenManager, Log, All);
 
 UQuickTweenManager* UQuickTweenManager::Get(const UObject* worldContextObject)
 {
-	if (UWorld* world = GEngine->GetWorldFromContextObject(worldContextObject, EGetWorldErrorMode::ReturnNull))
+	if (worldContextObject)
 	{
-		return world->GetSubsystem<UQuickTweenManager>();
+		if (UWorld* world = worldContextObject->GetWorld())
+		{
+			return world->GetSubsystem<UQuickTweenManager>();
+		}
 	}
 	return nullptr;
 }
