@@ -171,10 +171,14 @@ void UQuickTweenSequence::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 
 	if (CurrentTweenGroupIndex >= 0 && CurrentTweenGroupIndex < TweenGroups.Num())
 	{
-		auto completeGroup = [&](TArray<UQuickTweenable*>& tweens, bool toEnd)
+		auto completeGroup = [&](TArray<UQuickTweenable*>& tweens, bool toEnd, bool forceUpdate = false)
 		{
 			for (UQuickTweenable* tween : tweens)
 			{
+				if (forceUpdate)
+				{
+					tween->Update(0.0f, this); // force an update to ensure the tween is fully initialized
+				}
 				tween->Complete(this, toEnd);
 			}
 		};
@@ -197,7 +201,7 @@ void UQuickTweenSequence::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 		{
 			for (int32 groupIdx = CurrentTweenGroupIndex; groupIdx < TweenGroups.Num(); ++groupIdx)
 			{
-				completeGroup(TweenGroups[groupIdx].Tweens, bSnapToEnd);
+				completeGroup(TweenGroups[groupIdx].Tweens, bSnapToEnd, true);
 			}
 		}
 		else
