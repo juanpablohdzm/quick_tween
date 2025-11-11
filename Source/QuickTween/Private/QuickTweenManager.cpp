@@ -8,7 +8,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenManager, Log, All);
 
 UQuickTweenManager* UQuickTweenManager::Get(const UObject* worldContextObject)
 {
-	if (worldContextObject)
+	if (IsValid(worldContextObject))
 	{
 		if (UWorld* world = worldContextObject->GetWorld())
 		{

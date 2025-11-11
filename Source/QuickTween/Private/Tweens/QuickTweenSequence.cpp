@@ -153,7 +153,7 @@ void UQuickTweenSequence::Stop(UQuickTweenable* instigator)
 	}
 }
 
-void UQuickTweenSequence::Complete(UQuickTweenable* instigator)
+void UQuickTweenSequence::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -165,32 +165,46 @@ void UQuickTweenSequence::Complete(UQuickTweenable* instigator)
 	bIsPlaying   = false;
 	bIsCompleted = true;
 
-	ElapsedTime = !bIsReversed? GetDuration() * GetLoops() : 0.0f;
+	ElapsedTime = GetDuration() * GetLoops();
 	Progress    = 1.0f;
 	CurrentLoop = Loops;
 
 	if (CurrentTweenGroupIndex >= 0 && CurrentTweenGroupIndex < TweenGroups.Num())
 	{
-		auto completeGroup = [&](TArray<UQuickTweenable*>& tweens)
+		auto completeGroup = [&](TArray<UQuickTweenable*>& tweens, bool toEnd)
 		{
-			for (UQuickTweenable* weakTween : tweens)
+			for (UQuickTweenable* tween : tweens)
 			{
-				weakTween->Complete(this);
+				tween->Complete(this, toEnd);
 			}
 		};
+
+		if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
+		{
+			if (!bIsReversed)
+			{
+				Reverse(instigator);
+			}
+
+			for (int32 groupIdx = CurrentTweenGroupIndex; groupIdx>= 0; --groupIdx)
+			{
+				completeGroup(TweenGroups[groupIdx].Tweens, true);
+			}
+			return;
+		}
 
 		if (!bIsReversed)
 		{
 			for (int32 groupIdx = CurrentTweenGroupIndex; groupIdx < TweenGroups.Num(); ++groupIdx)
 			{
-				completeGroup(TweenGroups[groupIdx].Tweens);
+				completeGroup(TweenGroups[groupIdx].Tweens, bSnapToEnd);
 			}
 		}
 		else
 		{
 			for (int32 groupIdx = CurrentTweenGroupIndex; groupIdx>= 0; --groupIdx)
 			{
-				completeGroup(TweenGroups[groupIdx].Tweens);
+				completeGroup(TweenGroups[groupIdx].Tweens, bSnapToEnd);
 			}
 		}
 	}
@@ -205,7 +219,6 @@ void UQuickTweenSequence::Complete(UQuickTweenable* instigator)
 
 	OnComplete.Broadcast(this);
 }
-
 
 void UQuickTweenSequence::Restart(UQuickTweenable* instigator)
 {

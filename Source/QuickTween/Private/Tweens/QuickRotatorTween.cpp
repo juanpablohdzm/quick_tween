@@ -41,19 +41,20 @@ void UQuickRotatorTween::Update(float deltaTime, UQuickTweenable* instigator)
 	SetProgress(progress);
 }
 
-void UQuickRotatorTween::Complete(UQuickTweenable* instigator)
+void UQuickRotatorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
-	if (GetLoopType() == ELoopType::PingPong )
+	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
 	{
-		const bool isOddLoop = GetCurrentLoop() % 2 == 1;
-		const bool toEnd = (isOddLoop && !GetIsReversed()) || (!isOddLoop && GetIsReversed());
-		SetterFunction(toEnd ? To() : StartValue.GetValue());
+		SetterFunction(StartValue.GetValue());
+		return Super::Complete(instigator, false);
 	}
-	else
+
+	if (GetIsReversed())
 	{
-		SetterFunction(GetIsReversed() ? StartValue.GetValue() : To());
+		bSnapToEnd = !bSnapToEnd;
 	}
-	return Super::Complete(instigator);
+	SetterFunction(bSnapToEnd ? To() : StartValue.GetValue());
+	return Super::Complete(instigator, bSnapToEnd);
 }

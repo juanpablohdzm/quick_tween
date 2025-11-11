@@ -32,7 +32,7 @@ public:
 	virtual void Restart(UQuickTweenable* instigator = nullptr);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void Complete(UQuickTweenable* instigator = nullptr);
+	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Reset(UQuickTweenable* instigator = nullptr);

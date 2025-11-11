@@ -71,8 +71,7 @@ public:
 
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Complete(UQuickTweenable* instigator = nullptr) override;
-
+	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
 private:
 	/** Starting function returning FVector. */
 	TFunction<FVector()> From;

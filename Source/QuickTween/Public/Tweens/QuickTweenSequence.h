@@ -86,7 +86,7 @@ public:
 	virtual void Pause(UQuickTweenable* instigator = nullptr) override;
 	virtual void Stop(UQuickTweenable* instigator = nullptr) override;
 	virtual void Reverse(UQuickTweenable* instigator = nullptr) override;
-	virtual void Complete(UQuickTweenable* instigator = nullptr) override;
+	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
 	virtual void Restart(UQuickTweenable* instigator = nullptr) override;
 	virtual void Reset(UQuickTweenable* instigator = nullptr) override;
 	virtual void Kill(UQuickTweenable* instigator = nullptr) override;

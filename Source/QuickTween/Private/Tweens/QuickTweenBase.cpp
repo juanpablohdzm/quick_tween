@@ -230,18 +230,16 @@ void UQuickTweenBase::Restart(UQuickTweenable* instigator)
 	return;
 }
 
-void UQuickTweenBase::Complete(UQuickTweenable* instigator)
+void UQuickTweenBase::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 	if (bIsCompleted) return;
 
-	const bool toEnd = bIsReversed == bIsBackwards;
-
 	bIsPlaying   = false;
 	bIsCompleted = true;
 
-	ElapsedTime = toEnd ? Duration : 0.0f;
-	Progress    = toEnd ? 1.0f     : 0.0f;
+	ElapsedTime = Duration;
+	Progress    = 1.0f;
 	if (bAutoKill)
 	{
 		Kill(nullptr);

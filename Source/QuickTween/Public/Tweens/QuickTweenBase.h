@@ -70,7 +70,7 @@ public:
 
 	virtual void Restart(UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Complete(UQuickTweenable* instigator = nullptr) override;
+	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
 
 	virtual void Reset(UQuickTweenable* instigator = nullptr) override;
 
