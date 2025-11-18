@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <variant>
-
 #include "CoreMinimal.h"
 #include "QuickTweenBase.h"
 #include "QuickVectorTween.generated.h"
@@ -35,6 +33,8 @@ public:
 	 * @param loopType Type of looping behavior.
 	 * @param tweenTag Optional tag for identifying the tween.
 	 * @param worldContextObject Context object for world access.
+	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
+	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
 	 */
 	void SetUp(
 		TFunction<FVector()>&& from,

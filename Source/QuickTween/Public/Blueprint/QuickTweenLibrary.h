@@ -25,7 +25,11 @@ enum class EQuickTweenSpace : uint8
  */
 
 DECLARE_DYNAMIC_DELEGATE_RetVal(FVector, FVectorGetter);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FVectorSetter, const FVector&, value);
 DECLARE_DYNAMIC_DELEGATE_RetVal(FRotator, FRotatorGetter);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FRotatorSetter, const FRotator&, value);
+DECLARE_DYNAMIC_DELEGATE_RetVal(float, FloatGetter);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FloatSetter, const float, value);
 
 UCLASS()
 class QUICKTWEEN_API UQuickTweenLibrary : public UBlueprintFunctionLibrary
@@ -50,6 +54,112 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false);
+
+	/**
+	 * Create a vector tween that interpolates between two FVector values using delegate getters
+	 * and applies the interpolated value via a setter delegate each tick.
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param from Delegate that returns the starting FVector value.
+	 * @param to Delegate that returns the target FVector value.
+	 * @param setterFunction Delegate invoked each update with the current interpolated FVector.
+	 * @param duration Time in seconds for the tween to complete. Defaults to 1.0f.
+	 * @param timeScale Multiplier applied to the tween time. Defaults to 1.0f.
+	 * @param easeType Predefined easing function to use for interpolation. Defaults to EEaseType::Linear.
+	 * @param easeCurve Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops Number of times to loop the tween. Use -1 for infinite. Defaults to 1.
+	 * @param loopType How the tween loops (Restart, PingPong, etc.). Defaults to ELoopType::Restart.
+	 * @param space The space in which the tween operates (WorldSpace or LocalSpace). Defaults to WorldSpace.
+	 * @param tweenTag Optional tag to identify the created tween. Defaults to empty string.
+	 * @param bShouldAutoKill If true the tween will be automatically killed when complete. Defaults to true.
+	 * @param bShouldPlayWhilePaused If true the tween will update while game is paused. Defaults to false.
+	 * @return A pointer to the created UQuickVectorTween, or nullptr on failure.
+	 */
+	static UQuickVectorTween* MakeQuickTweenVector(
+		UObject* worldContextObject,
+		FVectorGetter from,
+		FVectorGetter to,
+		FVectorSetter setterFunction,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
+		FString tweenTag = "",
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false);
+
+	/**
+	 * Create a rotator tween that interpolates between two rotator values using delegates.
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param from Delegate that returns the starting rotation.
+	 * @param to Delegate that returns the target rotation.
+	 * @param setterFunction Delegate invoked each update with the current interpolated rotator.
+	 * @param bUseShortestPath If true, rotation will take the shortest angular path.
+	 * @param duration Time in seconds for the tween to complete.
+	 * @param timeScale Multiplier applied to the tween time.
+	 * @param easeType Predefined easing function to use for interpolation.
+	 * @param easeCurve Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops Number of times to loop the tween. Use -1 for infinite loops.
+	 * @param loopType How the tween loops (e.g., Restart, PingPong).
+	 * @param space The space in which the tween operates (WorldSpace or LocalSpace).
+	 * @param tweenTag Optional tag to identify the created tween.
+	 * @param bShouldAutoKill If true, the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true, the tween will update while the game is paused.
+	 * @return A pointer to the created UQuickRotatorTween, or nullptr on failure.
+	 */
+	static UQuickRotatorTween* MakeQuickTweenRotator(
+		UObject* worldContextObject,
+		FRotatorGetter from,
+		FRotatorGetter to,
+		FRotatorSetter setterFunction,
+		bool bUseShortestPath,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
+		FString tweenTag = "",
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false);
+
+	/**
+	 * Create a float tween that interpolates a value from `from` to `to` and applies it via `setterFunction`.
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param from Delegate that returns the starting float value.
+	 * @param to Delegate that returns the target float value.
+	 * @param setterFunction Delegate invoked each update with the current interpolated float value.
+	 * @param duration Time in seconds for the tween to complete.
+	 * @param timeScale Multiplier applied to the tween time.
+	 * @param easeType Predefined easing function to use for interpolation.
+	 * @param easeCurve Optional custom `UCurveFloat` used for easing (overrides `easeType` when provided).
+	 * @param loops Number of times to loop the tween. Use -1 for infinite loops.
+	 * @param loopType How the tween loops (e.g., Restart, PingPong).
+	 * @param tweenTag Optional tag to identify the created tween.
+	 * @param bShouldAutoKill If true, the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true, the tween will update while the game is paused.
+	 * @return A pointer to the created `UQuickFloatTween`, or nullptr on failure.
+	 */
+	static UQuickFloatTween* MakeQuickTweenFloat(
+		UObject* worldContextObject,
+		FloatGetter from,
+		FloatGetter to,
+		FloatSetter setterFunction,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		FString tweenTag = "",
 		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false);
 

@@ -24,6 +24,113 @@ UQuickTweenSequence* UQuickTweenLibrary::MakeQuickTweenSequence(
 	return sequence;
 }
 
+UQuickVectorTween* UQuickTweenLibrary::MakeQuickTweenVector(
+	UObject* worldContextObject,
+	FVectorGetter from,
+	FVectorGetter to,
+	FVectorSetter setter,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	EQuickTweenSpace space,
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused)
+{
+	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
+	tween->SetUp(
+		[from]() -> FVector { return from.Execute(); },
+		[to]() -> FVector { return to.Execute(); },
+		[setter](const FVector& v) { setter.Execute(v); },
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		worldContextObject,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused
+	);
+
+	return tween;
+}
+
+UQuickRotatorTween* UQuickTweenLibrary::MakeQuickTweenRotator(
+	UObject* worldContextObject,
+	FRotatorGetter from,
+	FRotatorGetter to,
+	FRotatorSetter setterFunction,
+	bool bUseShortestPath,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	EQuickTweenSpace space,
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused)
+{
+	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
+	tween->SetUp(
+		[from]() -> FRotator { return from.Execute(); },
+		[to]() -> FRotator { return to.Execute(); },
+		bUseShortestPath,
+		[setterFunction](const FRotator& v) { setterFunction.Execute(v); },
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		worldContextObject,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused
+	);
+	return tween;
+}
+
+UQuickFloatTween* UQuickTweenLibrary::MakeQuickTweenFloat(
+	UObject* worldContextObject,
+	FloatGetter from,
+	FloatGetter to,
+	FloatSetter setterFunction,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused)
+{
+	UQuickFloatTween* tween = NewObject<UQuickFloatTween>();
+	tween->SetUp(
+		[from]() -> float { return from.Execute(); },
+		[to]() -> float { return to.Execute(); },
+		[setterFunction](const float v) { setterFunction.Execute(v); },
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		worldContextObject,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused
+	);
+	return tween;
+}
+
 UQuickVectorTween* UQuickTweenLibrary::MoveTo_SceneComponent(
 	UObject* worldContextObject,
 	USceneComponent* component,
