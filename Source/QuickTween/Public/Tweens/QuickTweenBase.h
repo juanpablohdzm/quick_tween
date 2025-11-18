@@ -48,7 +48,6 @@ public:
 		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false);
 
-	/** Sets whether this tween is part of a sequence. */
 	virtual void SetOwner(UQuickTweenable* owner) override { Owner = owner; }
 
 protected:

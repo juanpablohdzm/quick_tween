@@ -3,10 +3,13 @@
 
 #include "Blueprint/QuickTweenLibrary.h"
 
+#include "QuickTweenManager.h"
+#include "Tweens/QuickFloatTween.h"
 #include "Tweens/QuickRotatorTween.h"
 #include "Tweens/QuickTweenSequence.h"
 #include "Tweens/QuickVectorTween.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenLibrary, Log, All);
 
 UQuickTweenSequence* UQuickTweenLibrary::MakeQuickTweenSequence(
 	UObject* worldContextObject,
@@ -31,6 +34,7 @@ UQuickVectorTween* UQuickTweenLibrary::MoveTo_SceneComponent(
 	UCurveFloat* easeCurve,
 	int32 loops,
 	ELoopType loopType,
+	EQuickTweenSpace space,
 	FString tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused)
@@ -38,11 +42,18 @@ UQuickVectorTween* UQuickTweenLibrary::MoveTo_SceneComponent(
 
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
 	tween->SetUp(
-		[component]()->FVector { return component->GetComponentLocation(); },
-		[to]()->FVector{ return to; },
-		[component](const FVector& v)
+		[component, space]()->FVector
 		{
-			component->SetWorldLocation(v, true, nullptr, ETeleportType::None);
+			return space == EQuickTweenSpace::WorldSpace ?
+				component->GetComponentLocation() :
+				component->GetRelativeLocation();
+		},
+		[to]()->FVector{ return to; },
+		[component, space](const FVector& v)
+		{
+			space == EQuickTweenSpace::WorldSpace ?
+				component->SetWorldLocation(v, true, nullptr, ETeleportType::None) :
+				component->SetRelativeLocation(v, true, nullptr, ETeleportType::None);
 		},
 		duration,
 		timeScale,
@@ -69,15 +80,26 @@ UQuickVectorTween* UQuickTweenLibrary::ScaleTo_SceneComponent(
 	UCurveFloat* easeCurve,
 	int32 loops,
 	ELoopType loopType,
+	EQuickTweenSpace space,
 	FString tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused)
 {
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
 	tween->SetUp(
-		[component]()->FVector { return component->GetRelativeScale3D(); },
+		[component, space]()->FVector
+		{
+			return space == EQuickTweenSpace::WorldSpace ?
+				component->GetComponentScale() :
+				component->GetRelativeScale3D();
+		},
 		[to]()->FVector { return to; },
-		[component](const FVector& v) { component->SetRelativeScale3D(v); },
+		[component, space](const FVector& v)
+		{
+			return space == EQuickTweenSpace::WorldSpace ?
+				component->SetWorldScale3D(v) :
+				component->SetRelativeScale3D(v);
+		},
 		duration,
 		timeScale,
 		easeType,
@@ -104,16 +126,27 @@ UQuickRotatorTween* UQuickTweenLibrary::RotateTo_SceneComponent(
 	UCurveFloat* easeCurve,
 	int32 loops,
 	ELoopType loopType,
+	EQuickTweenSpace space,
 	FString tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused)
 {
 	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
 	tween->SetUp(
-		[component]()->FRotator { return component->GetRelativeRotation(); },
+		[component, space]()->FRotator
+		{
+			return space == EQuickTweenSpace::WorldSpace ?
+				component->GetComponentRotation() :
+				component->GetRelativeRotation();
+		},
 		[to]()->FRotator { return to; },
 		bUseShortestPath,
-		[component](const FRotator& v) { component->SetRelativeRotation(v); },
+		[component, space](const FRotator& v)
+		{
+			return space == EQuickTweenSpace::WorldSpace ?
+				component->SetWorldRotation(v) :
+				component->SetRelativeRotation(v);
+		},
 		duration,
 		timeScale,
 		easeType,
@@ -144,13 +177,16 @@ UQuickRotatorTween* UQuickTweenLibrary::LookAt_SceneComponent(
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused)
 {
-	const FVector direction = (to - component->GetComponentLocation()).GetSafeNormal();
-	FRotator targetRotation = direction.Rotation();
 
 	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
 	tween->SetUp(
 		[component]()->FRotator { return component->GetRelativeRotation(); },
-		[targetRotation]()->FRotator{ return targetRotation;},
+		[to, component]()->FRotator
+		{
+			const FVector direction = (to - component->GetComponentLocation()).GetSafeNormal();
+			FRotator targetRotation = direction.Rotation();
+			return targetRotation;
+		},
 		bUseShortestPath,
 		[component](const FRotator& v) { component->SetRelativeRotation(v); },
 		duration,
@@ -166,6 +202,70 @@ UQuickRotatorTween* UQuickTweenLibrary::LookAt_SceneComponent(
 	);
 
 	return tween;
+}
+
+UQuickFloatTween* UQuickTweenLibrary::RotateAround_SceneComponent(
+	UObject* worldContextObject,
+	USceneComponent* component,
+	float from,
+	float to,
+	FVector point,
+	FVector normal,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused)
+{
+	const FVector startPoint  = component->GetComponentLocation();
+	const FVector dirFromPoint = startPoint - point;
+
+	UQuickFloatTween* tween = NewObject<UQuickFloatTween>();
+	tween->SetUp(
+		[from]()->float
+		{
+			return from;
+		},
+		[to]()->float { return to; },
+		[dirFromPoint, point, normal, component](const float v)
+		{
+			const FVector rotatedPosition = point + dirFromPoint.RotateAngleAxis(v, normal.GetSafeNormal());
+			component->SetWorldLocation(rotatedPosition);
+		},
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		worldContextObject,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused
+	);
+
+	return tween;
+}
+
+
+UQuickTweenable* UQuickTweenLibrary::FindTweenByTag(const UObject* worldContextObject, const FString& tweenTag)
+{
+	ensureAlwaysMsgf(worldContextObject, TEXT("FindTweenByTag called with a null worldContextObject. This should never happen."));
+
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject))
+	{
+		return manager->FindTweenByPredicate([&tweenTag](const UQuickTweenable* tween)->bool
+		{
+			return tween->GetTweenTag().Compare(tweenTag) == 0;
+		});
+	}
+
+	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("Failed to get QuickTweenManager in FindTweenByTag."));
+	return nullptr;
 }
 
 

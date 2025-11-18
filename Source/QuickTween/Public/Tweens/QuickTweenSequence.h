@@ -81,16 +81,24 @@ public:
 #pragma region Sequence Control
 public:
 
-
 	virtual void Play(UQuickTweenable* instigator = nullptr) override;
+
 	virtual void Pause(UQuickTweenable* instigator = nullptr) override;
+
 	virtual void Stop(UQuickTweenable* instigator = nullptr) override;
+
 	virtual void Reverse(UQuickTweenable* instigator = nullptr) override;
+
 	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
+
 	virtual void Restart(UQuickTweenable* instigator = nullptr) override;
+
 	virtual void Reset(UQuickTweenable* instigator = nullptr) override;
+
 	virtual void Kill(UQuickTweenable* instigator = nullptr) override;
+
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
+
 	virtual void SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator = nullptr) override;
 
 private:
@@ -115,33 +123,43 @@ private:
 	void Update_PingPong(float deltaTime, UQuickTweenable* instigator);
 public:
 
-	/**
-	 * If this sequence should be eliminated from the manager.
-	 * @return True if the sequence is pending kill, false otherwise.
-	 */
-	virtual bool GetIsPendingKill() const override { return bIsPendingKill; }
+	[[nodiscard]] virtual bool GetIsPendingKill() const override { return bIsPendingKill; }
 #pragma endregion
 
 
 #pragma region Sequence State Queries
 public:
 
-
 	[[nodiscard]] virtual bool GetIsPlaying() const override { return bIsPlaying;}
+
 	[[nodiscard]] virtual float GetProgress() const override { return Progress; }
+
 	[[nodiscard]] virtual float GetTimeScale() const override { return 1.0f; }
+
 	[[nodiscard]] virtual bool GetIsBackwards() const override { return bIsBackwards; }
+
 	[[nodiscard]] virtual bool GetIsReversed() const override { return bIsReversed; }
+
 	[[nodiscard]] virtual EEaseType GetEaseType() const override { return EEaseType::Linear; }
+
 	[[nodiscard]] virtual UCurveFloat* GetEaseCurve() const override { return nullptr; }
+
 	[[nodiscard]] virtual bool GetAutoKill() const override { return bAutoKill; }
+
 	[[nodiscard]] virtual bool GetIsCompleted() const override { return bIsCompleted; }
+
 	[[nodiscard]] virtual float GetDuration() const override;
+
 	[[nodiscard]] virtual float GetElapsedTime() const override { return ElapsedTime; }
+
 	[[nodiscard]] virtual int32 GetLoops() const override { return Loops; }
+
 	[[nodiscard]] virtual int32 GetCurrentLoop() const override { return CurrentLoop; }
+
 	[[nodiscard]] virtual ELoopType GetLoopType() const override { return LoopType; }
+
 	[[nodiscard]] virtual FString GetTweenTag() const override { return SequenceTweenId; }
+
 	[[nodiscard]] virtual bool GetShouldPlayWhilePaused() const override { return bPlayWhilePaused; }
 
 	/**

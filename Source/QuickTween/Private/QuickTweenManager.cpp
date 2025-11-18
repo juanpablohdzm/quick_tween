@@ -94,3 +94,9 @@ void UQuickTweenManager::RemoveTween(class UQuickTweenable* tween)
 	UE_LOG(LogQuickTweenManager, Log, TEXT("Remove tween from QuickTweenManager"));
 	QuickTweens.RemoveSingleSwap(tween);
 }
+
+UQuickTweenable* UQuickTweenManager::FindTweenByPredicate(TFunctionRef<bool(UQuickTweenable*)> predicate) const
+{
+	UQuickTweenable* const* const ptr = Algo::FindByPredicate(QuickTweens, predicate);
+	return ptr ? *ptr : nullptr;
+}
