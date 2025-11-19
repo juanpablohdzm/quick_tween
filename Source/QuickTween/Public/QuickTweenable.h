@@ -20,31 +20,31 @@ public:
 	/** Start or resume playback of the tween.
 	 * @param instigator Optional pointer indicating which tween initiated the call.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
 	virtual void Play(UQuickTweenable* instigator = nullptr);
 
 	/** Pause playback of the tween.
 	 * @param instigator Optional pointer indicating which tween initiated the call.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
 	virtual void Pause(UQuickTweenable* instigator = nullptr);
 
 	/** Stop playback and reset internal state as appropriate.
 	 * @param instigator Optional pointer indicating which tween initiated the call.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
 	virtual void Stop(UQuickTweenable* instigator = nullptr);
 
 	/** Play the tween in reverse (playback direction is inverted).
 	 * @param instigator Optional pointer indicating which tween initiated the call.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
 	virtual void Reverse(UQuickTweenable* instigator = nullptr);
 
 	/** Restart the tween from its beginning.
 	 * @param instigator Optional pointer indicating which tween initiated the call.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
 	virtual void Restart(UQuickTweenable* instigator = nullptr);
 
 	/** Immediately complete the tween.
@@ -52,33 +52,32 @@ public:
 	 * @param instigator Optional pointer indicating which tween initiated the call.
 	 * @param bSnapToEnd If true, snap properties to final state when completing.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
 	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true);
 
 	/** Reset the tween to its initial configuration without starting playback.
 	 * @param instigator Optional pointer indicating which tween initiated the call.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
 	virtual void Reset(UQuickTweenable* instigator = nullptr);
 
 	/** Forcefully kill the tween and mark it for removal.
 	 * @param instigator Optional pointer indicating which tween initiated the call.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
 	virtual void Kill(UQuickTweenable* instigator = nullptr);
 
 	/** Update the tween state by a time delta.
 	 * @param deltaTime Time in seconds to advance the tween.
 	 * @param instigator Optional pointer indicating which tween initiated the call.
 	 */
-	UFUNCTION(BlueprintCallable)
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr);
 
 	/** Configure whether the tween should be automatically removed after completion.
 	 * @param bShouldAutoKill Whether to auto-kill when completed.
 	 * @param instigator Optional pointer indicating which tween initiated the call.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
 	virtual void SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator = nullptr);
 
 	/**
@@ -147,15 +146,15 @@ public:
 	/** Get the current loop index (1-based) the tween is on.
 	 * @return 1 for the first loop, 2 for the second, etc.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category= "Tween|Info")
 	[[nodiscard]] virtual int32 GetCurrentLoop() const;
 
 	/** Returns whether this tween will be removed automatically after completion. */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category= "Tween|Info")
 	[[nodiscard]] virtual bool GetAutoKill() const;
 
 	/** Whether the tween should continue running even when the game is paused. */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category= "Tween|Info")
 	[[nodiscard]] virtual bool GetShouldPlayWhilePaused() const;
 };
 

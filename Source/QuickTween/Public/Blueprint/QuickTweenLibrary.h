@@ -8,11 +8,11 @@
 #include "Utils/LoopType.h"
 #include "QuickTweenLibrary.generated.h"
 
-class UQuickFloatTween;
 class UQuickTweenable;
 class UQuickTweenSequence;
 class UQuickVectorTween;
 class UQuickRotatorTween;
+class UQuickFloatTween;
 
 UENUM(BlueprintType)
 enum class EQuickTweenSpace : uint8
@@ -77,6 +77,7 @@ public:
 	 * @param bShouldPlayWhilePaused If true the tween will update while game is paused. Defaults to false.
 	 * @return A pointer to the created UQuickVectorTween, or nullptr on failure.
 	 */
+	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Vector", meta = (Keywords = "Tween | Vector"), Category = "QuickTween")
 	static UQuickVectorTween* MakeQuickTweenVector(
 		UObject* worldContextObject,
 		FVectorGetter from,
@@ -113,6 +114,7 @@ public:
 	 * @param bShouldPlayWhilePaused If true, the tween will update while the game is paused.
 	 * @return A pointer to the created UQuickRotatorTween, or nullptr on failure.
 	 */
+	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Rotator", meta = (Keywords = "Tween | Rotator"), Category = "QuickTween")
 	static UQuickRotatorTween* MakeQuickTweenRotator(
 		UObject* worldContextObject,
 		FRotatorGetter from,
@@ -148,6 +150,7 @@ public:
 	 * @param bShouldPlayWhilePaused If true, the tween will update while the game is paused.
 	 * @return A pointer to the created `UQuickFloatTween`, or nullptr on failure.
 	 */
+	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Float", meta = (Keywords = "Tween | Float"), Category = "QuickTween")
 	static UQuickFloatTween* MakeQuickTweenFloat(
 		UObject* worldContextObject,
 		FloatGetter from,

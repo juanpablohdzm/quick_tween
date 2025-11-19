@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
+#include "Subsystems/WorldSubsystem.h"
 #include "QuickTweenManager.generated.h"
 
 UCLASS()
