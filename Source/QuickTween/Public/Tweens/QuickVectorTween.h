@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
 
 #pragma once
 
@@ -6,14 +6,12 @@
 #include "QuickTweenBase.h"
 #include "QuickVectorTween.generated.h"
 
-/**
- * 
- */
-UCLASS(BlueprintType)
+
 /**
  * Tween class for interpolating between two FVector values over time.
  * Inherits from UQuickTweenBase and provides vector-specific tweening functionality.
  */
+UCLASS(BlueprintType)
 class QUICKTWEEN_API UQuickVectorTween : public UQuickTweenBase
 {
 	GENERATED_BODY()

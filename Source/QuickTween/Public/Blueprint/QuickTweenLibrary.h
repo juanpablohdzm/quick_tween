@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
 
 #pragma once
 
@@ -31,6 +31,18 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FRotatorSetter, const FRotator&, value);
 DECLARE_DYNAMIC_DELEGATE_RetVal(float, FloatGetter);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FloatSetter, const float, value);
 
+/**
+ * UQuickTweenLibrary
+ *
+ * Blueprint function library exposing helpers to create and manage QuickTween
+ * objects (sequences and tweens) from Blueprints and C++.
+ *
+ * This class is a static container (derived from UBlueprintFunctionLibrary)
+ * providing factory functions for creating vector, rotator and float tweens,
+ * plus convenience functions for common SceneComponent operations (move, rotate,
+ * scale, look-at and rotate-around). All functions operate on the game thread
+ * and require a valid world context object when applicable.
+ */
 UCLASS()
 class QUICKTWEEN_API UQuickTweenLibrary : public UBlueprintFunctionLibrary
 {
