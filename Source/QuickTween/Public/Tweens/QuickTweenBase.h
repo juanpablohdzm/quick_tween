@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
+
+#pragma once
 
 #include "CoreMinimal.h"
 #include "QuickTweenable.h"

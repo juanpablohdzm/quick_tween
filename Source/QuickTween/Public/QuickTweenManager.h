@@ -1,8 +1,19 @@
-﻿#pragma once
+﻿// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
+#pragma once
+
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "QuickTweenManager.generated.h"
 
+/**
+ * World-scoped manager that updates active tweens each frame.
+ * Implements a world subsystem to live with the UWorld and implements
+ * FTickableGameObject so the engine will call Tick on this instance.
+ *
+ * Use UQuickTweenManager::Get(...) to retrieve the manager for a given
+ * world context object. The manager does not take ownership of added
+ * UQuickTweenable pointers; it only tracks and updates them.
+ */
 UCLASS()
 class QUICKTWEEN_API UQuickTweenManager final : public UWorldSubsystem, public FTickableGameObject
 {

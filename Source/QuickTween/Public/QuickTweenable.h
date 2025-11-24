@@ -1,13 +1,24 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Interface.h"
 #include "Utils/EaseType.h"
 #include "Utils/LoopType.h"
 #include "QuickTweenable.generated.h"
 
+/**
+ * Base UObject for QuickTween tweens.
+ *
+ * Provides a common interface for playback control, querying state, and configuring
+ * tween behavior. This class is intended to be extended in C++ or Blueprint to
+ * implement concrete tween logic (e.g., property interpolation). Marked as
+ * BlueprintType so instances and subclasses can be used in Blueprint graphs.
+ *
+ * Usage notes:
+ *  - Use SetOwner to assign the owning tween or manager.
+ *  - The class exposes lifecycle and query functions (Play, Pause, Stop, GetProgress, etc.).
+ */
 UCLASS(BlueprintType)
 class QUICKTWEEN_API UQuickTweenable : public UObject
 {

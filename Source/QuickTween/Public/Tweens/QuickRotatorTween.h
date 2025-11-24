@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
 
 #pragma once
 
@@ -8,14 +8,12 @@
 #include "QuickTweenBase.h"
 #include "QuickRotatorTween.generated.h"
 
-/**
- * 
- */
-UCLASS(BlueprintType)
+
 /**
  * Tween class for interpolating between two FRotator values over time.
  * Inherits from UQuickTweenBase and provides rotator-specific tweening functionality.
  */
+UCLASS(BlueprintType)
 class QUICKTWEEN_API UQuickRotatorTween : public UQuickTweenBase
 {
 	GENERATED_BODY()

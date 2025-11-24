@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
 
 #pragma once
 
@@ -31,6 +31,8 @@ struct FQuickTweenSequenceGroup
  * UQuickTweenSequence manages a sequence of tween animations.
  * Allows joining, appending, and controlling multiple tweens as a group.
  * Supports looping, reversing, and querying sequence state.
+ * Note:
+ * - Tweens added to the sequence can not be controlled individually.
  */
 UCLASS(BlueprintType)
 class QUICKTWEEN_API UQuickTweenSequence : public UQuickTweenable
