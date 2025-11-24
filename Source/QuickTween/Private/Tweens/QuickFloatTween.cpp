@@ -2,7 +2,7 @@
 
 
 #include "Tweens/QuickFloatTween.h"
-
+#include "Curves/CurveFloat.h"
 #include "Utils/EaseFunctions.h"
 
 

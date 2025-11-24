@@ -59,6 +59,5 @@ Makefile
 CMakeLists.txt
 cmake-build-*/
 
-# Optional: If you are developing inside a test project and want to exclude the entire project:
-# /YourTestProject/
-
+# Ignore Tests folders
+*/Tests/

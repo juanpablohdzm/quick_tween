@@ -1,6 +1,9 @@
+// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
+#include "LoopType.generated.h"
 
 /**
  * Enum representing the type of looping behavior for tweens.

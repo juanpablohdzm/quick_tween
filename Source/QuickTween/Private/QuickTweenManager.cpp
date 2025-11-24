@@ -2,7 +2,8 @@
 
 #include "QuickTweenManager.h"
 #include "QuickTweenable.h"
-#include "Kismet/GameplayStatics.h"
+#include "Algo/Find.h"
+#include "Engine/World.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenManager, Log, All);
 
@@ -12,7 +13,8 @@ UQuickTweenManager* UQuickTweenManager::Get(const UObject* worldContextObject)
 	{
 		if (UWorld* world = worldContextObject->GetWorld())
 		{
-			return world->GetSubsystem<UQuickTweenManager>();
+			UQuickTweenManager* subsystem =  world->GetSubsystem<UQuickTweenManager>();
+			return subsystem;
 		}
 	}
 	return nullptr;
@@ -25,7 +27,7 @@ UWorld* UQuickTweenManager::GetTickableGameObjectWorld() const
 
 void UQuickTweenManager::Initialize(FSubsystemCollectionBase& Collection)
 {
-	check(!bIsInitialized)
+	check(!bIsInitialized);
 	bIsInitialized = true;
 
 	// Refresh the tick type after initialization
