@@ -8,6 +8,7 @@
 #include "Tweens/QuickRotatorTween.h"
 #include "Tweens/QuickTweenSequence.h"
 #include "Tweens/QuickVectorTween.h"
+#include "Components/SceneComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenLibrary, Log, All);
 

@@ -2,7 +2,7 @@
 
 
 #include "Tweens/QuickRotatorTween.h"
-
+#include "Curves/CurveFloat.h"
 #include "Utils/EaseFunctions.h"
 
 void UQuickRotatorTween::Update(float deltaTime, UQuickTweenable* instigator)
