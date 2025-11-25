@@ -14,21 +14,18 @@ class UQuickVectorTween;
 class UQuickRotatorTween;
 class UQuickFloatTween;
 
+/**
+ *  Enum defining the space in which a QuickTween operates.
+ */
 UENUM(BlueprintType)
 enum class EQuickTweenSpace : uint8
 {
 	WorldSpace UMETA(DisplayName = "World Space"),
 	LocalSpace UMETA(DisplayName = "Local Space")
 };
-/**
- * 
- */
 
-DECLARE_DYNAMIC_DELEGATE_RetVal(FVector, FVectorGetter);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FVectorSetter, const FVector&, value);
-DECLARE_DYNAMIC_DELEGATE_RetVal(FRotator, FRotatorGetter);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FRotatorSetter, const FRotator&, value);
-DECLARE_DYNAMIC_DELEGATE_RetVal(float, FloatGetter);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FloatSetter, const float, value);
 
 /**
@@ -58,10 +55,10 @@ public:
 	 * @param tweenTag            Optional tag to identify the created sequence.
 	 * @param bShouldAutoKill     If true the sequence will be automatically killed when complete.
 	 * @param bShouldPlayWhilePaused If true the sequence will update while game is paused.
-	 * @return                    A newly created UQuickTweenSequence pointer (may be nullptr on failure).
+	 * @return                    A newly created UQuickTweenSequence pointer.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Sequence | Create | Make"), Category = "QuickTween")
-	static UQuickTweenSequence* MakeQuickTweenSequence(
+	static UQuickTweenSequence* QuickTweenCreateSequence(
 		UObject* worldContextObject,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
@@ -87,13 +84,13 @@ public:
 	 * @param tweenTag Optional tag to identify the created tween. Defaults to empty string.
 	 * @param bShouldAutoKill If true the tween will be automatically killed when complete. Defaults to true.
 	 * @param bShouldPlayWhilePaused If true the tween will update while game is paused. Defaults to false.
-	 * @return A pointer to the created UQuickVectorTween, or nullptr on failure.
+	 * @return A pointer to the created UQuickVectorTween.
 	 */
-	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Vector", meta = (Keywords = "Tween | Vector"), Category = "QuickTween")
-	static UQuickVectorTween* MakeQuickTweenVector(
+	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Vector", meta = (Keywords = "Tween | Vector"), Category = "QuickTween")
+	static UQuickVectorTween* QuickTweenCreateTweenVector(
 		UObject* worldContextObject,
-		FVectorGetter from,
-		FVectorGetter to,
+		FVector from,
+		FVector to,
 		FVectorSetter setterFunction,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
@@ -126,11 +123,11 @@ public:
 	 * @param bShouldPlayWhilePaused If true, the tween will update while the game is paused.
 	 * @return A pointer to the created UQuickRotatorTween, or nullptr on failure.
 	 */
-	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Rotator", meta = (Keywords = "Tween | Rotator"), Category = "QuickTween")
-	static UQuickRotatorTween* MakeQuickTweenRotator(
+	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Rotator", meta = (Keywords = "Tween | Rotator"), Category = "QuickTween")
+	static UQuickRotatorTween* QuickTweenCreateTweenRotator(
 		UObject* worldContextObject,
-		FRotatorGetter from,
-		FRotatorGetter to,
+		FRotator from,
+		FRotator to,
 		FRotatorSetter setterFunction,
 		bool bUseShortestPath,
 		float duration = 1.0f,
@@ -160,13 +157,13 @@ public:
 	 * @param tweenTag Optional tag to identify the created tween.
 	 * @param bShouldAutoKill If true, the tween will be automatically killed when complete.
 	 * @param bShouldPlayWhilePaused If true, the tween will update while the game is paused.
-	 * @return A pointer to the created `UQuickFloatTween`, or nullptr on failure.
+	 * @return A pointer to the created `UQuickFloatTween`.
 	 */
-	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Float", meta = (Keywords = "Tween | Float"), Category = "QuickTween")
-	static UQuickFloatTween* MakeQuickTweenFloat(
+	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Float", meta = (Keywords = "Tween | Float"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenCreateTweenFloat(
 		UObject* worldContextObject,
-		FloatGetter from,
-		FloatGetter to,
+		float from,
+		float to,
 		FloatSetter setterFunction,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
@@ -344,7 +341,7 @@ public:
 	 * @param bShouldPlayWhilePaused     If true the tween will update while game is paused.
 	 * @return                           A UQuickFloatTween pointer controlling the rotation, or nullptr on failure.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween RotateAroundPoint SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate Around Point SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent"), Category = "QuickTween")
 	static UQuickFloatTween* RotateAround_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -369,6 +366,6 @@ public:
 	 * @param tweenTag            Tag identifying the tween to find.
 	 * @return                    Pointer to the found UQuickTweenable instance, or nullptr if none found.
 	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Find | By Tag"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Find | By Tag"), DisplayName= "Quick Tween Query Find Tween By Tag", Category = "QuickTween")
 	static UQuickTweenable* FindTweenByTag(const UObject* worldContextObject, const FString& tweenTag);
 };

@@ -12,7 +12,7 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenLibrary, Log, All);
 
-UQuickTweenSequence* UQuickTweenLibrary::MakeQuickTweenSequence(
+UQuickTweenSequence* UQuickTweenLibrary::QuickTweenCreateSequence(
 	UObject* worldContextObject,
 	int32 loops,
 	ELoopType loopType,
@@ -25,10 +25,10 @@ UQuickTweenSequence* UQuickTweenLibrary::MakeQuickTweenSequence(
 	return sequence;
 }
 
-UQuickVectorTween* UQuickTweenLibrary::MakeQuickTweenVector(
+UQuickVectorTween* UQuickTweenLibrary::QuickTweenCreateTweenVector(
 	UObject* worldContextObject,
-	FVectorGetter from,
-	FVectorGetter to,
+	FVector from,
+	FVector to,
 	FVectorSetter setter,
 	float duration,
 	float timeScale,
@@ -43,8 +43,8 @@ UQuickVectorTween* UQuickTweenLibrary::MakeQuickTweenVector(
 {
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
 	tween->SetUp(
-		[from]() -> FVector { return from.Execute(); },
-		[to]() -> FVector { return to.Execute(); },
+		[from]() -> FVector { return from; },
+		[to]() -> FVector { return to; },
 		[setter](const FVector& v) { setter.Execute(v); },
 		duration,
 		timeScale,
@@ -61,10 +61,10 @@ UQuickVectorTween* UQuickTweenLibrary::MakeQuickTweenVector(
 	return tween;
 }
 
-UQuickRotatorTween* UQuickTweenLibrary::MakeQuickTweenRotator(
+UQuickRotatorTween* UQuickTweenLibrary::QuickTweenCreateTweenRotator(
 	UObject* worldContextObject,
-	FRotatorGetter from,
-	FRotatorGetter to,
+	FRotator from,
+	FRotator to,
 	FRotatorSetter setterFunction,
 	bool bUseShortestPath,
 	float duration,
@@ -80,8 +80,8 @@ UQuickRotatorTween* UQuickTweenLibrary::MakeQuickTweenRotator(
 {
 	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
 	tween->SetUp(
-		[from]() -> FRotator { return from.Execute(); },
-		[to]() -> FRotator { return to.Execute(); },
+		[from]() -> FRotator { return from; },
+		[to]() -> FRotator { return to; },
 		bUseShortestPath,
 		[setterFunction](const FRotator& v) { setterFunction.Execute(v); },
 		duration,
@@ -98,10 +98,10 @@ UQuickRotatorTween* UQuickTweenLibrary::MakeQuickTweenRotator(
 	return tween;
 }
 
-UQuickFloatTween* UQuickTweenLibrary::MakeQuickTweenFloat(
+UQuickFloatTween* UQuickTweenLibrary::QuickTweenCreateTweenFloat(
 	UObject* worldContextObject,
-	FloatGetter from,
-	FloatGetter to,
+	float from,
+	float to,
 	FloatSetter setterFunction,
 	float duration,
 	float timeScale,
@@ -115,8 +115,8 @@ UQuickFloatTween* UQuickTweenLibrary::MakeQuickTweenFloat(
 {
 	UQuickFloatTween* tween = NewObject<UQuickFloatTween>();
 	tween->SetUp(
-		[from]() -> float { return from.Execute(); },
-		[to]() -> float { return to.Execute(); },
+		[from]() -> float { return from; },
+		[to]() -> float { return to; },
 		[setterFunction](const float v) { setterFunction.Execute(v); },
 		duration,
 		timeScale,
