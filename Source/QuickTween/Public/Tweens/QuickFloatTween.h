@@ -21,6 +21,8 @@ public:
 	/**
 	 * Set up the vector tween with the specified parameters.
 	 *
+	 * Note: The start value will be cached from the component's current location at the first update.
+	 *
 	 * @param from Function to get the FROM value.
 	 * @param to Function to get the TO value.
 	 * @param setterFunction Function to apply the interpolated value.

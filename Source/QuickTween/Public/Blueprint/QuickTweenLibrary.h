@@ -178,6 +178,8 @@ public:
 	/**
 	 * Create a vector tween that moves a SceneComponent to a target location.
 	 *
+	 * Note: The start value will be cached from the component's current location at the first update.
+	 *
 	 * @param worldContextObject  Context object used to find the world for the tween.
 	 * @param component           The SceneComponent to move.
 	 * @param to                  Target world-space location.
@@ -212,6 +214,8 @@ public:
 	/**
 	 * Create a vector tween that scales a SceneComponent to a target scale.
 	 *
+	 * Note: The start value will be cached from the component's current location at the first update.
+	 *
 	 * @param worldContextObject  Context object used to find the world for the tween.
 	 * @param component           The SceneComponent to scale.
 	 * @param to                  Target scale vector.
@@ -245,6 +249,8 @@ public:
 
 	/**
 	 * Create a rotator tween that rotates a SceneComponent to a target rotator.
+	 *
+	 * Note: The start value will be cached from the component's current location at the first update.
 	 *
 	 * @param worldContextObject  Context object used to find the world for the tween.
 	 * @param component           The SceneComponent to rotate.
@@ -283,6 +289,8 @@ public:
 
 	/**
 	 * Create a rotator tween that orients a SceneComponent to look at a target point.
+	 *
+	 * Note: The start value will be cached from the component's current location at the first update.
 	 *
 	 * @param worldContextObject  Context object used to find the world for the tween.
 	 * @param component           The SceneComponent to rotate.

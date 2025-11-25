@@ -22,6 +22,8 @@ public:
 	/**
 	 * Set up the rotator tween with the specified parameters.
 	 *
+	 * Note: The start value will be cached from the component's current location at the first update.
+	 *
 	 * @param from Function to get the FROM value.
 	 * @param to Function to get the TO value.
 	 * @param bUseShortestPath Whether to use the shortest path for interpolation.
