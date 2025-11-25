@@ -38,7 +38,11 @@ void UQuickRotatorTween::Update(float deltaTime, UQuickTweenable* instigator)
 	EEasePath Path = bShortestPath ? EEasePath::Shortest : EEasePath::Longest;
 	const FRotator value = FEaseFunctions<FRotator>::Ease(StartValue.GetValue(), To(), progress, GetEaseType(), Path);
 	SetterFunction(value);
-	SetProgress(progress);
+	CurrentValue = value;
+	if (OnUpdate.IsBound())
+	{
+		OnUpdate.Broadcast(this);
+	}
 }
 
 void UQuickRotatorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
@@ -55,6 +59,8 @@ void UQuickRotatorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 	{
 		bSnapToEnd = !bSnapToEnd;
 	}
-	SetterFunction(bSnapToEnd ? To() : StartValue.GetValue());
+	FRotator value = bSnapToEnd ? To() : StartValue.GetValue();
+	SetterFunction(value);
+	CurrentValue = value;
 	return Super::Complete(instigator, bSnapToEnd);
 }

@@ -134,8 +134,6 @@ public:
 
 	[[nodiscard]] virtual bool GetIsPlaying() const override { return bIsPlaying;}
 
-	[[nodiscard]] virtual float GetProgress() const override { return Progress; }
-
 	[[nodiscard]] virtual float GetTimeScale() const override { return 1.0f; }
 
 	[[nodiscard]] virtual bool GetIsBackwards() const override { return bIsBackwards; }

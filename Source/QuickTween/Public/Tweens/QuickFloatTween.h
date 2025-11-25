@@ -71,6 +71,9 @@ public:
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
 
 	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
+
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category= "Tween|Info")
+	[[nodiscard]] float GetCurrentValue() const { return CurrentValue; }
 private:
 	/** Starting function returning float. */
 	TFunction<float()> From;
@@ -83,4 +86,7 @@ private:
 
 	/** Function to set the interpolated FVector value. */
 	TFunction<void(const float)> SetterFunction;
+
+	/** Current interpolated value. */
+	float CurrentValue = 0.0f;
 };

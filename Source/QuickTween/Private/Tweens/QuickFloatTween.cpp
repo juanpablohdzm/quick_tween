@@ -38,7 +38,11 @@ void UQuickFloatTween::Update(float deltaTime, UQuickTweenable* instigator)
 
 	const float value = FEaseFunctions<float>::Ease(StartValue.GetValue(), To(), progress, GetEaseType());
 	SetterFunction(value);
-	SetProgress(progress);
+	CurrentValue = value;
+	if (OnUpdate.IsBound())
+	{
+		OnUpdate.Broadcast(this);
+	}
 }
 
 void UQuickFloatTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
@@ -55,6 +59,8 @@ void UQuickFloatTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 	{
 		bSnapToEnd = !bSnapToEnd;
 	}
-	SetterFunction(bSnapToEnd ? To() : StartValue.GetValue());
+	float value = bSnapToEnd ? To() : StartValue.GetValue();
+	SetterFunction(value);
+	CurrentValue = value;
 	return Super::Complete(instigator, bSnapToEnd);
 }

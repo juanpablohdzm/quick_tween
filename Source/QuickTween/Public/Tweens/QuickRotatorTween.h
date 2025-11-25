@@ -77,6 +77,8 @@ public:
 
 	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
 
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] FRotator GetCurrentValue() const { return CurrentValue; }
 private:
 	/** Starting value or function returning FRotator. */
 	TFunction<FRotator()> From;
@@ -90,5 +92,9 @@ private:
 	/** Function to set the interpolated FRotator value. */
 	TFunction<void(const FRotator&)> SetterFunction;
 
+	/** Whether to use the shortest path for interpolation. */
 	bool bShortestPath = true;
+
+	/** Current interpolated value. */
+	FRotator CurrentValue;
 };

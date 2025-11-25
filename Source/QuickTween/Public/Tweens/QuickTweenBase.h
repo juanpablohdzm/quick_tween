@@ -10,7 +10,7 @@
 
 class UQuickTweenSequence;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStartTween, UObject*, Tween);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateTween, UObject*, Tween, float, Progress);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateTween, UObject*, Tween);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompleteTween, UObject*, Tween);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledTween, UObject*, Tween);
 
@@ -51,10 +51,6 @@ public:
 		bool bShouldPlayWhilePaused = false);
 
 	virtual void SetOwner(UQuickTweenable* owner) override { Owner = owner; }
-
-protected:
-	/** Sets the progress of the tween (0-1). */
-	void SetProgress(float progress) { Progress = progress; }
 
 #pragma endregion
 
@@ -99,9 +95,6 @@ public:
 
 	/** Gets the duration of the tween. */
 	[[nodiscard]] virtual float GetDuration() const override { return Duration;}
-
-	/** Gets the current progress of the tween (0-1). */
-	[[nodiscard]] virtual float GetProgress() const override { return Progress; }
 
 	[[nodiscard]] virtual float GetElapsedTime() const override { return ElapsedTime; }
 
@@ -173,8 +166,6 @@ protected:
 private:
 	/** Duration of the tween in seconds. */
 	float Duration = 0.0f;
-	/** Current progress of the tween (0-1). */
-	float Progress = 0.0f;
 	/** Time scale multiplier. */
 	float TimeScale = 1.0f;
 

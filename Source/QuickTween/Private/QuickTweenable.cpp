@@ -84,12 +84,6 @@ float UQuickTweenable::GetElapsedTime() const
 	return 0.0f;
 }
 
-float UQuickTweenable::GetProgress() const
-{
-	ensureAlwaysMsgf(false, TEXT("GetProgress not implemented in IQuickTweenable"));
-	return 0.0f;
-}
-
 float UQuickTweenable::GetTimeScale() const
 {
 	ensureAlwaysMsgf(false, TEXT("GetTimeScale not implemented in IQuickTweenable"));

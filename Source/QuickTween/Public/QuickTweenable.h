@@ -106,10 +106,6 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual float GetElapsedTime() const;
 
-	/** Get the normalized progress of the tween between 0.0 and 1.0. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] virtual float GetProgress() const;
-
 	/** Get the current time scale applied to the tween (1.0 = normal speed). */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual float GetTimeScale() const;

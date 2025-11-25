@@ -57,11 +57,6 @@ void UQuickTweenBase::Update_Restart(float deltaTime, UQuickTweenable* instigato
 {
 	ElapsedTime = !bIsReversed ?  ElapsedTime + deltaTime * GetTimeScale() : ElapsedTime - deltaTime * GetTimeScale();
 
-	if (OnUpdate.IsBound())
-	{
-		OnUpdate.Broadcast(this, Progress);
-	}
-
 
 	bool shouldComplete = false;
 	if (!bIsReversed)
@@ -119,11 +114,6 @@ void UQuickTweenBase::Update_PingPong(float deltaTime, UQuickTweenable* instigat
 			shouldCompleteLoop = true;
 			ElapsedTime = -ElapsedTime;
 		}
-	}
-
-	if (OnUpdate.IsBound())
-	{
-		OnUpdate.Broadcast(this, Progress);
 	}
 
 	if (shouldCompleteLoop)
@@ -225,7 +215,6 @@ void UQuickTweenBase::Restart(UQuickTweenable* instigator)
 
 	float duration = GetLoopType() == ELoopType::PingPong ? GetDuration() : GetDuration() * GetLoops();
 	ElapsedTime = bIsReversed ? duration : 0.0f;
-	Progress    = bIsReversed ? 1.0f     : 0.0f;
 	CurrentLoop = bIsReversed ? GetLoops() : 1;
 	return;
 }
@@ -239,7 +228,6 @@ void UQuickTweenBase::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 	bIsCompleted = true;
 
 	ElapsedTime = Duration;
-	Progress    = 1.0f;
 	if (bAutoKill)
 	{
 		Kill(nullptr);
@@ -257,7 +245,6 @@ void UQuickTweenBase::Reset(UQuickTweenable* instigator)
 	if (!InstigatorIsOwner(instigator)) return;
 
 	ElapsedTime = 0.0f;
-	Progress    = 0.0f;
 	Duration    = 0.0f;
 	TimeScale   = 1.0f;
 	bIsPlaying  = false;
