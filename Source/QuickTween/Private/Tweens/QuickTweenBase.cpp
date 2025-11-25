@@ -129,6 +129,46 @@ void UQuickTweenBase::Update_PingPong(float deltaTime, UQuickTweenable* instigat
 	}
 }
 
+void UQuickTweenBase::AssignOnStartEvent(FDynamicDelegateTween callback)
+{
+	OnStart.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenBase::AssignOnUpdateEvent(FDynamicDelegateTween callback)
+{
+	OnUpdate.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenBase::AssignOnCompleteEvent(FDynamicDelegateTween callback)
+{
+	OnComplete.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenBase::AssignOnKilledEvent(FDynamicDelegateTween callback)
+{
+	OnKilled.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenBase::RemoveAllOnStartEvent(const UObject* object)
+{
+	OnStart.RemoveAll(object);
+}
+
+void UQuickTweenBase::RemoveAllOnUpdateEvent(const UObject* object)
+{
+	OnUpdate.RemoveAll(object);
+}
+
+void UQuickTweenBase::RemoveAllOnCompleteEvent(const UObject* object)
+{
+	OnComplete.RemoveAll(object);
+}
+
+void UQuickTweenBase::RemoveAllOnKilledEvent(const UObject* object)
+{
+	OnKilled.RemoveAll(object);
+}
+
 void UQuickTweenBase::Update(float deltaTime, UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator) || GetIsCompleted() || !GetIsPlaying()) return;

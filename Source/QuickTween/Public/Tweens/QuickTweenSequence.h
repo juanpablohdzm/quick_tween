@@ -8,12 +8,12 @@
 #include "../Utils/LoopType.h"
 #include "QuickTweenSequence.generated.h"
 
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateTweenSequence, UObject*, TweenSequence);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompleteTweenSequence, UObject*, TweenSequence);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledTweenSequence, UObject*, TweenSequence);
-
 class UQuickTweenBase;
+class UQuickTweenSequence;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateTweenSequence, UQuickTweenSequence*);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FDynamicDelegateTweenSequence, UQuickTweenSequence*, TweenSequence);
+
 
 /**
  * Represents a group of tweens that run in parallel.
@@ -181,17 +181,78 @@ public:
 
 #pragma region Delegates
 public:
+
+	/**
+	 * Assign a Blueprint dynamic delegate to be invoked when the tween starts.
+	 * @param callback Dynamic delegate with signature (UQuickTweenSequence* Tween).
+	 *                 The provided delegate will be stored and called on start events.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void AssignOnStartEvent(FDynamicDelegateTweenSequence callback);
+
+	/**
+	 * Assign a Blueprint dynamic delegate to be invoked on every tween update.
+	 * @param callback Dynamic delegate with signature (UQuickTweenSequence* Tween).
+	 *                 The provided delegate will be stored and called each update tick.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void AssignOnUpdateEvent(FDynamicDelegateTweenSequence callback);
+
+	/**
+	 * Assign a Blueprint dynamic delegate to be invoked when the tween completes.
+	 * @param callback Dynamic delegate with signature (UQuickTweenSequence* Tween).
+	 *                 The provided delegate will be stored and called on completion.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void AssignOnCompleteEvent(FDynamicDelegateTweenSequence callback);
+
+	/**
+	 * Assign a Blueprint dynamic delegate to be invoked when the tween is killed.
+	 * @param callback Dynamic delegate with signature (UQuickTweenSequence* Tween).
+	 *                 The provided delegate will be stored and called when the tween is killed.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void AssignOnKilledEvent(FDynamicDelegateTweenSequence callback);
+
+	/**
+	 * Remove all bound Blueprint dynamic delegates for the start event that belong to the specified object.
+	 * @param object The UObject whose bindings should be removed. If nullptr, no action is taken.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void RemoveAllOnStartEvent(const UObject* object);
+
+	/**
+	 * Remove all bound Blueprint dynamic delegates for the update event that belong to the specified object.
+	 * @param object The UObject whose bindings should be removed. If nullptr, no action is taken.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void RemoveAllOnUpdateEvent(const UObject* object);
+
+	/**
+	 * Remove all bound Blueprint dynamic delegates for the complete event that belong to the specified object.
+	 * @param object The UObject whose bindings should be removed. If nullptr, no action is taken.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void RemoveAllOnCompleteEvent(const UObject* object);
+
+	/**
+	 * Remove all bound Blueprint dynamic delegates for the killed event that belong to the specified object.
+	 * @param object The UObject whose bindings should be removed. If nullptr, no action is taken.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void RemoveAllOnKilledEvent(const UObject* object);
+
+	/** Called when the sequence starts. */
+	FNativeDelegateTweenSequence OnStart;
+
 	/** Called when the sequence updates. */
-	UPROPERTY(BlueprintAssignable)
-	FOnUpdateTweenSequence OnUpdate;
+	FNativeDelegateTweenSequence OnUpdate;
 
 	/** Called when the sequence completes. */
-	UPROPERTY(BlueprintAssignable)
-	FOnCompleteTweenSequence OnComplete;
+	FNativeDelegateTweenSequence OnComplete;
 
 	/** Called when the sequence is killed. */
-	UPROPERTY(BlueprintAssignable)
-	FOnKilledTweenSequence OnKilled;
+	FNativeDelegateTweenSequence OnKilled;
 #pragma endregion
 protected:
 	bool InstigatorIsOwner(UQuickTweenable* instigator) const

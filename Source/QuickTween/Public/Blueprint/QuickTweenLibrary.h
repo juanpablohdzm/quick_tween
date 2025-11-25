@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Utils/EaseType.h"
 #include "Utils/LoopType.h"
+#include "Utils/CommonValues.h"
 #include "QuickTweenLibrary.generated.h"
 
 class UQuickTweenable;
@@ -14,19 +15,6 @@ class UQuickVectorTween;
 class UQuickRotatorTween;
 class UQuickFloatTween;
 
-/**
- *  Enum defining the space in which a QuickTween operates.
- */
-UENUM(BlueprintType)
-enum class EQuickTweenSpace : uint8
-{
-	WorldSpace UMETA(DisplayName = "World Space"),
-	LocalSpace UMETA(DisplayName = "Local Space")
-};
-
-DECLARE_DYNAMIC_DELEGATE_OneParam(FVectorSetter, const FVector&, value);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FRotatorSetter, const FRotator&, value);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FloatSetter, const float, value);
 
 /**
  * UQuickTweenLibrary
@@ -57,7 +45,7 @@ public:
 	 * @param bShouldPlayWhilePaused If true the sequence will update while game is paused.
 	 * @return                    A newly created UQuickTweenSequence pointer.
 	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Sequence | Create | Make"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Sequence | Create | Make", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickTweenSequence* QuickTweenCreateSequence(
 		UObject* worldContextObject,
 		int32 loops = 1,
@@ -86,7 +74,7 @@ public:
 	 * @param bShouldPlayWhilePaused If true the tween will update while game is paused. Defaults to false.
 	 * @return A pointer to the created UQuickVectorTween.
 	 */
-	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Vector", meta = (Keywords = "Tween | Vector"), Category = "QuickTween")
+	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Vector", meta = (Keywords = "Tween | Vector", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVectorTween* QuickTweenCreateTweenVector(
 		UObject* worldContextObject,
 		FVector from,
@@ -123,7 +111,7 @@ public:
 	 * @param bShouldPlayWhilePaused If true, the tween will update while the game is paused.
 	 * @return A pointer to the created UQuickRotatorTween, or nullptr on failure.
 	 */
-	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Rotator", meta = (Keywords = "Tween | Rotator"), Category = "QuickTween")
+	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Rotator", meta = (Keywords = "Tween | Rotator", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickRotatorTween* QuickTweenCreateTweenRotator(
 		UObject* worldContextObject,
 		FRotator from,
@@ -159,7 +147,7 @@ public:
 	 * @param bShouldPlayWhilePaused If true, the tween will update while the game is paused.
 	 * @return A pointer to the created `UQuickFloatTween`.
 	 */
-	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Float", meta = (Keywords = "Tween | Float"), Category = "QuickTween")
+	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Float", meta = (Keywords = "Tween | Float", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickFloatTween* QuickTweenCreateTweenFloat(
 		UObject* worldContextObject,
 		float from,
@@ -195,7 +183,7 @@ public:
 	 * @param bShouldPlayWhilePaused If true the tween will update while game is paused.
 	 * @return                    A UQuickVectorTween pointer controlling the movement.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Move To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Move To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVectorTween* MoveTo_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -231,7 +219,7 @@ public:
 	 * @param bShouldPlayWhilePaused If true the tween will update while game is paused.
 	 * @return                    A UQuickVectorTween pointer controlling the scale tween.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Scale To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Scale To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVectorTween* ScaleTo_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -268,7 +256,7 @@ public:
 	 * @param bShouldPlayWhilePaused If true the tween will update while game is paused.
 	 * @return                    A UQuickRotatorTween pointer controlling the rotation.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickRotatorTween* RotateTo_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -307,7 +295,7 @@ public:
 	 * @param bShouldPlayWhilePaused If true the tween will update while game is paused.
 	 * @return                    A UQuickRotatorTween pointer controlling the look-at rotation.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween LookAt SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween LookAt SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickRotatorTween* LookAt_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -349,7 +337,7 @@ public:
 	 * @param bShouldPlayWhilePaused     If true the tween will update while game is paused.
 	 * @return                           A UQuickFloatTween pointer controlling the rotation, or nullptr on failure.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate Around Point SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate Around Point SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickFloatTween* RotateAround_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -374,6 +362,6 @@ public:
 	 * @param tweenTag            Tag identifying the tween to find.
 	 * @return                    Pointer to the found UQuickTweenable instance, or nullptr if none found.
 	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Find | By Tag"), DisplayName= "Quick Tween Query Find Tween By Tag", Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Find | By Tag", WorldContext = "worldContextObject"), DisplayName= "Quick Tween Query Find Tween By Tag", Category = "QuickTween")
 	static UQuickTweenable* FindTweenByTag(const UObject* worldContextObject, const FString& tweenTag);
 };

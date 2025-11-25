@@ -535,3 +535,43 @@ UObject* UQuickTweenSequence::GetTween(int32 index) const
 	}
 	return nullptr;
 }
+
+void UQuickTweenSequence::AssignOnStartEvent(FDynamicDelegateTweenSequence callback)
+{
+	OnStart.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenSequence::AssignOnUpdateEvent(FDynamicDelegateTweenSequence callback)
+{
+	OnUpdate.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenSequence::AssignOnCompleteEvent(FDynamicDelegateTweenSequence callback)
+{
+	OnComplete.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenSequence::AssignOnKilledEvent(FDynamicDelegateTweenSequence callback)
+{
+	OnKilled.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenSequence::RemoveAllOnStartEvent(const UObject* object)
+{
+	OnStart.RemoveAll(object);
+}
+
+void UQuickTweenSequence::RemoveAllOnUpdateEvent(const UObject* object)
+{
+	OnUpdate.RemoveAll(object);
+}
+
+void UQuickTweenSequence::RemoveAllOnCompleteEvent(const UObject* object)
+{
+	OnComplete.RemoveAll(object);
+}
+
+void UQuickTweenSequence::RemoveAllOnKilledEvent(const UObject* object)
+{
+	OnKilled.RemoveAll(object);
+}

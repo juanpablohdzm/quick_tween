@@ -9,10 +9,10 @@
 #include "QuickTweenBase.generated.h"
 
 class UQuickTweenSequence;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStartTween, UObject*, Tween);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateTween, UObject*, Tween);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCompleteTween, UObject*, Tween);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledTween, UObject*, Tween);
+class UQuickTweenBase;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateTween, UQuickTweenBase*);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FDynamicDelegateTween, UQuickTweenBase*, Tween);
 
 /**
  * Base class for all QuickTween tweens.
@@ -137,28 +137,84 @@ public:
 	[[nodiscard]] virtual bool GetShouldPlayWhilePaused() const override {return bPlayWhilePaused;}
 #pragma endregion
 
-protected:
 	bool InstigatorIsOwner(UQuickTweenable* instigator) const
 	{
 		if (!Owner) return true; // No owner means it's not in a sequence
 		return instigator == Owner;
 	};
 
+	/**
+	 * Assign a Blueprint dynamic delegate to be invoked when the tween starts.
+	 * @param callback Dynamic delegate with signature (UQuickTweenBase* Tween).
+	 *                 The provided delegate will be stored and called on start events.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void AssignOnStartEvent(FDynamicDelegateTween callback);
+
+	/**
+	 * Assign a Blueprint dynamic delegate to be invoked on every tween update.
+	 * @param callback Dynamic delegate with signature (UQuickTweenBase* Tween).
+	 *                 The provided delegate will be stored and called each update tick.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void AssignOnUpdateEvent(FDynamicDelegateTween callback);
+
+	/**
+	 * Assign a Blueprint dynamic delegate to be invoked when the tween completes.
+	 * @param callback Dynamic delegate with signature (UQuickTweenBase* Tween).
+	 *                 The provided delegate will be stored and called on completion.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void AssignOnCompleteEvent(FDynamicDelegateTween callback);
+
+	/**
+	 * Assign a Blueprint dynamic delegate to be invoked when the tween is killed.
+	 * @param callback Dynamic delegate with signature (UQuickTweenBase* Tween).
+	 *                 The provided delegate will be stored and called when the tween is killed.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void AssignOnKilledEvent(FDynamicDelegateTween callback);
+
+	/**
+	 * Remove all bound Blueprint dynamic delegates for the start event that belong to the specified object.
+	 * @param object The UObject whose bindings should be removed. If nullptr, no action is taken.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void RemoveAllOnStartEvent(const UObject* object);
+
+	/**
+	 * Remove all bound Blueprint dynamic delegates for the update event that belong to the specified object.
+	 * @param object The UObject whose bindings should be removed. If nullptr, no action is taken.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void RemoveAllOnUpdateEvent(const UObject* object);
+
+	/**
+	 * Remove all bound Blueprint dynamic delegates for the complete event that belong to the specified object.
+	 * @param object The UObject whose bindings should be removed. If nullptr, no action is taken.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void RemoveAllOnCompleteEvent(const UObject* object);
+
+	/**
+	 * Remove all bound Blueprint dynamic delegates for the killed event that belong to the specified object.
+	 * @param object The UObject whose bindings should be removed. If nullptr, no action is taken.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void RemoveAllOnKilledEvent(const UObject* object);
+
+
 	/** Event triggered when the tween starts. */
-	UPROPERTY(BlueprintAssignable)
-	FOnStartTween OnStart;
+	FNativeDelegateTween OnStart;
 
 	/** Event triggered when the tween updates. */
-	UPROPERTY(BlueprintAssignable)
-	FOnUpdateTween OnUpdate;
+	FNativeDelegateTween OnUpdate;
 
 	/** Event triggered when the tween completes. */
-	UPROPERTY(BlueprintAssignable)
-	FOnCompleteTween OnComplete;
+	FNativeDelegateTween OnComplete;
 
 	/** Event triggered when the tween is killed. */
-	UPROPERTY(BlueprintAssignable)
-	FOnKilledTween OnKilled;
+	FNativeDelegateTween OnKilled;
 
 	/** Time elapsed since the tween started. */
 	float ElapsedTime = 0.0f;
