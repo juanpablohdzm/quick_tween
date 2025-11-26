@@ -29,7 +29,7 @@ public:
 			Latent,
 			LatentInfo = "latentInfo",
 			ExpandEnumAsExecs = "latentStep",
-			Keywords = "Tween | Sequence | Create | Make",
+			Keywords = "Tween | Sequence | Create | Make | Latent",
 			HidePin = "latentStep"
 			),
 		Category = "QuickTween")
@@ -50,7 +50,7 @@ public:
 			Latent,
 			LatentInfo = "latentInfo",
 			ExpandEnumAsExecs = "latentStep",
-			Keywords = "Tween | Vector | Create | Make",
+			Keywords = "Tween | Vector | Create | Make | Latent",
 			HidePin = "latentStep"
 			),
 		Category = "QuickTween")
@@ -80,7 +80,7 @@ public:
 			Latent,
 			LatentInfo = "latentInfo",
 			ExpandEnumAsExecs = "latentStep",
-			Keywords = "Tween | Rotator | Create | Make",
+			Keywords = "Tween | Rotator | Create | Make | Latent",
 			HidePin = "latentStep"
 			),
 		Category = "QuickTween")
@@ -110,7 +110,7 @@ public:
 			Latent,
 			LatentInfo = "latentInfo",
 			ExpandEnumAsExecs = "latentStep",
-			Keywords = "Tween | Rotator | Create | Make",
+			Keywords = "Tween | Rotator | Create | Make | Latent",
 			HidePin = "latentStep"
 			),
 		Category = "QuickTween")
@@ -131,4 +131,91 @@ public:
 		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = true);
+
+	UFUNCTION(BlueprintCallable,
+		meta = (
+			WorldContext = "worldContextObject",
+			Latent,
+			LatentInfo = "latentInfo",
+			ExpandEnumAsExecs = "latentStep",
+			Keywords = "Tween | Rotator | Create | Make | Latent",
+			HidePin = "latentStep"
+			),
+		Category = "QuickTween")
+		static UQuickRotatorTween* LatentRotateTo_SceneComponent(
+        		UObject* worldContextObject,
+        		FLatentActionInfo latentInfo,
+				EQuickTweenLatentSteps& latentStep,
+        		USceneComponent* component,
+        		FRotator to,
+        		bool bUseShortestPath = true,
+        		float duration = 1.0f,
+        		float timeScale = 1.0f,
+        		EEaseType easeType = EEaseType::Linear,
+        		UCurveFloat* easeCurve = nullptr,
+        		int32 loops = 1,
+        		ELoopType loopType = ELoopType::Restart,
+        		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
+        		FString tweenTag = "",
+        		bool bShouldAutoKill = true,
+        		bool bShouldPlayWhilePaused = false,
+        		bool bShouldAutoPlay = true);
+
+		UFUNCTION(BlueprintCallable,
+			meta = (
+				WorldContext = "worldContextObject",
+				Latent,
+				LatentInfo = "latentInfo",
+				ExpandEnumAsExecs = "latentStep",
+				Keywords = "Tween | Rotator | Create | Make | Latent",
+				HidePin = "latentStep"
+				),
+			Category = "QuickTween")
+        static UQuickRotatorTween* LatentLookAt_SceneComponent(
+        		UObject* worldContextObject,
+        		FLatentActionInfo latentInfo,
+				EQuickTweenLatentSteps& latentStep,
+        		USceneComponent* component,
+        		FVector to,
+        		bool bUseShortestPath = true,
+        		float duration = 1.0f,
+        		float timeScale = 1.0f,
+        		EEaseType easeType = EEaseType::Linear,
+        		UCurveFloat* easeCurve = nullptr,
+        		int32 loops = 1,
+        		ELoopType loopType = ELoopType::Restart,
+        		FString tweenTag = "",
+        		bool bShouldAutoKill = true,
+        		bool bShouldPlayWhilePaused = false,
+        		bool bShouldAutoPlay = true);
+
+		UFUNCTION(BlueprintCallable,
+		meta = (
+			WorldContext = "worldContextObject",
+			Latent,
+			LatentInfo = "latentInfo",
+			ExpandEnumAsExecs = "latentStep",
+			Keywords = "Tween | Float | Create | Make | Latent",
+			HidePin = "latentStep"
+			),
+		Category = "QuickTween")
+        static UQuickFloatTween* LatentRotateAround_SceneComponent(
+        		UObject* worldContextObject,
+        		FLatentActionInfo latentInfo,
+				EQuickTweenLatentSteps& latentStep,
+        		USceneComponent* component,
+        		float from,
+        		float to,
+        		FVector point,
+        		FVector normal,
+        		float duration = 1.0f,
+        		float timeScale = 1.0f,
+        		EEaseType easeType = EEaseType::Linear,
+        		UCurveFloat* easeCurve = nullptr,
+        		int32 loops = 1,
+        		ELoopType loopType = ELoopType::Restart,
+        		FString tweenTag = "",
+        		bool bShouldAutoKill = true,
+        		bool bShouldPlayWhilePaused = false,
+        		bool bShouldAutoPlay = true);
 };
