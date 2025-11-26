@@ -5,41 +5,6 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenLatentAction, Log, All);
 
-FQuickTweenLatentAction::FQuickTweenLatentAction(
-	const FLatentActionInfo& latentInfo,
-	UQuickTweenSequence* tweenObj,
-	EQuickTweenLatentSteps& outLatentStep)
-	:	ExecutionFunction(latentInfo.ExecutionFunction),
-		OutputLink(latentInfo.Linkage),
-		CallbackTarget(latentInfo.CallbackTarget),
-		bIsFirstUpdate(true),
-		StepPtr(&outLatentStep)
-{
-	Buffer.Reserve(50);
-
-	HandleStep(EQuickTweenLatentSteps::Default);
-
-	tweenObj->OnStart.AddLambda([this](UQuickTweenSequence* Tween)
-	{
-		HandleStep(EQuickTweenLatentSteps::OnStart);
-	});
-
-	tweenObj->OnUpdate.AddLambda([this](UQuickTweenSequence* Tween)
-	{
-		HandleStep(EQuickTweenLatentSteps::OnUpdate);
-	});
-
-	tweenObj->OnComplete.AddLambda([this](UQuickTweenSequence* Tween)
-	{
-		HandleStep(EQuickTweenLatentSteps::OnComplete);
-	});
-
-	tweenObj->OnKilled.AddLambda([this](UQuickTweenSequence* Tween)
-	{
-		HandleStep(EQuickTweenLatentSteps::OnKilled);
-	});
-}
-
 void FQuickTweenLatentAction::HandleStep(EQuickTweenLatentSteps NewStep)
 {
 	Buffer.Push(NewStep);
@@ -55,15 +20,22 @@ void FQuickTweenLatentAction::UpdateOperation(FLatentResponse& Response)
 
 	if (Buffer.Num() > 0)
 	{
-		EQuickTweenLatentSteps step = Buffer[0];
+		const EQuickTweenLatentSteps nextStep = Buffer[0];
 		Buffer.RemoveAt(0);
-		if (*StepPtr != step || step == EQuickTweenLatentSteps::OnUpdate || bIsFirstUpdate)
+
+		const bool bIsNewStep = (*StepPtr != nextStep);
+		const bool bShouldTriggerUpdate = (nextStep == EQuickTweenLatentSteps::OnUpdate);
+		const bool bForceFirstTrigger = bIsFirstUpdate;
+
+		// Trigger if it's new OR an OnUpdate OR forced by first update
+		if (bIsNewStep || bShouldTriggerUpdate || bForceFirstTrigger)
 		{
-			*StepPtr = step;
+			*StepPtr = nextStep;
 			Response.TriggerLink(ExecutionFunction, OutputLink, CallbackTarget);
-			if ((*StepPtr == EQuickTweenLatentSteps::OnComplete || *StepPtr == EQuickTweenLatentSteps::OnKilled) && Buffer.IsEmpty())
+			if (nextStep == EQuickTweenLatentSteps::OnKilled)
 			{
 				Response.DoneIf(true);
+				return;
 			}
 		}
 	}
@@ -71,5 +43,6 @@ void FQuickTweenLatentAction::UpdateOperation(FLatentResponse& Response)
 	{
 		Response.TriggerLink(ExecutionFunction, OutputLink, CallbackTarget);
 	}
+
 	bIsFirstUpdate = false;
 }
