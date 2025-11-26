@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Latent/FQuickTweenLatentAction.h"
 #include "Tweens/QuickTweenBase.h"
+#include "Utils/CommonValues.h"
 #include "Utils/LoopType.h"
 #include "QuickTweenLatentLibrary.generated.h"
 
@@ -39,6 +40,94 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = true);
+
+	UFUNCTION(BlueprintCallable,
+		meta = (
+			WorldContext = "worldContextObject",
+			Latent,
+			LatentInfo = "latentInfo",
+			ExpandEnumAsExecs = "latentStep",
+			Keywords = "Tween | Vector | Create | Make",
+			HidePin = "latentStep"
+			),
+		Category = "QuickTween")
+	static UQuickVectorTween* QuickTweenCreateLatentTweenVector(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		FVector from,
+		FVector to,
+		FVectorSetter setterFunction,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
+		FString tweenTag = "",
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = true);
+
+
+	UFUNCTION(BlueprintCallable,
+		meta = (
+			WorldContext = "worldContextObject",
+			Latent,
+			LatentInfo = "latentInfo",
+			ExpandEnumAsExecs = "latentStep",
+			Keywords = "Tween | Rotator | Create | Make",
+			HidePin = "latentStep"
+			),
+		Category = "QuickTween")
+	static UQuickRotatorTween* QuickTweenCreateLatentTweenRotator(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		FRotator from,
+		FRotator to,
+		FRotatorSetter setterFunction,
+		bool bUseShortestPath,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
+		FString tweenTag = "",
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = true);
+
+	UFUNCTION(BlueprintCallable,
+		meta = (
+			WorldContext = "worldContextObject",
+			Latent,
+			LatentInfo = "latentInfo",
+			ExpandEnumAsExecs = "latentStep",
+			Keywords = "Tween | Rotator | Create | Make",
+			HidePin = "latentStep"
+			),
+		Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenCreateLatentTweenFloat(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		float from,
+		float to,
+		FloatSetter setterFunction,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		FString tweenTag = "",
 		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = true);

@@ -278,15 +278,17 @@ void UQuickTweenBase::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 	bIsCompleted = true;
 
 	ElapsedTime = Duration;
-	if (bAutoKill)
-	{
-		Kill(nullptr);
-	}
 
 	if (OnComplete.IsBound())
 	{
 		OnComplete.Broadcast(this);
 	}
+
+	if (bAutoKill)
+	{
+		Kill(nullptr);
+	}
+
 	return;
 }
 
@@ -317,4 +319,9 @@ void UQuickTweenBase::Kill(UQuickTweenable* instigator)
 
 	bIsPendingKill = true;
 	bIsPlaying     = false;
+
+	if (OnKilled.IsBound())
+	{
+		OnKilled.Broadcast(this);
+	}
 }

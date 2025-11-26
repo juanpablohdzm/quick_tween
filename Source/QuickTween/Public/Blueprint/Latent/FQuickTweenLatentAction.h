@@ -20,7 +20,7 @@ UENUM()
 enum class EQuickTweenLatentSteps : uint8
 {
 	/** Initial/default state before any tween events have been received. */
-	Default  UMETA(DisplayName = ""),
+	Default,
 	/** The tween has started (OnStart event). */
 	OnStart,
 	/** The tween has produced an update/tick (OnUpdate event). */
