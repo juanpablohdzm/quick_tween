@@ -9,66 +9,79 @@
 
 struct FLatentActionInfo;
 
+UENUM()
+enum class EQuickTweenLatentSteps : uint8
+{
+	Default,
+	OnStart,
+	OnUpdate,
+	OnComplete,
+	OnKilled
+};
+
 /**
  * 
  */
 class FQuickTweenLatentAction : public FPendingLatentAction
 {
 public:
-	FName StartFunction = TEXT("OnStart");
-	FName UpdateFunction = TEXT("OnUpdate");
-	FName CompleteFunction = TEXT("OnComplete");
-
-	int32 StartLink = 1;
-	int32 UpdateLink = 2;
-	int32 CompleteLink = 3;
-
+	FName ExecutionFunction;
+	int32 OutputLink;
 	FWeakObjectPtr CallbackTarget;
 	bool bIsDone = false;
+	bool bShotOnce = false;
 
-	FQuickTweenLatentAction(const FLatentActionInfo& LatentInfo, UQuickTweenBase* Obj)
+	EQuickTweenLatentSteps* StepPtr = nullptr;
+
+	FQuickTweenLatentAction(const FLatentActionInfo& latentInfo, UQuickTweenBase* obj, EQuickTweenLatentSteps& outLatentStep)
 	{
-		CallbackTarget = LatentInfo.CallbackTarget;
-		CompleteFunction = LatentInfo.ExecutionFunction;
-		CompleteLink = LatentInfo.Linkage;
+		ExecutionFunction = latentInfo.ExecutionFunction;
+		OutputLink = latentInfo.Linkage;
+		CallbackTarget = latentInfo.CallbackTarget;
+		StepPtr = &outLatentStep;
+		*StepPtr = EQuickTweenLatentSteps::Default;
+		bShotOnce = true;
 
-		Obj->OnStart.AddLambda([this](UQuickTweenBase* Tween)
+		obj->OnStart.AddLambda([this](UQuickTweenBase* Tween)
 		{
 			OnTweenStarted(Cast<UQuickTweenable>(Tween));
 		});
-		Obj->OnUpdate.AddLambda([this](UQuickTweenBase* Tween)
+		obj->OnUpdate.AddLambda([this](UQuickTweenBase* Tween)
 		{
 			OnTweenUpdated(Cast<UQuickTweenable>(Tween));
 		});
-		Obj->OnComplete.AddLambda([this](UQuickTweenBase* Tween)
+		obj->OnComplete.AddLambda([this](UQuickTweenBase* Tween)
 		{
 			OnTweenCompleted(Cast<UQuickTweenable>(Tween));
 		});
-		Obj->OnKilled.AddLambda([this](UQuickTweenBase* Tween)
+		obj->OnKilled.AddLambda([this](UQuickTweenBase* Tween)
 		{
 			OnTweenKilled(Cast<UQuickTweenable>(Tween));
 		});
 	}
 
-	FQuickTweenLatentAction(const FLatentActionInfo& LatentInfo, UQuickTweenSequence* Obj)
+	FQuickTweenLatentAction(const FLatentActionInfo& latentInfo, UQuickTweenSequence* obj, EQuickTweenLatentSteps& outLatentStep)
 	{
-		CallbackTarget = LatentInfo.CallbackTarget;
-		CompleteFunction = LatentInfo.ExecutionFunction;
-		CompleteLink = LatentInfo.Linkage;
+		ExecutionFunction = latentInfo.ExecutionFunction;
+		OutputLink = latentInfo.Linkage;
+		CallbackTarget = latentInfo.CallbackTarget;
+		StepPtr = &outLatentStep;
+		*StepPtr = EQuickTweenLatentSteps::Default;
+		bShotOnce = true;
 
-		Obj->OnStart.AddLambda([this](UQuickTweenSequence* Tween)
+		obj->OnStart.AddLambda([this](UQuickTweenSequence* Tween)
 		{
 			OnTweenStarted(Cast<UQuickTweenable>(Tween));
 		});
-		Obj->OnUpdate.AddLambda([this](UQuickTweenSequence* Tween)
+		obj->OnUpdate.AddLambda([this](UQuickTweenSequence* Tween)
 		{
 			OnTweenUpdated(Cast<UQuickTweenable>(Tween));
 		});
-		Obj->OnComplete.AddLambda([this](UQuickTweenSequence* Tween)
+		obj->OnComplete.AddLambda([this](UQuickTweenSequence* Tween)
 		{
 			OnTweenCompleted(Cast<UQuickTweenable>(Tween));
 		});
-		Obj->OnKilled.AddLambda([this](UQuickTweenSequence* Tween)
+		obj->OnKilled.AddLambda([this](UQuickTweenSequence* Tween)
 		{
 			OnTweenKilled(Cast<UQuickTweenable>(Tween));
 		});
@@ -76,38 +89,80 @@ public:
 
 	virtual void UpdateOperation(FLatentResponse& Response) override
 	{
-		// Finish latent action when bIsDone is true
-		Response.FinishAndTriggerIf(bIsDone, CompleteFunction, CompleteLink, CallbackTarget);
-	}
-
-	void Trigger(FName Func, int32 Link)
-	{
-		if (UObject* Obj = CallbackTarget.Get())
+		switch (*StepPtr)
 		{
-			FLatentResponse LatentResponse{0.01f};
-			LatentResponse.TriggerLink(Func, Link, Obj);
+		case EQuickTweenLatentSteps::Default:
+			if (bShotOnce)
+			{
+				Response.TriggerLink(ExecutionFunction, OutputLink, CallbackTarget);
+				bShotOnce = false;
+			}
+			break;
+		case EQuickTweenLatentSteps::OnStart:
+			if (bShotOnce)
+			{
+				Response.TriggerLink(ExecutionFunction, OutputLink, CallbackTarget);
+				bShotOnce = false;
+			}
+			break;
+		case EQuickTweenLatentSteps::OnUpdate:
+			Response.TriggerLink(ExecutionFunction, OutputLink, CallbackTarget);
+			break;
+		case EQuickTweenLatentSteps::OnComplete:
+			if (bShotOnce)
+			{
+				Response.TriggerLink(ExecutionFunction, OutputLink, CallbackTarget);
+				bShotOnce = false;
+			}
+			break;
+		case EQuickTweenLatentSteps::OnKilled:
+			if (bShotOnce)
+			{
+				Response.TriggerLink(ExecutionFunction, OutputLink, CallbackTarget);
+				bShotOnce = false;
+			}
+			break;
+		default: ;
 		}
+		Response.FinishAndTriggerIf(bIsDone, ExecutionFunction, OutputLink, CallbackTarget);
 	}
 
 private:
 	void OnTweenStarted(UQuickTweenable* Tween)
 	{
-		Trigger(StartFunction, StartLink);
+		if (StepPtr)
+		{
+			*StepPtr = EQuickTweenLatentSteps::OnStart;
+		}
+		bShotOnce = true;
 	}
 
 	void OnTweenUpdated(UQuickTweenable* Tween)
 	{
-		Trigger(UpdateFunction, UpdateLink);
+		if (StepPtr)
+		{
+			*StepPtr = EQuickTweenLatentSteps::OnUpdate;
+		}
+		bShotOnce = true;
 	}
 
 	void OnTweenCompleted(UQuickTweenable* Tween)
 	{
+		if (StepPtr)
+		{
+			*StepPtr = EQuickTweenLatentSteps::OnComplete;
+		}
+		bShotOnce = true;
 		bIsDone = true;  // Mark latent action done to finish
-		Trigger(CompleteFunction, CompleteLink);
 	}
 
 	void OnTweenKilled(UQuickTweenable* Tween)
 	{
+		if (StepPtr)
+		{
+			*StepPtr = EQuickTweenLatentSteps::OnKilled;
+		}
+		bShotOnce = true;
 		bIsDone = true;  // Mark latent action done to finish
 	}
 };

@@ -3,8 +3,6 @@
 
 #include "Blueprint/QuickTweenLatentLibrary.h"
 
-#include "Blueprint/Latent/FQuickTweenLatentAction.h"
-#include "Tweens/QuickFloatTween.h"
 #include "Tweens/QuickRotatorTween.h"
 #include "Components/SceneComponent.h"
 
@@ -13,7 +11,8 @@ DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenLatentLibrary, Log, All);
 
 UQuickTweenSequence* UQuickTweenLatentLibrary::QuickTweenCreateLatentSequence(
 	UObject* worldContextObject,
-	FLatentActionInfo LatentInfo,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
 	int32 loops,
 	ELoopType loopType,
 	const FString& tweenTag,
@@ -24,7 +23,8 @@ UQuickTweenSequence* UQuickTweenLatentLibrary::QuickTweenCreateLatentSequence(
 	if (UWorld* World = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
     {
 		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
-		if (LatentActionManager.FindExistingAction<FQuickTweenLatentAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) == nullptr)
+
+		if (LatentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
 		{
 			UQuickTweenSequence* sequence = NewObject<UQuickTweenSequence>();
 			sequence->SetUp(
@@ -34,7 +34,8 @@ UQuickTweenSequence* UQuickTweenLatentLibrary::QuickTweenCreateLatentSequence(
 				tweenTag,
 				bShouldAutoKill,
 				bShouldPlayWhilePaused);
-			LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID, new FQuickTweenLatentAction(LatentInfo, sequence));
+
+			LatentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, sequence, latentStep));
 			if (bShouldAutoPlay)
 			{
 				sequence->Play();

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Latent/FQuickTweenLatentAction.h"
 #include "Tweens/QuickTweenBase.h"
 #include "Utils/LoopType.h"
 #include "QuickTweenLatentLibrary.generated.h"
@@ -14,15 +15,6 @@ class UQuickVectorTween;
 class UQuickRotatorTween;
 class UQuickFloatTween;
 
-UENUM()
-enum class EQuickTweenLatentSteps
-{
-	OnStart,
-	OnUpdate,
-	OnComplete,
-	OnKilled
-};
-
 UCLASS()
 class QUICKTWEEN_API UQuickTweenLatentLibrary : public UBlueprintFunctionLibrary
 {
@@ -30,10 +22,20 @@ class QUICKTWEEN_API UQuickTweenLatentLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Keywords = "Tween | Sequence | Create | Make", LatentInfo = "LatentInfo"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable,
+		meta = (
+			WorldContext = "worldContextObject",
+			Latent,
+			LatentInfo = "latentInfo",
+			ExpandEnumAsExecs = "latentStep",
+			Keywords = "Tween | Sequence | Create | Make",
+			HidePin = "latentStep"
+			),
+		Category = "QuickTween")
 	static UQuickTweenSequence* QuickTweenCreateLatentSequence(
 		UObject* worldContextObject,
-		FLatentActionInfo LatentInfo,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
