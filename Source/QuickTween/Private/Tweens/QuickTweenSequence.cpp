@@ -215,13 +215,13 @@ void UQuickTweenSequence::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 
 	CurrentTweenGroupIndex = !bIsReversed ? FMath::Max(TweenGroups.Num() -1, 0) : 0;
 
+	OnComplete.Broadcast(this);
 
 	if (bAutoKill)
 	{
 		Kill(nullptr);
 	}
 
-	OnComplete.Broadcast(this);
 }
 
 void UQuickTweenSequence::Restart(UQuickTweenable* instigator)
@@ -236,6 +236,7 @@ void UQuickTweenSequence::Restart(UQuickTweenable* instigator)
 	bIsPlaying   = true;
 	bIsCompleted = false;
 	bIsBackwards = false;
+	bHasStarted = false;
 
 	ElapsedTime = bIsReversed ? GetDuration() * GetLoops() : 0.0f;
 	Progress    = bIsReversed ? 1.0f     : 0.0f;
@@ -267,6 +268,7 @@ void UQuickTweenSequence::Reset(UQuickTweenable* instigator)
 	bIsCompleted= false;
 	bIsBackwards= false;
 	bIsReversed = false;
+	bHasStarted = false;
 	Loops       = 0;
 	LoopType    = ELoopType::Restart;
 	CurrentLoop = 1;
@@ -342,6 +344,15 @@ void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
 
 	if (GetIsCompleted() || !GetIsPlaying()) return;
 
+	if (!bHasStarted)
+	{
+		bHasStarted = true;
+		if (OnStart.IsBound())
+		{
+			OnStart.Broadcast(this);
+		}
+	}
+
 	switch (LoopType)
 	{
 		case ELoopType::Restart:
@@ -350,17 +361,6 @@ void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
 		case ELoopType::PingPong:
 			Update_PingPong(deltaTime, instigator);
 			break;
-	}
-}
-
-void UQuickTweenSequence::SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-	bAutoKill = bShouldAutoKill;
-	if (GetIsCompleted())
-	{
-		bIsPendingKill = bAutoKill;
 	}
 }
 
@@ -494,6 +494,17 @@ void UQuickTweenSequence::Update_PingPong(float deltaTime, UQuickTweenable* inst
 			bIsBackwards = !bIsBackwards;
 			CurrentTweenGroupIndex = bIsBackwards ? TweenGroups.Num() - 1 : 0;
 		}
+	}
+}
+
+void UQuickTweenSequence::SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator)
+{
+	if (!InstigatorIsOwner(instigator)) return;
+
+	bAutoKill = bShouldAutoKill;
+	if (GetIsCompleted())
+	{
+		bIsPendingKill = bAutoKill;
 	}
 }
 

@@ -129,6 +129,38 @@ void UQuickTweenBase::Update_PingPong(float deltaTime, UQuickTweenable* instigat
 	}
 }
 
+void UQuickTweenBase::Update(float deltaTime, UQuickTweenable* instigator)
+{
+	if (!InstigatorIsOwner(instigator) || GetIsCompleted() || !GetIsPlaying()) return;
+
+	if (!bHasStarted)
+	{
+		bHasStarted = true;
+		if (OnStart.IsBound())
+		{
+			OnStart.Broadcast(this);
+		}
+	}
+
+	if (FMath::IsNearlyZero(GetDuration()))
+	{
+		Complete(instigator);
+		return;
+	}
+
+	switch (LoopType)
+	{
+	case ELoopType::Restart:
+		Update_Restart(deltaTime, instigator);
+		break;
+	case ELoopType::PingPong:
+		Update_PingPong(deltaTime, instigator);
+		break;
+	default:
+		ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));
+	}
+}
+
 void UQuickTweenBase::AssignOnStartEvent(FDynamicDelegateTween callback)
 {
 	OnStart.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
@@ -167,29 +199,6 @@ void UQuickTweenBase::RemoveAllOnCompleteEvent(const UObject* object)
 void UQuickTweenBase::RemoveAllOnKilledEvent(const UObject* object)
 {
 	OnKilled.RemoveAll(object);
-}
-
-void UQuickTweenBase::Update(float deltaTime, UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator) || GetIsCompleted() || !GetIsPlaying()) return;
-
-	if (FMath::IsNearlyZero(GetDuration()))
-	{
-		Complete(instigator);
-		return;
-	}
-
-	switch (LoopType)
-	{
-		case ELoopType::Restart:
-			Update_Restart(deltaTime, instigator);
-			break;
-		case ELoopType::PingPong:
-			Update_PingPong(deltaTime, instigator);
-			break;
-		default:
-			ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));
-	}
 }
 
 void UQuickTweenBase::SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator)
@@ -252,6 +261,7 @@ void UQuickTweenBase::Restart(UQuickTweenable* instigator)
 
 	bIsCompleted = false;
 	bIsPlaying   = true;
+	bHasStarted = false;
 
 	float duration = GetLoopType() == ELoopType::PingPong ? GetDuration() : GetDuration() * GetLoops();
 	ElapsedTime = bIsReversed ? duration : 0.0f;
@@ -291,6 +301,7 @@ void UQuickTweenBase::Reset(UQuickTweenable* instigator)
 	bIsCompleted= false;
 	bIsBackwards= false;
 	bIsReversed = false;
+	bHasStarted = false;
 	EaseType    = EEaseType::Linear;
 	EaseCurve   = nullptr;
 	Loops       = 0;

@@ -286,6 +286,9 @@ private:
 	/** Whether the sequence is playing backwards internally. */
 	bool bIsBackwards = false;
 
+	/** Whether the sequence has started. */
+	bool bHasStarted = false;
+
 	/** Current loop index. */
 	int32 CurrentLoop = 1;
 

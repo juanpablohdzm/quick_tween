@@ -225,25 +225,34 @@ private:
 	/** Time scale multiplier. */
 	float TimeScale = 1.0f;
 
+	/** Whether the tween has started. */
+	bool bHasStarted = false;
+
 	/** Whether the tween is currently playing. */
 	bool bIsPlaying = false;
+
 	/** Whether the tween is completed. */
 	bool bIsCompleted = false;
+
 	/** Whether the tween is playing backwards. */
 	bool bIsBackwards = false;
+
 	/** Internal flag to track if the tween is reversed. */
 	bool bIsReversed = false;
 
 	/** Easing type for the tween. */
 	EEaseType EaseType = EEaseType::Linear;
+
 	/** Custom curve for easing, if any. */
 	UPROPERTY(Transient)
 	UCurveFloat* EaseCurve = nullptr;
 
 	/** Current loop index (1-based). */
 	int32 CurrentLoop = 1;
+
 	/** Number of loops (-1 = infinite). */
 	int32 Loops = -1;
+
 	/** Looping behavior. */
 	ELoopType LoopType = ELoopType::Restart;
 
