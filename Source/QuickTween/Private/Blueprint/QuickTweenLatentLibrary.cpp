@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
 
 
 #include "Blueprint/QuickTweenLatentLibrary.h"
@@ -204,7 +204,107 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenFloat(
 	return nullptr;
 }
 
-UQuickRotatorTween* UQuickTweenLatentLibrary::LatentRotateTo_SceneComponent(
+UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentMoveTo_SceneComponent(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	USceneComponent* component,
+	FVector to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	EQuickTweenSpace space,
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickVectorTween* tween = UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
+				worldContextObject,
+				component,
+				to,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				space,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+	return nullptr;
+}
+
+UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleTo_SceneComponent(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	USceneComponent* component,
+	FVector to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	EQuickTweenSpace space,
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickVectorTween* tween = UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
+				worldContextObject,
+				component,
+				to,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				space,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+	return nullptr;
+}
+
+UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateTo_SceneComponent(
 	UObject* worldContextObject,
 	FLatentActionInfo latentInfo,
 	EQuickTweenLatentSteps& latentStep,
@@ -229,7 +329,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::LatentRotateTo_SceneComponent(
 
 		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
 		{
-			UQuickRotatorTween* tween = UQuickTweenLibrary::RotateTo_SceneComponent(
+			UQuickRotatorTween* tween = UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 				worldContextObject,
 				component,
 				to,
@@ -256,7 +356,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::LatentRotateTo_SceneComponent(
 	return nullptr;
 }
 
-UQuickRotatorTween* UQuickTweenLatentLibrary::LatentLookAt_SceneComponent(
+UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentLookAt_SceneComponent(
 	UObject* worldContextObject,
 	FLatentActionInfo latentInfo,
 	EQuickTweenLatentSteps& latentStep,
@@ -280,7 +380,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::LatentLookAt_SceneComponent(
 
 		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
 		{
-			UQuickRotatorTween* tween = UQuickTweenLibrary::LookAt_SceneComponent(
+			UQuickRotatorTween* tween = UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 				worldContextObject,
 				component,
 				to,
@@ -306,7 +406,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::LatentLookAt_SceneComponent(
 	return nullptr;
 }
 
-UQuickFloatTween* UQuickTweenLatentLibrary::LatentRotateAround_SceneComponent(
+UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateAround_SceneComponent(
 	UObject* worldContextObject,
 	FLatentActionInfo latentInfo,
 	EQuickTweenLatentSteps& latentStep,
@@ -332,7 +432,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::LatentRotateAround_SceneComponent(
 
 		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
 		{
-			UQuickFloatTween* tween = UQuickTweenLibrary::RotateAround_SceneComponent(
+			UQuickFloatTween* tween = UQuickTweenLibrary::QuickTweenRotateAround_SceneComponent(
 				worldContextObject,
 				component,
 				from,

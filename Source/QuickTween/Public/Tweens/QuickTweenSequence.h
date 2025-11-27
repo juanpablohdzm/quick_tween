@@ -58,7 +58,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& id = FString(),
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false);
 
 	/**

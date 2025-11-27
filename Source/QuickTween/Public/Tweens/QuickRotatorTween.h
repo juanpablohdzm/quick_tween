@@ -52,7 +52,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = FString(),
 		const UObject* worldContextObject = nullptr,
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false)
 	{
 		From = from;

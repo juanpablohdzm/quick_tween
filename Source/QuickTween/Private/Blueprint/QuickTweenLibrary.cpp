@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
 
 
 #include "Blueprint/QuickTweenLibrary.h"
@@ -132,7 +132,7 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenCreateTweenFloat(
 	return tween;
 }
 
-UQuickVectorTween* UQuickTweenLibrary::MoveTo_SceneComponent(
+UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
 	UObject* worldContextObject,
 	USceneComponent* component,
 	FVector to,
@@ -178,7 +178,7 @@ UQuickVectorTween* UQuickTweenLibrary::MoveTo_SceneComponent(
 	return tween;
 }
 
-UQuickVectorTween* UQuickTweenLibrary::ScaleTo_SceneComponent(
+UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
 	UObject* worldContextObject,
 	USceneComponent* component,
 	FVector to,
@@ -223,7 +223,7 @@ UQuickVectorTween* UQuickTweenLibrary::ScaleTo_SceneComponent(
 	return tween;
 }
 
-UQuickRotatorTween* UQuickTweenLibrary::RotateTo_SceneComponent(
+UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 	UObject* worldContextObject,
 	USceneComponent* component,
 	FRotator to,
@@ -270,7 +270,7 @@ UQuickRotatorTween* UQuickTweenLibrary::RotateTo_SceneComponent(
 	return tween;
 }
 
-UQuickRotatorTween* UQuickTweenLibrary::LookAt_SceneComponent(
+UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 	UObject* worldContextObject,
 	USceneComponent* component,
 	FVector to,
@@ -312,7 +312,7 @@ UQuickRotatorTween* UQuickTweenLibrary::LookAt_SceneComponent(
 	return tween;
 }
 
-UQuickFloatTween* UQuickTweenLibrary::RotateAround_SceneComponent(
+UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAround_SceneComponent(
 	UObject* worldContextObject,
 	USceneComponent* component,
 	float from,
@@ -360,7 +360,7 @@ UQuickFloatTween* UQuickTweenLibrary::RotateAround_SceneComponent(
 }
 
 
-UQuickTweenable* UQuickTweenLibrary::FindTweenByTag(const UObject* worldContextObject, const FString& tweenTag)
+UQuickTweenable* UQuickTweenLibrary::QuickTweenFindTweenByTag(const UObject* worldContextObject, const FString& tweenTag)
 {
 	ensureAlwaysMsgf(worldContextObject, TEXT("FindTweenByTag called with a null worldContextObject. This should never happen."));
 
