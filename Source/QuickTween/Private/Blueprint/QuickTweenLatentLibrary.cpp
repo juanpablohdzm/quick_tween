@@ -61,7 +61,6 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenVector(
 	UCurveFloat* easeCurve,
 	int32 loops,
 	ELoopType loopType,
-	EQuickTweenSpace space,
 	FString tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
@@ -84,7 +83,6 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenVector(
 				easeCurve,
 				loops,
 				loopType,
-				space,
 				tweenTag,
 				bShouldAutoKill,
 				bShouldPlayWhilePaused);
@@ -114,7 +112,6 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenRotator
 	UCurveFloat* easeCurve,
 	int32 loops,
 	ELoopType loopType,
-	EQuickTweenSpace space,
 	FString tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
@@ -138,7 +135,6 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenRotator
 				easeCurve,
 				loops,
 				loopType,
-				space,
 				tweenTag,
 				bShouldAutoKill,
 				bShouldPlayWhilePaused);

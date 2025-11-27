@@ -51,6 +51,7 @@ public:
 	 * @param id Optional identifier for the sequence.
 	 * @param bShouldAutoKill Whether to auto-kill the sequence on completion.
 	 * @param bShouldPlayWhilePaused Whether the sequence should play while the game is paused.
+	 * @param bShouldAutoPlay Whether to start playing the sequence immediately after setup.
 	 * @return Reference to this sequence.
 	 */
 	void SetUp(
@@ -59,7 +60,8 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		const FString& id = FString(),
 		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false);
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Joins a tween to the current group, allowing them to run in parallel.

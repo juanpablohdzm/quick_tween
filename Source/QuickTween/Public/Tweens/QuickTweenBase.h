@@ -37,6 +37,7 @@ public:
 	 * @param worldContextObject Context object for world access.
 	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
 	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
+	 * @param bShouldAutoPlay Whether the tween should start playing immediately.
 	 */
 	void SetUp(
 		float duration,
@@ -48,7 +49,8 @@ public:
 		const FString& tweenTag = FString(),
 		const UObject* worldContextObject = nullptr,
 		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false);
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 
 	virtual void SetOwner(UQuickTweenable* owner) override { Owner = owner; }
 

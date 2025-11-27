@@ -38,6 +38,7 @@ public:
 	 * @param worldContextObject Context object for world access.
 	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
 	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
+	 * @param bShouldAutoPlay Whether to start playing the tween immediately after setup.
 	 */
 	void SetUp(
 		TFunction<FRotator()>&& from,
@@ -53,7 +54,8 @@ public:
 		const FString& tweenTag = FString(),
 		const UObject* worldContextObject = nullptr,
 		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false)
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false)
 	{
 		From = from;
 		To = to;
@@ -69,7 +71,8 @@ public:
 			tweenTag,
 			worldContextObject,
 			bShouldAutoKill,
-			bShouldPlayWhilePaused);
+			bShouldPlayWhilePaused,
+			bShouldAutoPlay);
 
 	}
 

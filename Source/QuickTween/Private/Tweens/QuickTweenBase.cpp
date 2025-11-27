@@ -29,7 +29,8 @@ void UQuickTweenBase::SetUp(
 	const FString& tweenTag,
 	const UObject* worldContextObject,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused)
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
 {
 	Duration = duration;
 	TimeScale = timeScale;
@@ -50,6 +51,11 @@ void UQuickTweenBase::SetUp(
 	else
 	{
 		manager->AddTween(this);
+	}
+
+	if (bShouldAutoPlay)
+	{
+		Play();
 	}
 }
 

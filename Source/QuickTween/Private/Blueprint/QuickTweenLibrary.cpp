@@ -18,10 +18,18 @@ UQuickTweenSequence* UQuickTweenLibrary::QuickTweenCreateSequence(
 	ELoopType loopType,
 	const FString& tweenTag,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused)
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
 {
 	UQuickTweenSequence* sequence = NewObject<UQuickTweenSequence>();
-	sequence->SetUp(worldContextObject, loops, loopType, tweenTag, bShouldAutoKill, bShouldPlayWhilePaused);
+	sequence->SetUp(
+		worldContextObject,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay);
 	return sequence;
 }
 
@@ -36,10 +44,10 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenCreateTweenVector(
 	UCurveFloat* easeCurve,
 	int32 loops,
 	ELoopType loopType,
-	EQuickTweenSpace space,
 	FString tweenTag,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused)
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
 {
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
 	tween->SetUp(
@@ -55,7 +63,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenCreateTweenVector(
 		tweenTag,
 		worldContextObject,
 		bShouldAutoKill,
-		bShouldPlayWhilePaused
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
 	);
 
 	return tween;
@@ -73,10 +82,10 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenCreateTweenRotator(
 	UCurveFloat* easeCurve,
 	int32 loops,
 	ELoopType loopType,
-	EQuickTweenSpace space,
 	FString tweenTag,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused)
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
 {
 	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
 	tween->SetUp(
@@ -93,7 +102,8 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenCreateTweenRotator(
 		tweenTag,
 		worldContextObject,
 		bShouldAutoKill,
-		bShouldPlayWhilePaused
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
 	);
 	return tween;
 }
@@ -111,7 +121,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenCreateTweenFloat(
 	ELoopType loopType,
 	FString tweenTag,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused)
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
 {
 	UQuickFloatTween* tween = NewObject<UQuickFloatTween>();
 	tween->SetUp(
@@ -127,7 +138,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenCreateTweenFloat(
 		tweenTag,
 		worldContextObject,
 		bShouldAutoKill,
-		bShouldPlayWhilePaused
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
 	);
 	return tween;
 }
@@ -145,7 +157,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
 	EQuickTweenSpace space,
 	FString tweenTag,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused)
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
 {
 
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
@@ -172,7 +185,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
 		tweenTag,
 		worldContextObject,
 		bShouldAutoKill,
-		bShouldPlayWhilePaused
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
 	);
 
 	return tween;
@@ -191,7 +205,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
 	EQuickTweenSpace space,
 	FString tweenTag,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused)
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
 {
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
 	tween->SetUp(
@@ -217,7 +232,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
 		tweenTag,
 		worldContextObject,
 		bShouldAutoKill,
-		bShouldPlayWhilePaused
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
 	);
 
 	return tween;
@@ -237,7 +253,8 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 	EQuickTweenSpace space,
 	FString tweenTag,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused)
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
 {
 	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
 	tween->SetUp(
@@ -264,7 +281,8 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 		tweenTag,
 		worldContextObject,
 		bShouldAutoKill,
-		bShouldPlayWhilePaused
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
 	);
 
 	return tween;
@@ -283,7 +301,8 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 	ELoopType loopType,
 	FString tweenTag,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused)
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
 {
 
 	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
@@ -306,7 +325,8 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 		tweenTag,
 		worldContextObject,
 		bShouldAutoKill,
-		bShouldPlayWhilePaused
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
 	);
 
 	return tween;
@@ -327,7 +347,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAround_SceneComponent(
 	ELoopType loopType,
 	FString tweenTag,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused)
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
 {
 	const FVector startPoint  = component->GetComponentLocation();
 	const FVector dirFromPoint = startPoint - point;
@@ -353,7 +374,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAround_SceneComponent(
 		tweenTag,
 		worldContextObject,
 		bShouldAutoKill,
-		bShouldPlayWhilePaused
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
 	);
 
 	return tween;

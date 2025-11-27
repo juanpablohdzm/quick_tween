@@ -43,6 +43,7 @@ public:
 	 * @param tweenTag            Optional tag to identify the created sequence.
 	 * @param bShouldAutoKill     If true the sequence will be automatically killed when complete.
 	 * @param bShouldPlayWhilePaused If true the sequence will update while game is paused.
+	 * @param bShouldAutoPlay     If true the sequence will start playing immediately after creation.
 	 * @return                    A newly created UQuickTweenSequence pointer.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Sequence | Create | Make", WorldContext = "worldContextObject"), Category = "QuickTween")
@@ -52,7 +53,8 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false);
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a vector tween that interpolates between two FVector values using delegate getters
@@ -68,10 +70,10 @@ public:
 	 * @param easeCurve Optional custom UCurveFloat used for easing (overrides easeType when provided).
 	 * @param loops Number of times to loop the tween. Use -1 for infinite. Defaults to 1.
 	 * @param loopType How the tween loops (Restart, PingPong, etc.). Defaults to ELoopType::Restart.
-	 * @param space The space in which the tween operates (WorldSpace or LocalSpace). Defaults to WorldSpace.
 	 * @param tweenTag Optional tag to identify the created tween. Defaults to empty string.
 	 * @param bShouldAutoKill If true the tween will be automatically killed when complete. Defaults to true.
 	 * @param bShouldPlayWhilePaused If true the tween will update while game is paused. Defaults to false.
+	 * @param bShouldAutoPlay If true the tween will start playing immediately after creation. Defaults to false.
 	 * @return A pointer to the created UQuickVectorTween.
 	 */
 	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Vector", meta = (Keywords = "Tween | Vector", WorldContext = "worldContextObject"), Category = "QuickTween")
@@ -86,10 +88,10 @@ public:
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
 		FString tweenTag = "",
 		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false);
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a rotator tween that interpolates between two rotator values using delegates.
@@ -105,10 +107,10 @@ public:
 	 * @param easeCurve Optional custom UCurveFloat used for easing (overrides easeType when provided).
 	 * @param loops Number of times to loop the tween. Use -1 for infinite loops.
 	 * @param loopType How the tween loops (e.g., Restart, PingPong).
-	 * @param space The space in which the tween operates (WorldSpace or LocalSpace).
 	 * @param tweenTag Optional tag to identify the created tween.
 	 * @param bShouldAutoKill If true, the tween will be automatically killed when complete.
 	 * @param bShouldPlayWhilePaused If true, the tween will update while the game is paused.
+	 * @param bShouldAutoPlay If true, the tween will start playing immediately after creation.
 	 * @return A pointer to the created UQuickRotatorTween, or nullptr on failure.
 	 */
 	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Rotator", meta = (Keywords = "Tween | Rotator", WorldContext = "worldContextObject"), Category = "QuickTween")
@@ -124,10 +126,10 @@ public:
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
 		FString tweenTag = "",
 		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false);
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a float tween that interpolates a value from `from` to `to` and applies it via `setterFunction`.
@@ -145,6 +147,7 @@ public:
 	 * @param tweenTag Optional tag to identify the created tween.
 	 * @param bShouldAutoKill If true, the tween will be automatically killed when complete.
 	 * @param bShouldPlayWhilePaused If true, the tween will update while the game is paused.
+	 * @param bShouldAutoPlay If true, the tween will start playing immediately after creation.
 	 * @return A pointer to the created `UQuickFloatTween`.
 	 */
 	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Float", meta = (Keywords = "Tween | Float", WorldContext = "worldContextObject"), Category = "QuickTween")
@@ -161,7 +164,8 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		FString tweenTag = "",
 		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false);
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a vector tween that moves a SceneComponent to a target location.
@@ -181,6 +185,7 @@ public:
 	 * @param tweenTag            Optional tag to identify the created tween.
 	 * @param bShouldAutoKill     If true the tween will be automatically killed when complete.
 	 * @param bShouldPlayWhilePaused If true the tween will update while game is paused.
+	 * @param bShouldAutoPlay     If true the tween will start playing immediately after creation.
 	 * @return                    A UQuickVectorTween pointer controlling the movement.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Move To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
@@ -197,7 +202,8 @@ public:
 		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
 		FString tweenTag = "",
 		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false);
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a vector tween that scales a SceneComponent to a target scale.
@@ -217,6 +223,7 @@ public:
 	 * @param space          Space in which to perform the look-at operation (World or Local).
 	 * @param bShouldAutoKill     If true the tween will be automatically killed when complete.
 	 * @param bShouldPlayWhilePaused If true the tween will update while game is paused.
+	 * @param bShouldAutoPlay     If true the tween will start playing immediately after creation.
 	 * @return                    A UQuickVectorTween pointer controlling the scale tween.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Scale To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
@@ -233,7 +240,8 @@ public:
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		FString tweenTag = "",
 		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false);
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a rotator tween that rotates a SceneComponent to a target rotator.
@@ -254,6 +262,7 @@ public:
 	 * @param tweenTag            Optional tag to identify the created tween.
 	 * @param bShouldAutoKill     If true the tween will be automatically killed when complete.
 	 * @param bShouldPlayWhilePaused If true the tween will update while game is paused.
+	 * @param bShouldAutoPlay     If true the tween will start playing immediately after creation.
 	 * @return                    A UQuickRotatorTween pointer controlling the rotation.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
@@ -271,7 +280,8 @@ public:
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		FString tweenTag = "",
 		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false);
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 
 
 
@@ -293,6 +303,7 @@ public:
 	 * @param tweenTag            Optional tag to identify the created tween.
 	 * @param bShouldAutoKill     If true the tween will be automatically killed when complete.
 	 * @param bShouldPlayWhilePaused If true the tween will update while game is paused.
+	 * @param bShouldAutoPlay     If true the tween will start playing immediately after creation.
 	 * @return                    A UQuickRotatorTween pointer controlling the look-at rotation.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween LookAt SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
@@ -309,7 +320,8 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		FString tweenTag = "",
 		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false);
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 
 
 	/**
@@ -335,6 +347,7 @@ public:
 	 * @param tweenTag                   Optional tag to identify the created tween.
 	 * @param bShouldAutoKill            If true the tween will be automatically killed when complete.
 	 * @param bShouldPlayWhilePaused     If true the tween will update while game is paused.
+	 * @param bShouldAutoPlay            If true the tween will start playing immediately after creation.
 	 * @return                           A UQuickFloatTween pointer controlling the rotation, or nullptr on failure.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate Around Point SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
@@ -353,7 +366,8 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		FString tweenTag = "",
 		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false);
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Find an active QuickTween by its tag within the world context.
