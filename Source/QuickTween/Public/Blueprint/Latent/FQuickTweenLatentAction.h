@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "QuickTweenable.h"
-#include "Tweens/QuickTweenBase.h"
-#include "Tweens/QuickTweenSequence.h"
+#include "LatentActions.h"
+#include "Engine/LatentActionManager.h"
+#include "FQuickTweenLatentAction.generated.h"
 
-struct FLatentActionInfo;
+struct FLatentResponse;
 
 /**
  * Enumeration used by the latent action to indicate the current step/state

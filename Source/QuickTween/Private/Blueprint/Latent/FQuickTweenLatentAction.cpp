@@ -2,6 +2,7 @@
 
 
 #include "Blueprint/Latent/FQuickTweenLatentAction.h"
+#include "LatentActions.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenLatentAction, Log, All);
 
