@@ -76,6 +76,7 @@ public:
 
 	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
 
+	/** Get the current interpolated float value. */
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category= "Tween|Info")
 	[[nodiscard]] float GetCurrentValue() const { return CurrentValue; }
 private:

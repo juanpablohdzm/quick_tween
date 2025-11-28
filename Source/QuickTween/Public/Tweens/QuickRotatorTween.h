@@ -80,6 +80,7 @@ public:
 
 	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
 
+	/** Get the current interpolated FRotator value. */
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] FRotator GetCurrentValue() const { return CurrentValue; }
 private:

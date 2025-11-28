@@ -76,6 +76,7 @@ public:
 
 	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
 
+	/** Get the current interpolated FVector value. */
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] FVector GetCurrentValue() const { return CurrentValue; }
 
