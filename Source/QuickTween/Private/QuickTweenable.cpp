@@ -57,11 +57,6 @@ void UQuickTweenable::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 	ensureAlwaysMsgf(false, TEXT("Complete not implemented in IQuickTweenable"));
 }
 
-void UQuickTweenable::Reset(UQuickTweenable* instigator)
-{
-	ensureAlwaysMsgf(false, TEXT("Reset not implemented in IQuickTweenable"));
-}
-
 void UQuickTweenable::Kill(UQuickTweenable* instigator)
 {
 	ensureAlwaysMsgf(false, TEXT("Kill not implemented in IQuickTweenable"));

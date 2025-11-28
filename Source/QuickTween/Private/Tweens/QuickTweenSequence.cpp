@@ -263,25 +263,6 @@ void UQuickTweenSequence::Restart(UQuickTweenable* instigator)
 	}
 }
 
-void UQuickTweenSequence::Reset(UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-
-	ElapsedTime = 0.0f;
-	Progress    = 0.0f;
-	bIsPlaying  = false;
-	bIsCompleted= false;
-	bIsBackwards= false;
-	bIsReversed = false;
-	bHasStarted = false;
-	Loops       = 0;
-	LoopType    = ELoopType::Restart;
-	CurrentLoop = 1;
-	CurrentTweenGroupIndex = 0;
-	TweenGroups.Empty();
-}
-
 void UQuickTweenSequence::Kill(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
@@ -293,6 +274,14 @@ void UQuickTweenSequence::Kill(UQuickTweenable* instigator)
 
 	Stop(instigator);
 	CurrentTweenGroupIndex = 0;
+
+	for (FQuickTweenSequenceGroup& group : TweenGroups)
+	{
+		for (UQuickTweenable* tween : group.Tweens)
+		{
+			tween->Kill(this);
+		}
+	}
 
 	bIsPendingKill = true;
 	if (OnKilled.IsBound())

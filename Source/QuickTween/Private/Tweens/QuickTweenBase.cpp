@@ -298,26 +298,6 @@ void UQuickTweenBase::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 	return;
 }
 
-void UQuickTweenBase::Reset(UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-	ElapsedTime = 0.0f;
-	Duration    = 0.0f;
-	TimeScale   = 1.0f;
-	bIsPlaying  = false;
-	bIsCompleted= false;
-	bIsBackwards= false;
-	bIsReversed = false;
-	bHasStarted = false;
-	EaseType    = EEaseType::Linear;
-	EaseCurve   = nullptr;
-	Loops       = 0;
-	LoopType    = ELoopType::Restart;
-	CurrentLoop = 1;
-	return;
-}
-
 void UQuickTweenBase::Kill(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;

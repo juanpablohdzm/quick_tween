@@ -97,8 +97,6 @@ public:
 
 	virtual void Restart(UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Reset(UQuickTweenable* instigator = nullptr) override;
-
 	virtual void Kill(UQuickTweenable* instigator = nullptr) override;
 
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;

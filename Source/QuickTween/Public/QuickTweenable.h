@@ -66,12 +66,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
 	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true);
 
-	/** Reset the tween to its initial configuration without starting playback.
-	 * @param instigator Optional pointer indicating which tween initiated the call.
-	 */
-	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Reset(UQuickTweenable* instigator = nullptr);
-
 	/** Forcefully kill the tween and mark it for removal.
 	 * @param instigator Optional pointer indicating which tween initiated the call.
 	 */

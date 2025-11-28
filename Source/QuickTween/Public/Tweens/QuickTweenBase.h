@@ -71,8 +71,6 @@ public:
 
 	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
 
-	virtual void Reset(UQuickTweenable* instigator = nullptr) override;
-
 	virtual void Kill(UQuickTweenable* instigator = nullptr) override;
 
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
