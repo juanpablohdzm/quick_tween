@@ -405,7 +405,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentLookAt_SceneCompon
 	return nullptr;
 }
 
-UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateAround_SceneComponent(
+UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateAroundPoint_SceneComponent(
 	UObject* worldContextObject,
 	FLatentActionInfo latentInfo,
 	EQuickTweenLatentSteps& latentStep,

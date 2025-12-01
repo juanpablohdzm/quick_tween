@@ -71,7 +71,7 @@ public:
 	 *
 	 * @return true if tickable.
 	 */
-	virtual bool IsTickable() const override { return true; }
+	virtual bool IsTickable() const override { return !QuickTweens.IsEmpty(); }
 
 	/**
 	 * Indicate whether this object is tickable in the editor.

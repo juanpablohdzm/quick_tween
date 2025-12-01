@@ -386,7 +386,7 @@ public:
 	 * @return Pointer to the created UQuickFloatTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
-    static UQuickFloatTween* QuickTweenLatentRotateAround_SceneComponent(
+    static UQuickFloatTween* QuickTweenLatentRotateAroundPoint_SceneComponent(
         	UObject* worldContextObject,
         	FLatentActionInfo latentInfo,
 			EQuickTweenLatentSteps& latentStep,
