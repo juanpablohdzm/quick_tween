@@ -313,10 +313,18 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
 				component->GetComponentRotation() :
 				component->GetRelativeRotation();
 		},
-		[by, tween]()->FRotator
+		[by, tween, space]()->FRotator
 		{
 			const FQuat startRotation = tween->GetStartValue().Quaternion();
-			const FQuat end = startRotation * by.Quaternion();
+			FQuat end;
+			if (space == EQuickTweenSpace::WorldSpace)
+			{
+				end = by.Quaternion() * startRotation;
+			}
+			else
+			{
+				end = startRotation * by.Quaternion();
+			}
 			return end.Rotator();
 		},
 		bUseShortestPath,
@@ -386,7 +394,7 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 	return tween;
 }
 
-UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAround_SceneComponent(
+UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent(
 	UObject* worldContextObject,
 	USceneComponent* component,
 	float from,

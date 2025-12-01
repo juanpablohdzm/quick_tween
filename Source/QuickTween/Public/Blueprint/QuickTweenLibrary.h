@@ -309,7 +309,7 @@ public:
 	 * @param bShouldAutoPlay     If true the tween will start playing immediately after creation.
 	 * @return                    A UQuickRotatorTween pointer controlling the rotation.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate By SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickRotatorTween* QuickTweenRotateBy_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -395,7 +395,7 @@ public:
 	 * @return                           A UQuickFloatTween pointer controlling the rotation, or nullptr on failure.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate Around Point SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
-	static UQuickFloatTween* QuickTweenRotateAround_SceneComponent(
+	static UQuickFloatTween* QuickTweenRotateAroundPoint_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
 		float from,

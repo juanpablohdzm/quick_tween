@@ -483,7 +483,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateAroundPoint_Sc
 
 		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
 		{
-			UQuickFloatTween* tween = UQuickTweenLibrary::QuickTweenRotateAround_SceneComponent(
+			UQuickFloatTween* tween = UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent(
 				worldContextObject,
 				component,
 				from,
