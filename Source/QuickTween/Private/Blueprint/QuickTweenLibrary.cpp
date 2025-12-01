@@ -288,6 +288,60 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 	return tween;
 }
 
+UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
+	UObject* worldContextObject,
+	USceneComponent* component,
+	FRotator by,
+	bool bUseShortestPath,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	EQuickTweenSpace space,
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
+	tween->SetUp(
+		[component, space]()->FRotator
+		{
+			return space == EQuickTweenSpace::WorldSpace ?
+				component->GetComponentRotation() :
+				component->GetRelativeRotation();
+		},
+		[by, tween]()->FRotator
+		{
+			const FQuat startRotation = tween->GetStartValue().Quaternion();
+			const FQuat end = startRotation * by.Quaternion();
+			return end.Rotator();
+		},
+		bUseShortestPath,
+		[component, space](const FRotator& v)
+		{
+			return space == EQuickTweenSpace::WorldSpace ?
+				component->SetWorldRotation(v) :
+				component->SetRelativeRotation(v);
+		},
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		worldContextObject,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+
+	return tween;
+}
+
 UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 	UObject* worldContextObject,
 	USceneComponent* component,

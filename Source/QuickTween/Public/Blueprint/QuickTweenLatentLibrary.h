@@ -319,6 +319,50 @@ public:
         	bool bShouldAutoPlay = false);
 
 	/**
+	 * Create a latent RotateBy tween for a scene component.
+	 *
+	 * Rotates the provided scene component by the specified rotator delta over time.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param component Scene component to rotate.
+	 * @param by Rotation delta to apply (added to current rotation).
+	 * @param bUseShortestPath When true, interpolation will use the shortest rotational path.
+	 * @param duration Duration of the rotation in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param space Whether rotation is applied in WorldSpace or LocalSpace.
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickRotatorTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Rotator | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickRotatorTween* QuickTweenLatentRotateBy_SceneComponent(
+			UObject* worldContextObject,
+			FLatentActionInfo latentInfo,
+			EQuickTweenLatentSteps& latentStep,
+			USceneComponent* component,
+			FRotator by,
+			bool bUseShortestPath = true,
+			float duration = 1.0f,
+			float timeScale = 1.0f,
+			EEaseType easeType = EEaseType::Linear,
+			UCurveFloat* easeCurve = nullptr,
+			int32 loops = 1,
+			ELoopType loopType = ELoopType::Restart,
+			EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
+			FString tweenTag = "",
+			bool bShouldAutoKill = false,
+			bool bShouldPlayWhilePaused = false,
+			bool bShouldAutoPlay = false);
+
+	/**
 	 * Create a latent LookAt rotator tween for a scene component.
 	 *
 	 * Rotates the component to look at the specified target location.

@@ -79,6 +79,10 @@ public:
 	/** Get the current interpolated float value. */
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category= "Tween|Info")
 	[[nodiscard]] float GetCurrentValue() const { return CurrentValue; }
+
+	/** Get the starting float value. Set after the first tick */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category= "Tween|Info")
+	[[nodiscard]] float GetStartValue() const { return StartValue.Get(CurrentValue); }
 private:
 	/** Starting function returning float. */
 	TFunction<float()> From;

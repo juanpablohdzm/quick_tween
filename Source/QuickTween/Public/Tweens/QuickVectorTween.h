@@ -80,6 +80,9 @@ public:
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] FVector GetCurrentValue() const { return CurrentValue; }
 
+	/** Get the starting FVector value. Set after the first tick */
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] FVector GetStartValue() const { return StartValue.Get(FVector::ZeroVector); }
 private:
 	/** Starting function returning FVector. */
 	TFunction<FVector()> From;

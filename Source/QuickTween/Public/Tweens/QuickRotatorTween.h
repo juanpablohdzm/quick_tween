@@ -83,6 +83,10 @@ public:
 	/** Get the current interpolated FRotator value. */
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] FRotator GetCurrentValue() const { return CurrentValue; }
+
+	/** Get the starting FRotator value. Set after the first tick */
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] FRotator GetStartValue() const { return StartValue.Get(FRotator::ZeroRotator); }
 private:
 	/** Starting value or function returning FRotator. */
 	TFunction<FRotator()> From;

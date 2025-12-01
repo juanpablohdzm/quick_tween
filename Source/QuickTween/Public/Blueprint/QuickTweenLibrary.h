@@ -283,6 +283,50 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
+	/**
+	 * Create a rotator tween that rotates a SceneComponent by a relative rotator value.
+	 *
+	 * This method creates a `UQuickRotatorTween` which will drive the component's rotation
+	 * from its current rotation (cached at the first update) by the provided `by` rotator.
+	 * The rotation can be applied in world or local space according to `space`. When
+	 * `bUseShortestPath` is true the interpolation will pick the shortest angular path
+	 * for each axis.
+	 *
+	 * @param worldContextObject  Context object used to find the world for the tween.
+	 * @param component           The SceneComponent to rotate.
+	 * @param by                  Relative rotator to apply (added to the start rotation).
+	 * @param bUseShortestPath    If true rotation will take the shortest angular path.
+	 * @param duration            Time in seconds for the tween to complete.
+	 * @param timeScale           Multiplier applied to the tween time.
+	 * @param easeType            Predefined easing type to use.
+	 * @param easeCurve           Optional custom curve to evaluate easing.
+	 * @param loops               Number of times to loop the tween. Use -1 for infinite.
+	 * @param loopType            How the tween loops (Restart, PingPong, etc.).
+	 * @param space               Space in which to apply the relative rotation (World or Local).
+	 * @param tweenTag            Optional tag to identify the created tween.
+	 * @param bShouldAutoKill     If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while game is paused.
+	 * @param bShouldAutoPlay     If true the tween will start playing immediately after creation.
+	 * @return                    A UQuickRotatorTween pointer controlling the rotation.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickRotatorTween* QuickTweenRotateBy_SceneComponent(
+		UObject* worldContextObject,
+		USceneComponent* component,
+		FRotator by,
+		bool bUseShortestPath = true,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
+		FString tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
 
 
 	/**

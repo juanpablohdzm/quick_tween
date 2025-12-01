@@ -355,6 +355,58 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateTo_SceneComp
 	return nullptr;
 }
 
+UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateBy_SceneComponent(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	USceneComponent* component,
+	FRotator by,
+	bool bUseShortestPath,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	EQuickTweenSpace space,
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickRotatorTween* tween = UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
+				worldContextObject,
+				component,
+				by,
+				bUseShortestPath,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				space,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+	return nullptr;
+}
+
 UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentLookAt_SceneComponent(
 	UObject* worldContextObject,
 	FLatentActionInfo latentInfo,
