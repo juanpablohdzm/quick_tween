@@ -250,7 +250,7 @@ public:
 	 *
 	 * @param worldContextObject  Context object used to find the world for the tween.
 	 * @param component           The SceneComponent to rotate.
-	 * @param to                  Target rotation.
+	 * @param to                  Target rotation (should be in the target space).
 	 * @param bUseShortestPath    If true rotation will take the shortest angular path.
 	 * @param duration            Time in seconds for the tween to complete.
 	 * @param timeScale           Multiplier applied to the tween time.
@@ -378,8 +378,8 @@ public:
 	 *
 	 * @param worldContextObject         Context object used to find the world for the tween.
 	 * @param component                  The SceneComponent to rotate around the point.
-	 * @param from                       Starting angle (degrees or radians depending on implementation).
-	 * @param to                         Target angle (degrees or radians depending on implementation).
+	 * @param from                       Starting angle in degrees.
+	 * @param to                         Target angle in degrees.
 	 * @param point                      World-space point to rotate around.
 	 * @param normal                     Axis (normal) to rotate around.
 	 * @param duration                   Time in seconds for the tween to complete.

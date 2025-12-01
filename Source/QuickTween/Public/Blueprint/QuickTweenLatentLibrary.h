@@ -283,7 +283,7 @@ public:
 	 * @param latentInfo Latent action execution info supplied by Blueprint.
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param component Scene component to rotate.
-	 * @param to Target rotator.
+	 * @param to Target rotator (should be in target space).
 	 * @param bUseShortestPath When true, interpolation will use the shortest rotational path.
 	 * @param duration Duration of the rotation in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
