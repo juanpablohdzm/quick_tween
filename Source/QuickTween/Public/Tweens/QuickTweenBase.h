@@ -87,53 +87,37 @@ private:
 
 #pragma region Tween State Queries
 public:
-	/**
-	 * If this tween should be eliminated from the manager.
-	 * @return True if the tween is pending kill, false otherwise.
-	 */
+
 	virtual bool GetIsPendingKill() const override { return bIsPendingKill; }
 
-	/** Gets the duration of the tween. */
 	[[nodiscard]] virtual float GetDuration() const override { return Duration;}
 
 	[[nodiscard]] virtual float GetElapsedTime() const override { return ElapsedTime; }
 
-	/** Gets the time scale of the tween. */
 	[[nodiscard]] virtual float GetTimeScale() const override { return TimeScale; }
 
-	/** Returns true if the tween is currently playing. */
 	[[nodiscard]] virtual bool GetIsPlaying() const override { return bIsPlaying; }
 
-	/** Returns true if the tween is completed. */
 	[[nodiscard]] virtual bool GetIsCompleted() const override { return bIsCompleted; }
 
-	/** Returns true if the tween is playing backwards. */
 	[[nodiscard]] virtual bool GetIsBackwards() const override { return bIsBackwards; }
 
 	[[nodiscard]] virtual bool GetIsReversed() const override { return bIsReversed; }
 
-	/** Gets the ease type of the tween. */
 	[[nodiscard]] virtual EEaseType GetEaseType() const override { return EaseType; }
 
-	/** Gets the custom ease curve of the tween, if any. */
 	[[nodiscard]] virtual UCurveFloat* GetEaseCurve() const override { return EaseCurve; }
 
-	/** Gets the number of loops for the tween. */
 	[[nodiscard]] virtual int32 GetLoops() const override{ return Loops; }
 
-	/** Gets the loop type of the tween. */
 	[[nodiscard]] virtual ELoopType GetLoopType() const override { return LoopType; }
 
-	/** Gets the tag assigned to the tween. */
 	[[nodiscard]] virtual FString GetTweenTag() const override { return TweenTag; }
 
-	/** Gets the current loop index (1-based). */
 	[[nodiscard]] virtual int32 GetCurrentLoop() const override { return CurrentLoop; }
 
-	/** Gets whether this tween will be removed after completion. */
 	[[nodiscard]] virtual bool GetAutoKill() const override { return bAutoKill; }
 
-	/** Gets whether this tween should play while paused. */
 	[[nodiscard]] virtual bool GetShouldPlayWhilePaused() const override {return bPlayWhilePaused;}
 #pragma endregion
 

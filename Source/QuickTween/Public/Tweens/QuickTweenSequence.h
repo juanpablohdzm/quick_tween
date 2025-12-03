@@ -45,7 +45,7 @@ public:
 #pragma region Sequence Creation
 	/**
 	 * Set up the sequence with optional looping parameters.
-	 * @param worldContextObject Context object for world access (OPTIONAL ONLY FOR TESTS).
+	 * @param worldContextObject Context object for world access.
 	 * @param loops Number of times to loop the sequence (-1 = infinite).
 	 * @param loopType Type of looping behavior.
 	 * @param id Optional identifier for the sequence.
@@ -64,7 +64,7 @@ public:
 		bool bShouldAutoPlay = false);
 
 	/**
-	 * Joins a tween to the current group, allowing them to run in parallel.
+	 * Creates a new group and adds a new tween to it.
 	 * @param tween The tween to join.
 	 * @return Reference to this sequence.
 	 */
@@ -72,7 +72,7 @@ public:
 	void Join(UQuickTweenable* tween);
 
 	/**
-	 * Appends a tween to the sequence, running after previous tweens complete.
+	 * Appends a tween to the previously created group, or creates a new one if it is the first.
 	 * @param tween The tween to append.
 	 * @return Reference to this sequence.
 	 */

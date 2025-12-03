@@ -11,8 +11,7 @@
  * FTickableGameObject so the engine will call Tick on this instance.
  *
  * Use UQuickTweenManager::Get(...) to retrieve the manager for a given
- * world context object. The manager does not take ownership of added
- * UQuickTweenable pointers; it only tracks and updates them.
+ * world context object.
  */
 UCLASS()
 class QUICKTWEEN_API UQuickTweenManager final : public UWorldSubsystem, public FTickableGameObject
@@ -104,8 +103,7 @@ public:
 	/** Find a tween matching the given predicate.
 	 *
 	 * @param predicate - Function that returns true for the desired tween.
-	 * @param outTween - Optional output parameter to receive the found tween.
-	 * @return true if a matching tween was found, false otherwise.
+	 * @return A pointer to the found tween or null otherwise.
 	 */
 	UQuickTweenable* FindTweenByPredicate(TFunctionRef<bool(UQuickTweenable*)> predicate) const;
 
