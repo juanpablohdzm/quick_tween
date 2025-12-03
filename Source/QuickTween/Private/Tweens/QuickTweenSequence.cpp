@@ -29,8 +29,7 @@ void UQuickTweenSequence::SetUp(
 	ELoopType loopType,
 	const FString& id,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldPlayWhilePaused)
 {
 	Loops = loops;
 	LoopType = loopType;
@@ -48,12 +47,6 @@ void UQuickTweenSequence::SetUp(
 	{
 		manager->AddTween(this);
 	}
-
-	if (bShouldAutoPlay)
-	{
-		Play();
-	}
-	return;
 }
 
 void UQuickTweenSequence::Join(UQuickTweenable* tween)

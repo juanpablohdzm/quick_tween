@@ -43,7 +43,6 @@ public:
 	 * @param tweenTag            Optional tag to identify the created sequence.
 	 * @param bShouldAutoKill     If true the sequence will be automatically killed when complete.
 	 * @param bShouldPlayWhilePaused If true the sequence will update while game is paused.
-	 * @param bShouldAutoPlay     If true the sequence will start playing immediately after creation.
 	 * @return                    A newly created UQuickTweenSequence pointer.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Sequence | Create | Make", WorldContext = "worldContextObject"), Category = "QuickTween")
@@ -53,8 +52,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false);
+		bool bShouldPlayWhilePaused = false);
 
 	/**
 	 * Create a vector tween that interpolates between two FVector values using delegate getters

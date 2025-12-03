@@ -23,8 +23,7 @@ UQuickTweenSequence* UQuickTweenLatentLibrary::QuickTweenCreateLatentSequence(
 	ELoopType loopType,
 	const FString& tweenTag,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldPlayWhilePaused)
 {
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
     {
@@ -41,10 +40,6 @@ UQuickTweenSequence* UQuickTweenLatentLibrary::QuickTweenCreateLatentSequence(
 				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, sequence, latentStep));
-			if (bShouldAutoPlay)
-			{
-				sequence->Play();
-			}
 			return sequence;
 		}
     }
@@ -79,7 +74,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenVector(
 				worldContextObject,
 				from,
 				to,
-				setterFunction,
+				MoveTemp(setterFunction),
 				duration,
 				timeScale,
 				easeType,
@@ -130,7 +125,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenRotator
 				worldContextObject,
 				from,
 				to,
-				setterFunction,
+				MoveTemp(setterFunction),
 				bUseShortestPath,
 				duration,
 				timeScale,
@@ -181,7 +176,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenFloat(
 				worldContextObject,
 				from,
 				to,
-				setterFunction,
+				MoveTemp(setterFunction),
 				duration,
 				timeScale,
 				easeType,

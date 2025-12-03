@@ -11,7 +11,7 @@ void UQuickRotatorTween::Update(float deltaTime, UQuickTweenable* instigator)
 
 	if (!StartValue.IsSet())
 	{
-		StartValue = From();
+		StartValue = From.Execute();
 	}
 
 	UQuickTweenBase::Update(deltaTime, instigator);
@@ -36,8 +36,8 @@ void UQuickRotatorTween::Update(float deltaTime, UQuickTweenable* instigator)
 	}
 
 	EEasePath Path = bShortestPath ? EEasePath::Shortest : EEasePath::Longest;
-	const FRotator value = FEaseFunctions<FRotator>::Ease(StartValue.GetValue(), To(), progress, GetEaseType(), Path);
-	SetterFunction(value);
+	const FRotator value = FEaseFunctions<FRotator>::Ease(StartValue.GetValue(), To.Execute(), progress, GetEaseType(), Path);
+	SetterFunction.Execute(value);
 	CurrentValue = value;
 	if (OnUpdate.IsBound())
 	{
@@ -51,7 +51,7 @@ void UQuickRotatorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 
 	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
 	{
-		SetterFunction(StartValue.GetValue());
+		SetterFunction.Execute(StartValue.GetValue());
 		return Super::Complete(instigator, false);
 	}
 
@@ -59,8 +59,8 @@ void UQuickRotatorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 	{
 		bSnapToEnd = !bSnapToEnd;
 	}
-	FRotator value = bSnapToEnd ? To() : StartValue.GetValue();
-	SetterFunction(value);
+	FRotator value = bSnapToEnd ? To.Execute() : StartValue.GetValue();
+	SetterFunction.Execute(value);
 	CurrentValue = value;
 	return Super::Complete(instigator, bSnapToEnd);
 }

@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include <variant>
-
 #include "CoreMinimal.h"
 #include "QuickTweenBase.h"
 #include "QuickRotatorTween.generated.h"
 
+DECLARE_DELEGATE_RetVal( FRotator, FNativeRotatorGetter );
+DECLARE_DELEGATE_OneParam( FNativeRotatorSetter, const FRotator& );
 
 /**
  * Tween class for interpolating between two FRotator values over time.
@@ -41,10 +41,10 @@ public:
 	 * @param bShouldAutoPlay Whether to start playing the tween immediately after setup.
 	 */
 	void SetUp(
-		TFunction<FRotator()>&& from,
-		TFunction<FRotator()>&& to,
+		FNativeRotatorGetter from,
+		FNativeRotatorGetter to,
 		bool bUseShortestPath,
-		TFunction<void(const FRotator&)>&& setterFunction,
+		FNativeRotatorSetter setterFunction,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -57,10 +57,10 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false)
 	{
-		From = from;
-		To = to;
+		From = MoveTemp(from);
+		To = MoveTemp(to);
+		SetterFunction = MoveTemp(setterFunction);
 		bShortestPath = bUseShortestPath;
-		SetterFunction = setterFunction;
 		UQuickTweenBase::SetUp(
 			duration,
 			timeScale,
@@ -89,16 +89,16 @@ public:
 	[[nodiscard]] FRotator GetStartValue() const { return StartValue.Get(FRotator::ZeroRotator); }
 private:
 	/** Starting value or function returning FRotator. */
-	TFunction<FRotator()> From;
+	FNativeRotatorGetter From;
 
 	/** Target FRotator function. */
-	TFunction<FRotator()> To;
+	FNativeRotatorGetter To;
 
 	/** Starting value. */
 	TOptional<FRotator> StartValue;
 
 	/** Function to set the interpolated FRotator value. */
-	TFunction<void(const FRotator&)> SetterFunction;
+	FNativeRotatorSetter SetterFunction;
 
 	/** Whether to use the shortest path for interpolation. */
 	bool bShortestPath = true;

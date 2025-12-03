@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include <variant>
-
 #include "CoreMinimal.h"
 #include "QuickTweenBase.h"
 #include "QuickFloatTween.generated.h"
 
+DECLARE_DELEGATE_RetVal( float, FNativeFloatGetter );
+DECLARE_DELEGATE_OneParam( FNativeFloatSetter, const float );
 /**
  * Tween class for interpolating between two FVector values over time.
  * Inherits from UQuickTweenBase and provides vector-specific tweening functionality.
@@ -39,9 +39,9 @@ public:
 	 * @param bShouldAutoPlay Whether to start playing the tween immediately after setup.
 	 */
 	void SetUp(
-		TFunction<float()>&& from,
-		TFunction<float()>&& to,
-		TFunction<void(const float)>&& setterFunction,
+		FNativeFloatGetter from,
+		FNativeFloatGetter to,
+		FNativeFloatSetter setterFunction,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -54,9 +54,9 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false)
 	{
-		From = from;
-		To = to;
-		SetterFunction = setterFunction;
+		From = MoveTemp(from);
+		To = MoveTemp(to);
+		SetterFunction = MoveTemp(setterFunction);
 		UQuickTweenBase::SetUp(
 			duration,
 			timeScale,
@@ -85,16 +85,16 @@ public:
 	[[nodiscard]] float GetStartValue() const { return StartValue.Get(CurrentValue); }
 private:
 	/** Starting function returning float. */
-	TFunction<float()> From;
+	FNativeFloatGetter From;
 
 	/** Target function returning float. */
-	TFunction<float()> To;
+	FNativeFloatGetter To;
 
 	/** Starting value. */
 	TOptional<float> StartValue;
 
 	/** Function to set the interpolated FVector value. */
-	TFunction<void(const float)> SetterFunction;
+	FNativeFloatSetter SetterFunction;
 
 	/** Current interpolated value. */
 	float CurrentValue = 0.0f;

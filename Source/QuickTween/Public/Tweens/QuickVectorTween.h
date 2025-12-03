@@ -6,6 +6,8 @@
 #include "QuickTweenBase.h"
 #include "QuickVectorTween.generated.h"
 
+DECLARE_DELEGATE_RetVal( FVector, FNativeVectorGetter );
+DECLARE_DELEGATE_OneParam( FNativeVectorSetter, const FVector& );
 
 /**
  * Tween class for interpolating between two FVector values over time.
@@ -38,9 +40,9 @@ public:
 	 * @param bShouldAutoPlay Whether to start playing the tween immediately after setup.
 	 */
 	void SetUp(
-		TFunction<FVector()>&& from,
-		TFunction<FVector()>&& to,
-		TFunction<void(const FVector&)>&& setterFunction,
+		FNativeVectorGetter from,
+		FNativeVectorGetter to,
+		FNativeVectorSetter setterFunction,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -53,9 +55,9 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false)
 	{
-		From = from;
-		To = to;
-		SetterFunction = setterFunction;
+		From = MoveTemp(from);
+		To = MoveTemp(to);
+		SetterFunction = MoveTemp(setterFunction);
 		UQuickTweenBase::SetUp(
 			duration,
 			timeScale,
@@ -85,16 +87,16 @@ public:
 	[[nodiscard]] FVector GetStartValue() const { return StartValue.Get(FVector::ZeroVector); }
 private:
 	/** Starting function returning FVector. */
-	TFunction<FVector()> From;
+	FNativeVectorGetter From;
 
 	/** Target function returning FVector. */
-	TFunction<FVector()> To;
+	FNativeVectorGetter To;
 
 	/** Starting value. */
 	TOptional<FVector> StartValue;
 
 	/** Function to set the interpolated FVector value. */
-	TFunction<void(const FVector&)> SetterFunction;
+	FNativeVectorSetter SetterFunction;
 
 	/** Current interpolated value. */
 	FVector CurrentValue;
