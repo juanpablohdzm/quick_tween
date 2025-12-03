@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
 
 
 #include "Tweens/QuickTweenSequence.h"
@@ -29,7 +29,8 @@ void UQuickTweenSequence::SetUp(
 	ELoopType loopType,
 	const FString& id,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused)
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
 {
 	Loops = loops;
 	LoopType = loopType;
@@ -46,6 +47,11 @@ void UQuickTweenSequence::SetUp(
 	else
 	{
 		manager->AddTween(this);
+	}
+
+	if (bShouldAutoPlay)
+	{
+		Play();
 	}
 	return;
 }
@@ -215,13 +221,13 @@ void UQuickTweenSequence::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 
 	CurrentTweenGroupIndex = !bIsReversed ? FMath::Max(TweenGroups.Num() -1, 0) : 0;
 
+	OnComplete.Broadcast(this);
 
 	if (bAutoKill)
 	{
 		Kill(nullptr);
 	}
 
-	OnComplete.Broadcast(this);
 }
 
 void UQuickTweenSequence::Restart(UQuickTweenable* instigator)
@@ -236,6 +242,7 @@ void UQuickTweenSequence::Restart(UQuickTweenable* instigator)
 	bIsPlaying   = true;
 	bIsCompleted = false;
 	bIsBackwards = false;
+	bHasStarted = false;
 
 	ElapsedTime = bIsReversed ? GetDuration() * GetLoops() : 0.0f;
 	Progress    = bIsReversed ? 1.0f     : 0.0f;
@@ -256,24 +263,6 @@ void UQuickTweenSequence::Restart(UQuickTweenable* instigator)
 	}
 }
 
-void UQuickTweenSequence::Reset(UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-
-	ElapsedTime = 0.0f;
-	Progress    = 0.0f;
-	bIsPlaying  = false;
-	bIsCompleted= false;
-	bIsBackwards= false;
-	bIsReversed = false;
-	Loops       = 0;
-	LoopType    = ELoopType::Restart;
-	CurrentLoop = 1;
-	CurrentTweenGroupIndex = 0;
-	TweenGroups.Empty();
-}
-
 void UQuickTweenSequence::Kill(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
@@ -285,6 +274,14 @@ void UQuickTweenSequence::Kill(UQuickTweenable* instigator)
 
 	Stop(instigator);
 	CurrentTweenGroupIndex = 0;
+
+	for (FQuickTweenSequenceGroup& group : TweenGroups)
+	{
+		for (UQuickTweenable* tween : group.Tweens)
+		{
+			tween->Kill(this);
+		}
+	}
 
 	bIsPendingKill = true;
 	if (OnKilled.IsBound())
@@ -342,6 +339,15 @@ void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
 
 	if (GetIsCompleted() || !GetIsPlaying()) return;
 
+	if (!bHasStarted)
+	{
+		bHasStarted = true;
+		if (OnStart.IsBound())
+		{
+			OnStart.Broadcast(this);
+		}
+	}
+
 	switch (LoopType)
 	{
 		case ELoopType::Restart:
@@ -350,17 +356,6 @@ void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
 		case ELoopType::PingPong:
 			Update_PingPong(deltaTime, instigator);
 			break;
-	}
-}
-
-void UQuickTweenSequence::SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-	bAutoKill = bShouldAutoKill;
-	if (GetIsCompleted())
-	{
-		bIsPendingKill = bAutoKill;
 	}
 }
 
@@ -497,6 +492,17 @@ void UQuickTweenSequence::Update_PingPong(float deltaTime, UQuickTweenable* inst
 	}
 }
 
+void UQuickTweenSequence::SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator)
+{
+	if (!InstigatorIsOwner(instigator)) return;
+
+	bAutoKill = bShouldAutoKill;
+	if (GetIsCompleted())
+	{
+		bIsPendingKill = bAutoKill;
+	}
+}
+
 float UQuickTweenSequence::GetDuration() const
 {
 	float totalDuration = 0.0f;
@@ -534,4 +540,44 @@ UObject* UQuickTweenSequence::GetTween(int32 index) const
 		currentTweenIndex += group.Tweens.Num();
 	}
 	return nullptr;
+}
+
+void UQuickTweenSequence::AssignOnStartEvent(FDynamicDelegateTweenSequence callback)
+{
+	OnStart.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenSequence::AssignOnUpdateEvent(FDynamicDelegateTweenSequence callback)
+{
+	OnUpdate.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenSequence::AssignOnCompleteEvent(FDynamicDelegateTweenSequence callback)
+{
+	OnComplete.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenSequence::AssignOnKilledEvent(FDynamicDelegateTweenSequence callback)
+{
+	OnKilled.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenSequence::RemoveAllOnStartEvent(const UObject* object)
+{
+	OnStart.RemoveAll(object);
+}
+
+void UQuickTweenSequence::RemoveAllOnUpdateEvent(const UObject* object)
+{
+	OnUpdate.RemoveAll(object);
+}
+
+void UQuickTweenSequence::RemoveAllOnCompleteEvent(const UObject* object)
+{
+	OnComplete.RemoveAll(object);
+}
+
+void UQuickTweenSequence::RemoveAllOnKilledEvent(const UObject* object)
+{
+	OnKilled.RemoveAll(object);
 }

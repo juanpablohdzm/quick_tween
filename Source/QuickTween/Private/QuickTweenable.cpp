@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
 
 
 #include "QuickTweenable.h"
@@ -57,11 +57,6 @@ void UQuickTweenable::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 	ensureAlwaysMsgf(false, TEXT("Complete not implemented in IQuickTweenable"));
 }
 
-void UQuickTweenable::Reset(UQuickTweenable* instigator)
-{
-	ensureAlwaysMsgf(false, TEXT("Reset not implemented in IQuickTweenable"));
-}
-
 void UQuickTweenable::Kill(UQuickTweenable* instigator)
 {
 	ensureAlwaysMsgf(false, TEXT("Kill not implemented in IQuickTweenable"));
@@ -81,12 +76,6 @@ float UQuickTweenable::GetDuration() const
 float UQuickTweenable::GetElapsedTime() const
 {
 	ensureAlwaysMsgf(false, TEXT("GetElapsedTime not implemented in IQuickTweenable"));
-	return 0.0f;
-}
-
-float UQuickTweenable::GetProgress() const
-{
-	ensureAlwaysMsgf(false, TEXT("GetProgress not implemented in IQuickTweenable"));
 	return 0.0f;
 }
 

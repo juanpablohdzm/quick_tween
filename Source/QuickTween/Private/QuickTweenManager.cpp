@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
 
 #include "QuickTweenManager.h"
 #include "QuickTweenable.h"
@@ -50,7 +50,6 @@ void UQuickTweenManager::Tick(float deltaTime)
 		return;
 	}
 
-	UE_LOG(LogQuickTweenManager, Verbose, TEXT("QuickTweenManager Tick called with deltaTime: %f"), deltaTime);
 	for (int i = QuickTweens.Num() - 1; i >= 0; --i)
 	{
 		UQuickTweenable* tweenContainer = QuickTweens[i];
@@ -87,13 +86,11 @@ TStatId UQuickTweenManager::GetStatId() const
 
 void UQuickTweenManager::AddTween(UQuickTweenable* tween)
 {
-	UE_LOG(LogQuickTweenManager, Log, TEXT("Adding tween from QuickTweenManager"));
 	QuickTweens.Add(tween);
 }
 
 void UQuickTweenManager::RemoveTween(class UQuickTweenable* tween)
 {
-	UE_LOG(LogQuickTweenManager, Log, TEXT("Remove tween from QuickTweenManager"));
 	QuickTweens.RemoveSingleSwap(tween);
 }
 

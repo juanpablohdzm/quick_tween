@@ -20,6 +20,8 @@ public:
 	/**
 	 * Set up the vector tween with the specified parameters.
 	 *
+	 * Note: The start value will be cached from the component's current location at the first update.
+	 *
 	 * @param from Function to get the FROM value.
 	 * @param to Function to get the TO value.
 	 * @param setterFunction Function to apply the interpolated value.
@@ -33,6 +35,7 @@ public:
 	 * @param worldContextObject Context object for world access.
 	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
 	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
+	 * @param bShouldAutoPlay Whether to start playing the tween immediately after setup.
 	 */
 	void SetUp(
 		TFunction<FVector()>&& from,
@@ -46,8 +49,9 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = FString(),
 		const UObject* worldContextObject = nullptr,
-		bool bShouldAutoKill = true,
-		bool bShouldPlayWhilePaused = false)
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false)
 	{
 		From = from;
 		To = to;
@@ -62,7 +66,8 @@ public:
 			tweenTag,
 			worldContextObject,
 			bShouldAutoKill,
-			bShouldPlayWhilePaused);
+			bShouldPlayWhilePaused,
+			bShouldAutoPlay);
 
 	}
 
@@ -70,6 +75,14 @@ public:
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
 
 	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
+
+	/** Get the current interpolated FVector value. */
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] FVector GetCurrentValue() const { return CurrentValue; }
+
+	/** Get the starting FVector value. Set after the first tick */
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] FVector GetStartValue() const { return StartValue.Get(FVector::ZeroVector); }
 private:
 	/** Starting function returning FVector. */
 	TFunction<FVector()> From;
@@ -82,4 +95,7 @@ private:
 
 	/** Function to set the interpolated FVector value. */
 	TFunction<void(const FVector&)> SetterFunction;
+
+	/** Current interpolated value. */
+	FVector CurrentValue;
 };

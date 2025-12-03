@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
 #include "Tweens/QuickTweenBase.h"
 
 #include "QuickTweenManager.h"
@@ -29,7 +29,8 @@ void UQuickTweenBase::SetUp(
 	const FString& tweenTag,
 	const UObject* worldContextObject,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused)
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
 {
 	Duration = duration;
 	TimeScale = timeScale;
@@ -51,16 +52,16 @@ void UQuickTweenBase::SetUp(
 	{
 		manager->AddTween(this);
 	}
+
+	if (bShouldAutoPlay)
+	{
+		Play();
+	}
 }
 
 void UQuickTweenBase::Update_Restart(float deltaTime, UQuickTweenable* instigator)
 {
 	ElapsedTime = !bIsReversed ?  ElapsedTime + deltaTime * GetTimeScale() : ElapsedTime - deltaTime * GetTimeScale();
-
-	if (OnUpdate.IsBound())
-	{
-		OnUpdate.Broadcast(this, Progress);
-	}
 
 
 	bool shouldComplete = false;
@@ -121,11 +122,6 @@ void UQuickTweenBase::Update_PingPong(float deltaTime, UQuickTweenable* instigat
 		}
 	}
 
-	if (OnUpdate.IsBound())
-	{
-		OnUpdate.Broadcast(this, Progress);
-	}
-
 	if (shouldCompleteLoop)
 	{
 		if (Loops != INFINITE_LOOPS && (!bIsReversed && CurrentLoop >= Loops || bIsReversed && (CurrentLoop - 1) <= 0))
@@ -143,6 +139,15 @@ void UQuickTweenBase::Update(float deltaTime, UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator) || GetIsCompleted() || !GetIsPlaying()) return;
 
+	if (!bHasStarted)
+	{
+		bHasStarted = true;
+		if (OnStart.IsBound())
+		{
+			OnStart.Broadcast(this);
+		}
+	}
+
 	if (FMath::IsNearlyZero(GetDuration()))
 	{
 		Complete(instigator);
@@ -151,15 +156,55 @@ void UQuickTweenBase::Update(float deltaTime, UQuickTweenable* instigator)
 
 	switch (LoopType)
 	{
-		case ELoopType::Restart:
-			Update_Restart(deltaTime, instigator);
-			break;
-		case ELoopType::PingPong:
-			Update_PingPong(deltaTime, instigator);
-			break;
-		default:
-			ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));
+	case ELoopType::Restart:
+		Update_Restart(deltaTime, instigator);
+		break;
+	case ELoopType::PingPong:
+		Update_PingPong(deltaTime, instigator);
+		break;
+	default:
+		ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));
 	}
+}
+
+void UQuickTweenBase::AssignOnStartEvent(FDynamicDelegateTween callback)
+{
+	OnStart.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenBase::AssignOnUpdateEvent(FDynamicDelegateTween callback)
+{
+	OnUpdate.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenBase::AssignOnCompleteEvent(FDynamicDelegateTween callback)
+{
+	OnComplete.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenBase::AssignOnKilledEvent(FDynamicDelegateTween callback)
+{
+	OnKilled.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
+void UQuickTweenBase::RemoveAllOnStartEvent(const UObject* object)
+{
+	OnStart.RemoveAll(object);
+}
+
+void UQuickTweenBase::RemoveAllOnUpdateEvent(const UObject* object)
+{
+	OnUpdate.RemoveAll(object);
+}
+
+void UQuickTweenBase::RemoveAllOnCompleteEvent(const UObject* object)
+{
+	OnComplete.RemoveAll(object);
+}
+
+void UQuickTweenBase::RemoveAllOnKilledEvent(const UObject* object)
+{
+	OnKilled.RemoveAll(object);
 }
 
 void UQuickTweenBase::SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator)
@@ -222,10 +267,10 @@ void UQuickTweenBase::Restart(UQuickTweenable* instigator)
 
 	bIsCompleted = false;
 	bIsPlaying   = true;
+	bHasStarted = false;
 
 	float duration = GetLoopType() == ELoopType::PingPong ? GetDuration() : GetDuration() * GetLoops();
 	ElapsedTime = bIsReversed ? duration : 0.0f;
-	Progress    = bIsReversed ? 1.0f     : 0.0f;
 	CurrentLoop = bIsReversed ? GetLoops() : 1;
 	return;
 }
@@ -239,36 +284,17 @@ void UQuickTweenBase::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 	bIsCompleted = true;
 
 	ElapsedTime = Duration;
-	Progress    = 1.0f;
-	if (bAutoKill)
-	{
-		Kill(nullptr);
-	}
 
 	if (OnComplete.IsBound())
 	{
 		OnComplete.Broadcast(this);
 	}
-	return;
-}
 
-void UQuickTweenBase::Reset(UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
+	if (bAutoKill)
+	{
+		Kill(nullptr);
+	}
 
-	ElapsedTime = 0.0f;
-	Progress    = 0.0f;
-	Duration    = 0.0f;
-	TimeScale   = 1.0f;
-	bIsPlaying  = false;
-	bIsCompleted= false;
-	bIsBackwards= false;
-	bIsReversed = false;
-	EaseType    = EEaseType::Linear;
-	EaseCurve   = nullptr;
-	Loops       = 0;
-	LoopType    = ELoopType::Restart;
-	CurrentLoop = 1;
 	return;
 }
 
@@ -279,4 +305,9 @@ void UQuickTweenBase::Kill(UQuickTweenable* instigator)
 
 	bIsPendingKill = true;
 	bIsPlaying     = false;
+
+	if (OnKilled.IsBound())
+	{
+		OnKilled.Broadcast(this);
+	}
 }

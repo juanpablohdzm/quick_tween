@@ -34,7 +34,7 @@ struct TEaseLerp<FRotator>
 
         float Dot = QA | QB;
 
-        if (FMath::Abs(Dot) > 1.f - UE_KINDA_SMALL_NUMBER)
+        if (Dot > 1.f - UE_KINDA_SMALL_NUMBER)
         {
             // Quats are nearly the same: use a cheap lerp and normalize.
             FQuat R = FQuat::FastLerp(QA, QB, Alpha);
@@ -45,7 +45,7 @@ struct TEaseLerp<FRotator>
         if (Path == EEasePath::Longest)
         {
             // Ensure we traverse the LONG arc: we want a NEGATIVE dot for FullPath.
-            if (Dot > 0.f) { QB = -QB; Dot = -Dot; }
+            if (Dot > 0.f) { QB = -QB; }
             const FQuat R = FQuat::SlerpFullPath(QA, QB, Alpha);
             return R.Rotator();
         }
