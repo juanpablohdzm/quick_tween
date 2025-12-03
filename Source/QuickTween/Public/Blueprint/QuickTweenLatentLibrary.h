@@ -44,7 +44,6 @@ public:
 	 * @param tweenTag Optional tag to identify the created tween.
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
-	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
 	 * @return Pointer to the created UQuickTweenSequence.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Sequence | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -56,8 +55,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false);
+		bool bShouldPlayWhilePaused = false);
 
 	/**
 	 * Create a latent vector tween.

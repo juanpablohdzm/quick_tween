@@ -18,8 +18,7 @@ UQuickTweenSequence* UQuickTweenLibrary::QuickTweenCreateSequence(
 	ELoopType loopType,
 	const FString& tweenTag,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldPlayWhilePaused)
 {
 	UQuickTweenSequence* sequence = NewObject<UQuickTweenSequence>();
 	sequence->SetUp(
@@ -28,8 +27,7 @@ UQuickTweenSequence* UQuickTweenLibrary::QuickTweenCreateSequence(
 		loopType,
 		tweenTag,
 		bShouldAutoKill,
-		bShouldPlayWhilePaused,
-		bShouldAutoPlay);
+		bShouldPlayWhilePaused);
 	return sequence;
 }
 
@@ -51,9 +49,9 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenCreateTweenVector(
 {
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
 	tween->SetUp(
-		[from]() -> FVector { return from; },
-		[to]() -> FVector { return to; },
-		[setter](const FVector& v) { setter.Execute(v); },
+		FNativeVectorGetter::CreateLambda([from]() -> FVector { return from; }),
+		FNativeVectorGetter::CreateLambda([to]() -> FVector { return to; }),
+		FNativeVectorSetter::CreateWeakLambda(setter.GetUObject(), [setter = MoveTemp(setter)](const FVector& v){ setter.Execute(v);}),
 		duration,
 		timeScale,
 		easeType,
@@ -89,10 +87,10 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenCreateTweenRotator(
 {
 	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
 	tween->SetUp(
-		[from]() -> FRotator { return from; },
-		[to]() -> FRotator { return to; },
+		FNativeRotatorGetter::CreateLambda([from]() -> FRotator { return from; }),
+		FNativeRotatorGetter::CreateLambda([to]() -> FRotator { return to; }),
 		bUseShortestPath,
-		[setterFunction](const FRotator& v) { setterFunction.Execute(v); },
+		FNativeRotatorSetter::CreateWeakLambda(setterFunction.GetUObject(),[setterFunction = MoveTemp(setterFunction)](const FRotator& v) { setterFunction.Execute(v); }),
 		duration,
 		timeScale,
 		easeType,
@@ -126,9 +124,9 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenCreateTweenFloat(
 {
 	UQuickFloatTween* tween = NewObject<UQuickFloatTween>();
 	tween->SetUp(
-		[from]() -> float { return from; },
-		[to]() -> float { return to; },
-		[setterFunction](const float v) { setterFunction.Execute(v); },
+		FNativeFloatGetter::CreateLambda([from]() -> float { return from; }),
+		FNativeFloatGetter::CreateLambda([to]() -> float { return to; }),
+		FNativeFloatSetter::CreateWeakLambda(setterFunction.GetUObject(), [setterFunction = MoveTemp(setterFunction)](const float v) { setterFunction.Execute(v); }),
 		duration,
 		timeScale,
 		easeType,
@@ -163,19 +161,19 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
 
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
 	tween->SetUp(
-		[component, space]()->FVector
+		FNativeVectorGetter::CreateWeakLambda(component, [component, space]()->FVector
 		{
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->GetComponentLocation() :
 				component->GetRelativeLocation();
-		},
-		[to]()->FVector{ return to; },
-		[component, space](const FVector& v)
+		}),
+		FNativeVectorGetter::CreateLambda([to]()->FVector{ return to; }),
+		FNativeVectorSetter::CreateWeakLambda(component, [component, space](const FVector& v)
 		{
 			space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldLocation(v, true, nullptr, ETeleportType::None) :
 				component->SetRelativeLocation(v, true, nullptr, ETeleportType::None);
-		},
+		}),
 		duration,
 		timeScale,
 		easeType,
@@ -210,19 +208,19 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
 {
 	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
 	tween->SetUp(
-		[component, space]()->FVector
+		FNativeVectorGetter::CreateWeakLambda(component,[component, space]()->FVector
 		{
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->GetComponentScale() :
 				component->GetRelativeScale3D();
-		},
-		[to]()->FVector { return to; },
-		[component, space](const FVector& v)
+		}),
+		FNativeVectorGetter::CreateLambda([to]()->FVector { return to; }),
+		FNativeVectorSetter::CreateWeakLambda(component, [component, space](const FVector& v)
 		{
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldScale3D(v) :
 				component->SetRelativeScale3D(v);
-		},
+		}),
 		duration,
 		timeScale,
 		easeType,
@@ -258,20 +256,20 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 {
 	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
 	tween->SetUp(
-		[component, space]()->FRotator
+		FNativeRotatorGetter::CreateWeakLambda(component, [component, space]()->FRotator
 		{
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->GetComponentRotation() :
 				component->GetRelativeRotation();
-		},
-		[to]()->FRotator { return to; },
+		}),
+		FNativeRotatorGetter::CreateLambda([to]()->FRotator { return to; }),
 		bUseShortestPath,
-		[component, space](const FRotator& v)
+		FNativeRotatorSetter::CreateWeakLambda(component, [component, space](const FRotator& v)
 		{
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldRotation(v) :
 				component->SetRelativeRotation(v);
-		},
+		}),
 		duration,
 		timeScale,
 		easeType,
@@ -307,13 +305,13 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
 {
 	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
 	tween->SetUp(
-		[component, space]()->FRotator
+		FNativeRotatorGetter::CreateWeakLambda(component, [component, space]()->FRotator
 		{
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->GetComponentRotation() :
 				component->GetRelativeRotation();
-		},
-		[by, tween, space]()->FRotator
+		}),
+		FNativeRotatorGetter::CreateLambda([by, tween, space]()->FRotator // capture same tween that holds the lambda no need for weak ptr
 		{
 			const FQuat startRotation = tween->GetStartValue().Quaternion();
 			FQuat end;
@@ -326,14 +324,14 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
 				end = startRotation * by.Quaternion();
 			}
 			return end.Rotator();
-		},
+		}),
 		bUseShortestPath,
-		[component, space](const FRotator& v)
+		FNativeRotatorSetter::CreateWeakLambda(component, [component, space](const FRotator& v)
 		{
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldRotation(v) :
 				component->SetRelativeRotation(v);
-		},
+		}),
 		duration,
 		timeScale,
 		easeType,
@@ -369,15 +367,15 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 
 	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
 	tween->SetUp(
-		[component]()->FRotator { return component->GetRelativeRotation(); },
-		[to, component]()->FRotator
+		FNativeRotatorGetter::CreateWeakLambda(component, [component]()->FRotator { return component->GetRelativeRotation(); }),
+		FNativeRotatorGetter::CreateWeakLambda(component, [to, component]()->FRotator
 		{
 			const FVector direction = (to - component->GetComponentLocation()).GetSafeNormal();
 			FRotator targetRotation = direction.Rotation();
 			return targetRotation;
-		},
+		}),
 		bUseShortestPath,
-		[component](const FRotator& v) { component->SetRelativeRotation(v); },
+		FNativeRotatorSetter::CreateWeakLambda(component, [component](const FRotator& v) { component->SetRelativeRotation(v); }),
 		duration,
 		timeScale,
 		easeType,
@@ -417,16 +415,16 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent
 
 	UQuickFloatTween* tween = NewObject<UQuickFloatTween>();
 	tween->SetUp(
-		[from]()->float
+		FNativeFloatGetter::CreateLambda([from]()->float
 		{
 			return from;
-		},
-		[to]()->float { return to; },
-		[dirFromPoint, point, normal, component](const float v)
+		}),
+		FNativeFloatGetter::CreateLambda([to]()->float { return to; }),
+		FNativeFloatSetter::CreateWeakLambda(component, [dirFromPoint, point, normal, component](const float v)
 		{
 			const FVector rotatedPosition = point + dirFromPoint.RotateAngleAxis(v, normal.GetSafeNormal());
 			component->SetWorldLocation(rotatedPosition);
-		},
+		}),
 		duration,
 		timeScale,
 		easeType,
