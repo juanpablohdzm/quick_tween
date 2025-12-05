@@ -20,15 +20,13 @@ UQuickTweenSequence* UQuickTweenLibrary::QuickTweenCreateSequence(
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused)
 {
-	UQuickTweenSequence* sequence = NewObject<UQuickTweenSequence>();
-	sequence->SetUp(
+	return UQuickTweenSequence::CreateSequence(
 		worldContextObject,
 		loops,
 		loopType,
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused);
-	return sequence;
 }
 
 UQuickVectorTween* UQuickTweenLibrary::QuickTweenCreateTweenVector(
@@ -47,11 +45,10 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenCreateTweenVector(
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
-	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
-	tween->SetUp(
-		FNativeVectorGetter::CreateLambda([from]() -> FVector { return from; }),
-		FNativeVectorGetter::CreateLambda([to]() -> FVector { return to; }),
-		FNativeVectorSetter::CreateWeakLambda(setter.GetUObject(), [setter = MoveTemp(setter)](const FVector& v){ setter.Execute(v);}),
+	return UQuickVectorTween::CreateTween(
+		FNativeVectorGetter::CreateLambda([from](UQuickVectorTween*) -> FVector { return from; }),
+		FNativeVectorGetter::CreateLambda([to](UQuickVectorTween*) -> FVector { return to; }),
+		FNativeVectorSetter::CreateWeakLambda(setter.GetUObject(), [setter = MoveTemp(setter)](const FVector& v, UQuickVectorTween* tween){ setter.Execute(v, tween);}),
 		duration,
 		timeScale,
 		easeType,
@@ -64,8 +61,6 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenCreateTweenVector(
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
 	);
-
-	return tween;
 }
 
 UQuickRotatorTween* UQuickTweenLibrary::QuickTweenCreateTweenRotator(
@@ -85,12 +80,11 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenCreateTweenRotator(
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
-	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
-	tween->SetUp(
-		FNativeRotatorGetter::CreateLambda([from]() -> FRotator { return from; }),
-		FNativeRotatorGetter::CreateLambda([to]() -> FRotator { return to; }),
+	return UQuickRotatorTween::CreateTween(
+		FNativeRotatorGetter::CreateLambda([from](UQuickRotatorTween*) -> FRotator { return from; }),
+		FNativeRotatorGetter::CreateLambda([to](UQuickRotatorTween*) -> FRotator { return to; }),
 		bUseShortestPath,
-		FNativeRotatorSetter::CreateWeakLambda(setterFunction.GetUObject(),[setterFunction = MoveTemp(setterFunction)](const FRotator& v) { setterFunction.Execute(v); }),
+		FNativeRotatorSetter::CreateWeakLambda(setterFunction.GetUObject(),[setterFunction = MoveTemp(setterFunction)](const FRotator& v, UQuickRotatorTween* tween) { setterFunction.Execute(v, tween); }),
 		duration,
 		timeScale,
 		easeType,
@@ -103,7 +97,6 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenCreateTweenRotator(
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
 	);
-	return tween;
 }
 
 UQuickFloatTween* UQuickTweenLibrary::QuickTweenCreateTweenFloat(
@@ -122,11 +115,10 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenCreateTweenFloat(
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
-	UQuickFloatTween* tween = NewObject<UQuickFloatTween>();
-	tween->SetUp(
-		FNativeFloatGetter::CreateLambda([from]() -> float { return from; }),
-		FNativeFloatGetter::CreateLambda([to]() -> float { return to; }),
-		FNativeFloatSetter::CreateWeakLambda(setterFunction.GetUObject(), [setterFunction = MoveTemp(setterFunction)](const float v) { setterFunction.Execute(v); }),
+	return UQuickFloatTween::CreateTween(
+		FNativeFloatGetter::CreateLambda([from](UQuickFloatTween*) -> float { return from; }),
+		FNativeFloatGetter::CreateLambda([to](UQuickFloatTween*) -> float { return to; }),
+		FNativeFloatSetter::CreateWeakLambda(setterFunction.GetUObject(), [setterFunction = MoveTemp(setterFunction)](const float v, UQuickFloatTween* tween) { setterFunction.Execute(v, tween); }),
 		duration,
 		timeScale,
 		easeType,
@@ -139,7 +131,6 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenCreateTweenFloat(
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
 	);
-	return tween;
 }
 
 UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
@@ -159,16 +150,15 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
 	bool bShouldAutoPlay)
 {
 
-	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
-	tween->SetUp(
-		FNativeVectorGetter::CreateWeakLambda(component, [component, space]()->FVector
+	return UQuickVectorTween::CreateTween(
+		FNativeVectorGetter::CreateWeakLambda(component, [component, space](UQuickVectorTween*)->FVector
 		{
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->GetComponentLocation() :
 				component->GetRelativeLocation();
 		}),
-		FNativeVectorGetter::CreateLambda([to]()->FVector{ return to; }),
-		FNativeVectorSetter::CreateWeakLambda(component, [component, space](const FVector& v)
+		FNativeVectorGetter::CreateLambda([to](UQuickVectorTween*)->FVector{ return to; }),
+		FNativeVectorSetter::CreateWeakLambda(component, [component, space](const FVector& v, UQuickVectorTween*)
 		{
 			space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldLocation(v, true, nullptr, ETeleportType::None) :
@@ -186,8 +176,6 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
 	);
-
-	return tween;
 }
 
 UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
@@ -206,16 +194,15 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
-	UQuickVectorTween* tween = NewObject<UQuickVectorTween>();
-	tween->SetUp(
-		FNativeVectorGetter::CreateWeakLambda(component,[component, space]()->FVector
+	return UQuickVectorTween::CreateTween(
+		FNativeVectorGetter::CreateWeakLambda(component,[component, space](UQuickVectorTween*)->FVector
 		{
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->GetComponentScale() :
 				component->GetRelativeScale3D();
 		}),
-		FNativeVectorGetter::CreateLambda([to]()->FVector { return to; }),
-		FNativeVectorSetter::CreateWeakLambda(component, [component, space](const FVector& v)
+		FNativeVectorGetter::CreateLambda([to](UQuickVectorTween*)->FVector { return to; }),
+		FNativeVectorSetter::CreateWeakLambda(component, [component, space](const FVector& v, UQuickVectorTween*)
 		{
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldScale3D(v) :
@@ -233,8 +220,6 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
 	);
-
-	return tween;
 }
 
 UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
@@ -254,17 +239,16 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
-	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
-	tween->SetUp(
-		FNativeRotatorGetter::CreateWeakLambda(component, [component, space]()->FRotator
+	return UQuickRotatorTween::CreateTween(
+		FNativeRotatorGetter::CreateWeakLambda(component, [component, space](UQuickRotatorTween*)->FRotator
 		{
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->GetComponentRotation() :
 				component->GetRelativeRotation();
 		}),
-		FNativeRotatorGetter::CreateLambda([to]()->FRotator { return to; }),
+		FNativeRotatorGetter::CreateLambda([to](UQuickRotatorTween*)->FRotator { return to; }),
 		bUseShortestPath,
-		FNativeRotatorSetter::CreateWeakLambda(component, [component, space](const FRotator& v)
+		FNativeRotatorSetter::CreateWeakLambda(component, [component, space](const FRotator& v, UQuickRotatorTween*)
 		{
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldRotation(v) :
@@ -282,8 +266,6 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
 	);
-
-	return tween;
 }
 
 UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
@@ -303,15 +285,14 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
-	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
-	tween->SetUp(
-		FNativeRotatorGetter::CreateWeakLambda(component, [component, space]()->FRotator
+	return UQuickRotatorTween::CreateTween(
+		FNativeRotatorGetter::CreateWeakLambda(component, [component, space](UQuickRotatorTween*)->FRotator
 		{
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->GetComponentRotation() :
 				component->GetRelativeRotation();
 		}),
-		FNativeRotatorGetter::CreateLambda([by, tween, space]()->FRotator // capture same tween that holds the lambda no need for weak ptr
+		FNativeRotatorGetter::CreateLambda([by, space](UQuickRotatorTween* tween)->FRotator // capture same tween that holds the lambda no need for weak ptr
 		{
 			const FQuat startRotation = tween->GetStartValue().Quaternion();
 			FQuat end;
@@ -326,7 +307,7 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
 			return end.Rotator();
 		}),
 		bUseShortestPath,
-		FNativeRotatorSetter::CreateWeakLambda(component, [component, space](const FRotator& v)
+		FNativeRotatorSetter::CreateWeakLambda(component, [component, space](const FRotator& v, UQuickRotatorTween*)
 		{
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldRotation(v) :
@@ -344,8 +325,6 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
 	);
-
-	return tween;
 }
 
 UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
@@ -365,17 +344,16 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 	bool bShouldAutoPlay)
 {
 
-	UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
-	tween->SetUp(
-		FNativeRotatorGetter::CreateWeakLambda(component, [component]()->FRotator { return component->GetRelativeRotation(); }),
-		FNativeRotatorGetter::CreateWeakLambda(component, [to, component]()->FRotator
+	return UQuickRotatorTween::CreateTween(
+		FNativeRotatorGetter::CreateWeakLambda(component, [component](UQuickRotatorTween*)->FRotator { return component->GetRelativeRotation(); }),
+		FNativeRotatorGetter::CreateWeakLambda(component, [to, component](UQuickRotatorTween*)->FRotator
 		{
 			const FVector direction = (to - component->GetComponentLocation()).GetSafeNormal();
 			FRotator targetRotation = direction.Rotation();
 			return targetRotation;
 		}),
 		bUseShortestPath,
-		FNativeRotatorSetter::CreateWeakLambda(component, [component](const FRotator& v) { component->SetRelativeRotation(v); }),
+		FNativeRotatorSetter::CreateWeakLambda(component, [component](const FRotator& v, UQuickRotatorTween*) { component->SetRelativeRotation(v); }),
 		duration,
 		timeScale,
 		easeType,
@@ -388,8 +366,6 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
 	);
-
-	return tween;
 }
 
 UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent(
@@ -413,14 +389,13 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent
 	const FVector startPoint  = component->GetComponentLocation();
 	const FVector dirFromPoint = startPoint - point;
 
-	UQuickFloatTween* tween = NewObject<UQuickFloatTween>();
-	tween->SetUp(
-		FNativeFloatGetter::CreateLambda([from]()->float
+	return UQuickFloatTween::CreateTween(
+		FNativeFloatGetter::CreateLambda([from](UQuickFloatTween*)->float
 		{
 			return from;
 		}),
-		FNativeFloatGetter::CreateLambda([to]()->float { return to; }),
-		FNativeFloatSetter::CreateWeakLambda(component, [dirFromPoint, point, normal, component](const float v)
+		FNativeFloatGetter::CreateLambda([to](UQuickFloatTween*)->float { return to; }),
+		FNativeFloatSetter::CreateWeakLambda(component, [dirFromPoint, point, normal, component](const float v, UQuickFloatTween*)
 		{
 			const FVector rotatedPosition = point + dirFromPoint.RotateAngleAxis(v, normal.GetSafeNormal());
 			component->SetWorldLocation(rotatedPosition);
@@ -437,8 +412,6 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
 	);
-
-	return tween;
 }
 
 

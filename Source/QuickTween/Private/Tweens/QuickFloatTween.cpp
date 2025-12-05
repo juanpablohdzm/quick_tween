@@ -12,7 +12,7 @@ void UQuickFloatTween::Update(float deltaTime, UQuickTweenable* instigator)
 
 	if (!StartValue.IsSet())
 	{
-		StartValue = From.Execute();
+		StartValue = From.Execute(this);
 	}
 
 	UQuickTweenBase::Update(deltaTime, instigator);
@@ -36,8 +36,8 @@ void UQuickFloatTween::Update(float deltaTime, UQuickTweenable* instigator)
 		progress = curve->GetFloatValue(progress);
 	}
 
-	const float value = FEaseFunctions<float>::Ease(StartValue.GetValue(), To.Execute(), progress, GetEaseType());
-	SetterFunction.Execute(value);
+	const float value = FEaseFunctions<float>::Ease(StartValue.GetValue(), To.Execute(this), progress, GetEaseType());
+	SetterFunction.Execute(value, this);
 	CurrentValue = value;
 	if (OnUpdate.IsBound())
 	{
@@ -51,7 +51,7 @@ void UQuickFloatTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 
 	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
 	{
-		SetterFunction.Execute(StartValue.GetValue());
+		SetterFunction.Execute(StartValue.GetValue(), this);
 		return Super::Complete(instigator, false);
 	}
 
@@ -59,8 +59,8 @@ void UQuickFloatTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 	{
 		bSnapToEnd = !bSnapToEnd;
 	}
-	float value = bSnapToEnd ? To.Execute() : StartValue.GetValue();
-	SetterFunction.Execute(value);
+	float value = bSnapToEnd ? To.Execute(this) : StartValue.GetValue();
+	SetterFunction.Execute(value, this);
 	CurrentValue = value;
 	return Super::Complete(instigator, bSnapToEnd);
 }

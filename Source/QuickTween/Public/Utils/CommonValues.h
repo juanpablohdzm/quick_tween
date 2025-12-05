@@ -2,11 +2,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "QuickTweenable.h"
 #include "CommonValues.generated.h"
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FVectorSetter, const FVector&, value);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FRotatorSetter, const FRotator&, value);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FloatSetter, const float, value);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FVectorSetter, const FVector&, value, UQuickTweenable*, tween);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FRotatorSetter, const FRotator&, value, UQuickTweenable*, tween);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FloatSetter, const float, value, UQuickTweenable*, tween);
 
 /**
  *  Enum defining the space in which a QuickTween operates.

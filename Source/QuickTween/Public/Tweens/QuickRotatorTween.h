@@ -6,8 +6,10 @@
 #include "QuickTweenBase.h"
 #include "QuickRotatorTween.generated.h"
 
-DECLARE_DELEGATE_RetVal( FRotator, FNativeRotatorGetter );
-DECLARE_DELEGATE_OneParam( FNativeRotatorSetter, const FRotator& );
+class UQuickRotatorTween;
+
+DECLARE_DELEGATE_RetVal_OneParam(FRotator, FNativeRotatorGetter, UQuickRotatorTween*);
+DECLARE_DELEGATE_TwoParams( FNativeRotatorSetter, const FRotator&, UQuickRotatorTween* );
 
 /**
  * Tween class for interpolating between two FRotator values over time.
@@ -17,28 +19,11 @@ UCLASS(BlueprintType)
 class QUICKTWEEN_API UQuickRotatorTween : public UQuickTweenBase
 {
 	GENERATED_BODY()
-public:
+private:
+	UQuickRotatorTween() = default;
 
 	/**
 	 * Set up the rotator tween with the specified parameters.
-	 *
-	 * Note: The start value will be cached from the component's current location at the first update.
-	 *
-	 * @param from Function to get the FROM value.
-	 * @param to Function to get the TO value.
-	 * @param bUseShortestPath Whether to use the shortest path for interpolation.
-	 * @param setterFunction Function to apply the interpolated value.
-	 * @param duration Duration of the tween in seconds.
-	 * @param timeScale Multiplier for the tween's speed.
-	 * @param easeType Type of easing to apply.
-	 * @param easeCurve Optional custom curve for easing.
-	 * @param loops Number of times to loop the tween.
-	 * @param loopType Type of looping behavior.
-	 * @param tweenTag Optional tag for identifying the tween.
-	 * @param worldContextObject Context object for world access.
-	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
-	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
-	 * @param bShouldAutoPlay Whether to start playing the tween immediately after setup.
 	 */
 	void SetUp(
 		FNativeRotatorGetter from,
@@ -74,6 +59,65 @@ public:
 			bShouldPlayWhilePaused,
 			bShouldAutoPlay);
 
+	}
+public:
+
+	/**
+	 * Creates a new rotator tween with the specified parameters.
+	 *
+	 * Note: The start value will be cached from the component's current location at the first update.
+	 *
+	 * @param from Function to get the FROM value.
+	 * @param to Function to get the TO value.
+	 * @param bUseShortestPath Whether to use the shortest path for interpolation.
+	 * @param setterFunction Function to apply the interpolated value.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Multiplier for the tween's speed.
+	 * @param easeType Type of easing to apply.
+	 * @param easeCurve Optional custom curve for easing.
+	 * @param loops Number of times to loop the tween.
+	 * @param loopType Type of looping behavior.
+	 * @param tweenTag Optional tag for identifying the tween.
+	 * @param worldContextObject Context object for world access.
+	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
+	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
+	 * @param bShouldAutoPlay Whether to start playing the tween immediately after setup.
+	 */
+	static UQuickRotatorTween* CreateTween(
+		FNativeRotatorGetter from,
+		FNativeRotatorGetter to,
+		bool bUseShortestPath,
+		FNativeRotatorSetter setterFunction,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = FString(),
+		const UObject* worldContextObject = nullptr,
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false)
+	{
+		UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
+		tween->SetUp(
+			MoveTemp(from),
+			MoveTemp(to),
+			bUseShortestPath,
+			MoveTemp(setterFunction),
+			duration,
+			timeScale,
+			easeType,
+			easeCurve,
+			loops,
+			loopType,
+			tweenTag,
+			worldContextObject,
+			bShouldAutoKill,
+			bShouldPlayWhilePaused,
+			bShouldAutoPlay);
+		return tween;
 	}
 
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;

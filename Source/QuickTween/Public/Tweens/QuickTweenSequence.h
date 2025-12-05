@@ -39,19 +39,11 @@ class QUICKTWEEN_API UQuickTweenSequence : public UQuickTweenable
 {
 	GENERATED_BODY()
 
-public:
-	virtual ~UQuickTweenSequence() override;
+private:
+	UQuickTweenSequence() = default;
 
-#pragma region Sequence Creation
 	/**
 	 * Set up the sequence with optional looping parameters.
-	 * @param worldContextObject Context object for world access.
-	 * @param loops Number of times to loop the sequence (-1 = infinite).
-	 * @param loopType Type of looping behavior.
-	 * @param id Optional identifier for the sequence.
-	 * @param bShouldAutoKill Whether to auto-kill the sequence on completion.
-	 * @param bShouldPlayWhilePaused Whether the sequence should play while the game is paused.
-	 * @return Reference to this sequence.
 	 */
 	void SetUp(
 		const UObject* worldContextObject = nullptr,
@@ -60,6 +52,41 @@ public:
 		const FString& id = FString(),
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false);
+
+public:
+	virtual ~UQuickTweenSequence() override;
+
+#pragma region Sequence Creation
+
+	/**
+	 * Creates a new tween sequence with the specified parameters.
+	 *
+	 * @param worldContextObject Context object for world access.
+	 * @param loops Number of loops (0 = infinite).
+	 * @param loopType Looping behavior.
+	 * @param id Optional identifier for the sequence.
+	 * @param bShouldAutoKill Whether to auto-kill the sequence on completion.
+	 * @param bShouldPlayWhilePaused Whether the sequence should play while the game is paused.
+	 * @return Pointer to the created tween sequence.
+	 */
+	static UQuickTweenSequence* CreateSequence(
+		const UObject* worldContextObject = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& id = FString(),
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false)
+	{
+		UQuickTweenSequence* sequence = NewObject<UQuickTweenSequence>();
+		sequence->SetUp(
+			worldContextObject,
+			loops,
+			loopType,
+			id,
+			bShouldAutoKill,
+			bShouldPlayWhilePaused);
+		return sequence;
+	}
 
 	/**
 	 * Joins a tween to the previously created group, or creates a new one if it is the first.
