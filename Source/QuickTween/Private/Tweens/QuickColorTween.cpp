@@ -36,7 +36,14 @@ void UQuickColorTween::Update(float deltaTime, UQuickTweenable* instigator)
 		progress = curve->GetFloatValue(progress);
 	}
 
-	const FColor value = FEaseFunctions<FColor>::Ease(StartValue.GetValue(), To.Execute(this), progress, GetEaseType());
+	const FColor startValue = StartValue.GetValue();
+	const FColor endValue = To.Execute(this);
+	FColor value;
+	value.R = FEaseFunctions<uint8>::Ease(startValue.R, endValue.R, progress, GetEaseType());
+	value.G = FEaseFunctions<uint8>::Ease(startValue.G, endValue.G, progress, GetEaseType());
+	value.B = FEaseFunctions<uint8>::Ease(startValue.B, endValue.B, progress, GetEaseType());
+	value.A = FEaseFunctions<uint8>::Ease(startValue.A, endValue.A, progress, GetEaseType());
+
 	SetterFunction.Execute(value, this);
 	CurrentValue = value;
 	if (OnUpdate.IsBound())

@@ -240,6 +240,14 @@ public:
 	void AssignOnKilledEvent(FDynamicDelegateTweenSequence callback);
 
 	/**
+	 * Assign a Blueprint dynamic delegate to be invoked when the tween loops.
+	 * @param callback Dynamic delegate with signature (UQuickTweenSequence* Tween).
+	 *                 The provided delegate will be stored and called when the tween loops.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void AssignOnLoopEvent(FDynamicDelegateTweenSequence callback);
+
+	/**
 	 * Remove all bound Blueprint dynamic delegates for the start event that belong to the specified object.
 	 * @param object The UObject whose bindings should be removed. If nullptr, no action is taken.
 	 */
@@ -267,6 +275,13 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
 	void RemoveAllOnKilledEvent(const UObject* object);
 
+	/**
+	 * Remove all bound Blueprint dynamic delegates for the loop event that belong to the specified object.
+	 * @param object The UObject whose bindings should be removed. If nullptr, no action is taken.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void RemoveAllOnLoopEvent(const UObject* object);
+
 	/** Called when the sequence starts. */
 	FNativeDelegateTweenSequence OnStart;
 
@@ -278,6 +293,9 @@ public:
 
 	/** Called when the sequence is killed. */
 	FNativeDelegateTweenSequence OnKilled;
+
+	/** Called when the sequence loops. */
+	FNativeDelegateTweenSequence OnLoop;
 #pragma endregion
 protected:
 	bool InstigatorIsOwner(UQuickTweenable* instigator) const

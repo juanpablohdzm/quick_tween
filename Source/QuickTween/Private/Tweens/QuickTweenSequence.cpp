@@ -51,7 +51,12 @@ void UQuickTweenSequence::SetUp(
 
 UQuickTweenSequence* UQuickTweenSequence::Join(UQuickTweenable* tween)
 {
-	ensureAlwaysMsgf(tween, TEXT("Join called with a null tween. This should never happen."));
+	if (!tween)
+	{
+		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Join called with a null tween. This should never happen."));
+		return this;
+	}
+
 	if (tween->GetLoops()  == INFINITE_LOOPS)
 	{
 		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Joining a tween with infinite loops is not allowed. Please set a finite number of loops."));
@@ -80,7 +85,12 @@ UQuickTweenSequence* UQuickTweenSequence::Join(UQuickTweenable* tween)
 
 UQuickTweenSequence* UQuickTweenSequence::Append(UQuickTweenable* tween)
 {
-	ensureAlwaysMsgf(tween, TEXT("Append called with a null tween. This should never happen."));
+	if (!tween)
+	{
+		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Append called with a null tween. This should never happen."));
+		return this;
+	}
+
 	if (tween->GetLoops()  == INFINITE_LOOPS)
 	{
 		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Append a tween with infinite loops is not allowed. Please set a finite number of loops."));
@@ -424,6 +434,10 @@ void UQuickTweenSequence::Update_Restart(float deltaTime, UQuickTweenable* insti
 				}
 			}
 			CurrentLoop = bIsReversed ? CurrentLoop - 1 : CurrentLoop + 1;
+			if (OnLoop.IsBound())
+			{
+				OnLoop.Broadcast(this);
+			}
 		}
 	}
 }
@@ -463,6 +477,11 @@ void UQuickTweenSequence::Update_PingPong(float deltaTime, UQuickTweenable* inst
 		if (CurrentTweenGroupIndex >= TweenGroups.Num() || CurrentTweenGroupIndex < 0)
 		{
 			CurrentLoop = bIsReversed ? CurrentLoop - 1 : CurrentLoop + 1;
+			if (OnLoop.IsBound())
+			{
+				OnLoop.Broadcast(this);
+			}
+
 			if (Loops != INFINITE_LOOPS && (!bIsReversed && CurrentLoop > Loops || bIsReversed && (CurrentLoop - 1) <= 0))
 			{
 				Complete(instigator);
@@ -557,6 +576,11 @@ void UQuickTweenSequence::AssignOnKilledEvent(FDynamicDelegateTweenSequence call
 	OnKilled.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
 }
 
+void UQuickTweenSequence::AssignOnLoopEvent(FDynamicDelegateTweenSequence callback)
+{
+	OnLoop.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
 void UQuickTweenSequence::RemoveAllOnStartEvent(const UObject* object)
 {
 	OnStart.RemoveAll(object);
@@ -575,4 +599,9 @@ void UQuickTweenSequence::RemoveAllOnCompleteEvent(const UObject* object)
 void UQuickTweenSequence::RemoveAllOnKilledEvent(const UObject* object)
 {
 	OnKilled.RemoveAll(object);
+}
+
+void UQuickTweenSequence::RemoveAllOnLoopEvent(const UObject* object)
+{
+	OnLoop.RemoveAll(object);
 }

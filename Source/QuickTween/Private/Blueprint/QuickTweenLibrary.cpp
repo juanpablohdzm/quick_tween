@@ -417,7 +417,11 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent
 
 UQuickTweenable* UQuickTweenLibrary::QuickTweenFindTweenByTag(const UObject* worldContextObject, const FString& tweenTag)
 {
-	ensureAlwaysMsgf(worldContextObject, TEXT("FindTweenByTag called with a null worldContextObject. This should never happen."));
+	if (!worldContextObject)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("FindTweenByTag called with a null worldContextObject."));
+		return nullptr;
+	}
 
 	if (UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject))
 	{

@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "QuickTweenBase.h"
-#include "QuickFloatTween.generated.h"
+#include "QuickIntTween.generated.h"
 
 class UQuickIntTween;
-DECLARE_DELEGATE_RetVal_OneParam(float, FNativeIntGetter, UQuickIntTween*);
+DECLARE_DELEGATE_RetVal_OneParam(int32, FNativeIntGetter, UQuickIntTween*);
 DECLARE_DELEGATE_TwoParams( FNativeIntSetter, const int32, UQuickIntTween* );
 /**
  * Tween class for interpolating between two int32 values over time.

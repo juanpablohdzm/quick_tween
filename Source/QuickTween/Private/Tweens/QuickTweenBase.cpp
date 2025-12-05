@@ -67,7 +67,15 @@ void UQuickTweenBase::Update_Restart(float deltaTime, UQuickTweenable* instigato
 	bool shouldComplete = false;
 	if (!bIsReversed)
 	{
-		CurrentLoop = (ElapsedTime / GetDuration()) + 1;
+		int32 loop = (ElapsedTime / GetDuration()) + 1;
+		if (CurrentLoop != loop)
+		{
+			CurrentLoop = loop;
+			if (OnLoop.IsBound())
+			{
+				OnLoop.Broadcast(this);
+			}
+		}
 		shouldComplete = CurrentLoop > Loops;
 	}
 	else
@@ -80,7 +88,14 @@ void UQuickTweenBase::Update_Restart(float deltaTime, UQuickTweenable* instigato
 		{
 			const float mod = FMath::Fmod(ElapsedTime, GetDuration());
 			const int32 loop = ElapsedTime / GetDuration();
-			CurrentLoop = loop + 1;
+			if (CurrentLoop != loop + 1)
+			{
+				CurrentLoop = loop + 1;
+				if (OnLoop.IsBound())
+				{
+					OnLoop.Broadcast(this);
+				}
+			}
 			shouldComplete = loop <= 0 && FMath::IsNearlyZero(mod);
 		}
 	}
@@ -132,6 +147,10 @@ void UQuickTweenBase::Update_PingPong(float deltaTime, UQuickTweenable* instigat
 
 		bIsBackwards = !bIsBackwards;
 		CurrentLoop = !bIsReversed ? CurrentLoop + 1 : CurrentLoop - 1;
+		if (OnLoop.IsBound())
+		{
+			OnLoop.Broadcast(this);
+		}
 	}
 }
 
@@ -187,6 +206,11 @@ void UQuickTweenBase::AssignOnKilledEvent(FDynamicDelegateTween callback)
 	OnKilled.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
 }
 
+void UQuickTweenBase::AssignOnLoopEvent(FDynamicDelegateTween callback)
+{
+	OnLoop.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
 void UQuickTweenBase::RemoveAllOnStartEvent(const UObject* object)
 {
 	OnStart.RemoveAll(object);
@@ -205,6 +229,11 @@ void UQuickTweenBase::RemoveAllOnCompleteEvent(const UObject* object)
 void UQuickTweenBase::RemoveAllOnKilledEvent(const UObject* object)
 {
 	OnKilled.RemoveAll(object);
+}
+
+void UQuickTweenBase::RemoveAllOnLoopEvent(const UObject* object)
+{
+	OnLoop.RemoveAll(object);
 }
 
 void UQuickTweenBase::SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator)
