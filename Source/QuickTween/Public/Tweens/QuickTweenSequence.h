@@ -67,7 +67,7 @@ public:
 	 * @return Reference to this sequence.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
-	void Join(UQuickTweenable* tween);
+	UQuickTweenSequence* Join(UQuickTweenable* tween);
 
 	/**
 	 * Creates a new group and adds a new tween to it.
@@ -75,7 +75,7 @@ public:
 	 * @return Reference to this sequence.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
-	void Append(UQuickTweenable* tween);
+	UQuickTweenSequence* Append(UQuickTweenable* tween);
 
 	virtual void SetOwner(UQuickTweenable* owner) override { Owner = owner; }
 #pragma endregion
