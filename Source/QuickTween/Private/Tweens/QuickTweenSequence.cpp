@@ -58,33 +58,9 @@ void UQuickTweenSequence::Join(UQuickTweenable* tween)
 		return;
 	}
 
-	if (UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject))
-	{
-		manager->RemoveTween(tween);
-	}
-	else
-	{
-		UE_LOG(LogQuickTweenSequence, Log, TEXT("Failed to get QuickTweenManager when joining a tween to sequence."));
-	}
-	tween->SetOwner(this);
-
-	FQuickTweenSequenceGroup group;
-	group.Tweens.Add(tween);
-	TweenGroups.Add(group);
-}
-
-void UQuickTweenSequence::Append(UQuickTweenable* tween)
-{
-	ensureAlwaysMsgf(tween, TEXT("Append called with a null tween. This should never happen."));
-	if (tween->GetLoops()  == INFINITE_LOOPS)
-	{
-		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Joining a tween with infinite loops is not allowed. Please set a finite number of loops."));
-		return;
-	}
-
 	if (TweenGroups.Num() == 0)
 	{
-		return Join(tween);
+		return Append(tween);
 	}
 
 	if (UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject))
@@ -99,6 +75,30 @@ void UQuickTweenSequence::Append(UQuickTweenable* tween)
 
 	FQuickTweenSequenceGroup& lastGroup = TweenGroups.Last();
 	lastGroup.Tweens.Add(tween);
+}
+
+void UQuickTweenSequence::Append(UQuickTweenable* tween)
+{
+	ensureAlwaysMsgf(tween, TEXT("Append called with a null tween. This should never happen."));
+	if (tween->GetLoops()  == INFINITE_LOOPS)
+	{
+		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Append a tween with infinite loops is not allowed. Please set a finite number of loops."));
+		return;
+	}
+
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject))
+	{
+		manager->RemoveTween(tween);
+	}
+	else
+	{
+		UE_LOG(LogQuickTweenSequence, Log, TEXT("Failed to get QuickTweenManager when appending a tween to sequence."));
+	}
+	tween->SetOwner(this);
+
+	FQuickTweenSequenceGroup group;
+	group.Tweens.Add(tween);
+	TweenGroups.Add(group);
 }
 
 void UQuickTweenSequence::Play(UQuickTweenable* instigator)
