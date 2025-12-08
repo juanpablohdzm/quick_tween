@@ -64,7 +64,7 @@ public:
 	 * @param worldContextObject Context object used to find the world for the tween.
 	 * @param from Delegate that returns the starting FVector value.
 	 * @param to Delegate that returns the target FVector value.
-	 * @param setterFunction Delegate invoked each update with the current interpolated FVector.
+	 * @param setter Delegate invoked each update with the current interpolated FVector.
 	 * @param duration Time in seconds for the tween to complete. Defaults to 1.0f.
 	 * @param timeScale Multiplier applied to the tween time. Defaults to 1.0f.
 	 * @param easeType Predefined easing function to use for interpolation. Defaults to EEaseType::Linear.
@@ -82,14 +82,14 @@ public:
 		UObject* worldContextObject,
 		FVector from,
 		FVector to,
-		FVectorSetter setterFunction,
+		FVectorSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -100,7 +100,7 @@ public:
 	 * @param worldContextObject Context object used to find the world for the tween.
 	 * @param from Delegate that returns the starting rotation.
 	 * @param to Delegate that returns the target rotation.
-	 * @param setterFunction Delegate invoked each update with the current interpolated rotator.
+	 * @param setter Delegate invoked each update with the current interpolated rotator.
 	 * @param bUseShortestPath If true, rotation will take the shortest angular path.
 	 * @param duration Time in seconds for the tween to complete.
 	 * @param timeScale Multiplier applied to the tween time.
@@ -119,7 +119,7 @@ public:
 		UObject* worldContextObject,
 		FRotator from,
 		FRotator to,
-		FRotatorSetter setterFunction,
+		FRotatorSetter setter,
 		bool bUseShortestPath,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
@@ -127,18 +127,18 @@ public:
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
 	/**
-	 * Create a float tween that interpolates a value from `from` to `to` and applies it via `setterFunction`.
+	 * Create a float tween that interpolates a value from `from` to `to` and applies it via `setter`.
 	 *
 	 * @param worldContextObject Context object used to find the world for the tween.
 	 * @param from Delegate that returns the starting float value.
 	 * @param to Delegate that returns the target float value.
-	 * @param setterFunction Delegate invoked each update with the current interpolated float value.
+	 * @param setter Delegate invoked each update with the current interpolated float value.
 	 * @param duration Time in seconds for the tween to complete.
 	 * @param timeScale Multiplier applied to the tween time.
 	 * @param easeType Predefined easing function to use for interpolation.
@@ -156,14 +156,14 @@ public:
 		UObject* worldContextObject,
 		float from,
 		float to,
-		FFloatSetter setterFunction,
+		FFloatSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -178,7 +178,7 @@ public:
 	 * @param worldContextObject Context object used to find the world for the tween.
 	 * @param from               Starting FVector2D value.
 	 * @param to                 Target FVector2D value.
-	 * @param setterFunction     Delegate invoked each update with the current interpolated FVector2D.
+	 * @param setter     Delegate invoked each update with the current interpolated FVector2D.
 	 * @param duration           Time in seconds for the tween to complete.
 	 * @param timeScale          Multiplier applied to the tween time.
 	 * @param easeType           Predefined easing function to use for interpolation.
@@ -196,14 +196,14 @@ public:
 		UObject* worldContextObject,
 		FVector2D from,
 		FVector2D to,
-		FVector2DSetter setterFunction,
+		FVector2DSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -217,7 +217,7 @@ public:
 	 * @param worldContextObject Context object used to find the world for the tween.
 	 * @param from               Starting FColor value.
 	 * @param to                 Target FColor value.
-	 * @param setterFunction     Delegate invoked each update with the current interpolated FColor.
+	 * @param setter     Delegate invoked each update with the current interpolated FColor.
 	 * @param duration           Time in seconds for the tween to complete.
 	 * @param timeScale          Multiplier applied to the tween time.
 	 * @param easeType           Predefined easing function to use for interpolation.
@@ -235,14 +235,14 @@ public:
 		UObject* worldContextObject,
 		FColor from,
 		FColor to,
-		FColorSetter setterFunction,
+		FColorSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -256,7 +256,7 @@ public:
 	 * @param worldContextObject Context object used to find the world for the tween.
 	 * @param from               Starting integer value.
 	 * @param to                 Target integer value.
-	 * @param setterFunction     Delegate invoked each update with the current interpolated integer.
+	 * @param setter     Delegate invoked each update with the current interpolated integer.
 	 * @param duration           Time in seconds for the tween to complete.
 	 * @param timeScale          Multiplier applied to the tween time.
 	 * @param easeType           Predefined easing function to use for interpolation.
@@ -274,14 +274,14 @@ public:
 		UObject* worldContextObject,
 		int32 from,
 		int32 to,
-		FIntSetter setterFunction,
+		FIntSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -319,7 +319,24 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Move By SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickVectorTween* QuickTweenMoveBy_SceneComponent(
+		UObject* worldContextObject,
+		USceneComponent* component,
+		FVector by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -357,7 +374,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -397,7 +414,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -441,7 +458,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -481,7 +498,7 @@ public:
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -527,7 +544,7 @@ public:
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);

@@ -10,6 +10,9 @@
 #include "Utils/LoopType.h"
 #include "QuickTweenLatentLibrary.generated.h"
 
+class UQuickIntTween;
+class UQuickColorTween;
+class UQuickVector2DTween;
 class UQuickTweenable;
 class UQuickTweenSequence;
 class UQuickVectorTween;
@@ -187,6 +190,30 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
+	/**
+	 * Create a latent 2D vector tween.
+	 *
+	 * Tween an FVector2D value from \p from to \p to using the provided setter function.
+	 * Exposed as a latent Blueprint node so execution can continue based on the latent step.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param from Starting 2D vector.
+	 * @param to Target 2D vector.
+	 * @param setterFunction Callback used to apply interpolated FVector2D values.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickVector2DTween.
+	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
 	static UQuickVector2DTween* QuickTweenCreateLatentTweenVector2D(
 		UObject* worldContextObject,
@@ -206,6 +233,30 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
+	/**
+	 * Create a latent color tween.
+	 *
+	 * Tween an FColor value from \p from to \p to using the provided setter function.
+	 * Exposed as a latent Blueprint node so execution can continue based on the latent step.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param from Starting color.
+	 * @param to Target color.
+	 * @param setterFunction Callback used to apply interpolated FColor values.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickColorTween.
+	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Color | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
 	static UQuickColorTween* QuickTweenCreateLatentTweenColor(
 		UObject* worldContextObject,
@@ -225,6 +276,30 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
+	/**
+	 * Create a latent integer tween.
+	 *
+	 * Tween an integer value from \p from to \p to using the provided setter function.
+	 * Exposed as a latent Blueprint node so execution can continue based on the latent step.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param from Starting integer value.
+	 * @param to Target integer value.
+	 * @param setterFunction Callback used to apply interpolated int32 values.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickIntTween.
+	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Int | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
 	static UQuickIntTween* QuickTweenCreateLatentTweenInt(
 		UObject* worldContextObject,
@@ -243,7 +318,6 @@ public:
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
-
 
 	/**
 	 * Create a latent MoveTo tween for a scene component.
