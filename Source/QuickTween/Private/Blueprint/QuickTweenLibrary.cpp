@@ -441,6 +441,56 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
 	);
 }
 
+UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleBy_SceneComponent(
+	UObject* worldContextObject,
+	USceneComponent* component,
+	const FVector& by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	EQuickTweenSpace space,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!component)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScaleBy_SceneComponent: SceneComponent is null."));
+		return nullptr;
+	}
+
+	return UQuickVectorTween::CreateTween(
+		FNativeVectorGetter::CreateWeakLambda(component,[component, space](UQuickVectorTween*)->FVector
+		{
+			return space == EQuickTweenSpace::WorldSpace ?
+				component->GetComponentScale() :
+				component->GetRelativeScale3D();
+		}),
+		FNativeVectorGetter::CreateLambda([by](UQuickVectorTween* tween)->FVector { return tween->GetStartValue() + by; }),
+		FNativeVectorSetter::CreateWeakLambda(component, [component, space](const FVector& v, UQuickVectorTween*)
+		{
+			space == EQuickTweenSpace::WorldSpace ?
+				component->SetWorldScale3D(v) :
+				component->SetRelativeScale3D(v);
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		worldContextObject,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
 UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 	UObject* worldContextObject,
 	USceneComponent* component,

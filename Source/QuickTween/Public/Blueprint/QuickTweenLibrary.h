@@ -324,6 +324,32 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 	
+	/**
+	 * Create a vector tween that moves a SceneComponent by a relative offset.
+	 *
+	 * This function generates a UQuickVectorTween which will drive the component's world
+	 * or local position from its current value (cached at the first update) by adding the
+	 * provided `by` vector to the start position. The interpolated value is applied each
+	 * tick via the tween's setter. Easing can be controlled with either a predefined
+	 * EEaseType or an optional UCurveFloat. The operation can be performed in local or
+	 * world space according to `space`.
+	 *
+	 * @param worldContextObject  Context object used to find the world for the tween.
+	 * @param component           The SceneComponent to move.
+	 * @param by                  Relative world/local offset to apply (added to the start location).
+	 * @param duration            Time in seconds for the tween to complete.
+	 * @param timeScale           Multiplier applied to the tween time.
+	 * @param easeType            Predefined easing type to use for interpolation.
+	 * @param easeCurve           Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops               Number of times to loop the tween. Use -1 for infinite.
+	 * @param loopType            How the tween loops (Restart, PingPong, etc.).
+	 * @param space               Space in which to apply the movement (World or Local).
+	 * @param tweenTag            Optional tag to identify the created tween.
+	 * @param bShouldAutoKill     If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay     If true the tween will start playing immediately after creation.
+	 * @return                    A UQuickVectorTween pointer controlling the movement.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Move By SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVectorTween* QuickTweenMoveBy_SceneComponent(
 		UObject* worldContextObject,
@@ -367,6 +393,48 @@ public:
 		UObject* worldContextObject,
 		USceneComponent* component,
 		const FVector& to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a vector tween that scales a SceneComponent by a relative amount.
+	 *
+	 * This function generates a UQuickVectorTween which will drive the component's scale
+	 * from its current value (cached at the first update) by adding the provided \p by
+	 * vector to the start scale. The scale change is applied every tick via the tween's
+	 * setter. Easing can be controlled with either a predefined EEaseType or an optional
+	 * UCurveFloat. The operation can be performed in local or world space according to \p space.
+	 *
+	 * @param worldContextObject    Context object used to find the world for the tween.
+	 * @param component             The SceneComponent to scale.
+	 * @param by                    Relative scale vector to apply (added to the start scale).
+	 * @param duration              Time in seconds for the tween to complete.
+	 * @param timeScale             Multiplier applied to the tween time.
+	 * @param easeType              Predefined easing type to use for interpolation.
+	 * @param easeCurve             Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops                 Number of times to loop the tween. Use -1 for infinite.
+	 * @param loopType              How the tween loops (Restart, PingPong, etc.).
+	 * @param space                 Space in which to apply the scale (World or Local).
+	 * @param tweenTag              Optional tag to identify the created tween.
+	 * @param bShouldAutoKill       If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay       If true the tween will start playing immediately after creation.
+	 * @return                      A UQuickVectorTween pointer controlling the scale tween.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Scale By SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickVectorTween* QuickTweenScaleBy_SceneComponent(
+		UObject* worldContextObject,
+		USceneComponent* component,
+		const FVector& by,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
