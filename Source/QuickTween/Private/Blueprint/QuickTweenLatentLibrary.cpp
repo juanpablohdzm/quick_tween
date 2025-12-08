@@ -67,6 +67,12 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenVector(
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
+	if (!setter.IsBound())
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenCreateLatentTweenVector: Setter function is not bound."));
+		return nullptr;
+	}
+	
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
 	{
 		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
@@ -118,6 +124,12 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenRotator
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
+	if (!setter.IsBound())
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenCreateLatentTweenRotator: Setter function is not bound."));
+		return nullptr;
+	}
+
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
 	{
 		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
@@ -169,6 +181,12 @@ UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenVector
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
+	if (!setter.IsBound())
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenCreateLatentTweenVector2D: Setter function is not bound."));
+		return nullptr;
+	}
+
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
 	{
 		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
@@ -219,6 +237,12 @@ UQuickColorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenColor(
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
+	if (!setter.IsBound())
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenCreateLatentTweenColor: Setter function is not bound."));
+		return nullptr;
+	}
+
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
 	{
 		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
@@ -269,6 +293,12 @@ UQuickIntTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenInt(
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
+	if (!setter.IsBound())
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenCreateLatentTweenInt: Setter function is not bound."));
+		return nullptr;
+	}
+
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
 	{
 		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
@@ -319,6 +349,12 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenFloat(
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
+	if (!setter.IsBound())
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenCreateLatentTweenFloat: Setter function is not bound."));
+		return nullptr;
+	}
+
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
 	{
 		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
@@ -369,6 +405,12 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentMoveTo_SceneCompone
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
+	if (!component)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentMoveTo_SceneComponent: SceneComponent is null."));
+		return nullptr;
+	}
+
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
 	{
 		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
@@ -419,6 +461,12 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleTo_SceneCompon
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
+	if (!component)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentScaleTo_SceneComponent: SceneComponent is null."));
+		return nullptr;
+	}
+
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
 	{
 		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
@@ -470,6 +518,12 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateTo_SceneComp
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
+	if (!component)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentRotateTo_SceneComponent: SceneComponent is null."));
+		return nullptr;
+	}
+
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
 	{
 		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
@@ -522,6 +576,12 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateBy_SceneComp
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
+	if (!component)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentRotateBy_SceneComponent: SceneComponent is null."));
+		return nullptr;
+	}
+
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
 	{
 		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
@@ -573,6 +633,12 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentLookAt_SceneCompon
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
+	if (!component)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentLookAt_SceneComponent: SceneComponent is null."));
+		return nullptr;
+	}
+
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
 	{
 		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
@@ -625,6 +691,12 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateAroundPoint_Sc
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
+	if (!component)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentRotateAroundPoint_SceneComponent: SceneComponent is null."));
+		return nullptr;
+	}
+
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
 	{
 		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
