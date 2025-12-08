@@ -71,7 +71,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param from Starting vector.
 	 * @param to Target vector.
-	 * @param setterFunction Callback used to apply interpolated FVector values.
+	 * @param setter Callback used to apply interpolated FVector values.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
@@ -89,16 +89,16 @@ public:
 		UObject* worldContextObject,
 		FLatentActionInfo latentInfo,
 		EQuickTweenLatentSteps& latentStep,
-		FVector from,
-		FVector to,
-		FVectorSetter setterFunction,
+		const FVector& from,
+		const FVector& to,
+		FVectorSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -114,7 +114,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param from Starting rotator.
 	 * @param to Target rotator.
-	 * @param setterFunction Callback used to apply interpolated FRotator values.
+	 * @param setter Callback used to apply interpolated FRotator values.
 	 * @param bUseShortestPath When true, interpolation will use the shortest rotational path.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
@@ -133,9 +133,9 @@ public:
 		UObject* worldContextObject,
 		FLatentActionInfo latentInfo,
 		EQuickTweenLatentSteps& latentStep,
-		FRotator from,
-		FRotator to,
-		FRotatorSetter setterFunction,
+		const FRotator& from,
+		const FRotator& to,
+		FRotatorSetter setter,
 		bool bUseShortestPath,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
@@ -143,7 +143,7 @@ public:
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -158,7 +158,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param from Starting float value.
 	 * @param to Target float value.
-	 * @param setterFunction Callback used to apply interpolated float values.
+	 * @param setter Callback used to apply interpolated float values.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
@@ -178,14 +178,14 @@ public:
 		EQuickTweenLatentSteps& latentStep,
 		float from,
 		float to,
-		FFloatSetter setterFunction,
+		FFloatSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -201,7 +201,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param from Starting 2D vector.
 	 * @param to Target 2D vector.
-	 * @param setterFunction Callback used to apply interpolated FVector2D values.
+	 * @param setter Callback used to apply interpolated FVector2D values.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
@@ -219,16 +219,16 @@ public:
 		UObject* worldContextObject,
 		FLatentActionInfo latentInfo,
 		EQuickTweenLatentSteps& latentStep,
-		FVector2D from,
-		FVector2D to,
-		FVector2DSetter setterFunction,
+		const FVector2D& from,
+		const FVector2D& to,
+		FVector2DSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -244,7 +244,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param from Starting color.
 	 * @param to Target color.
-	 * @param setterFunction Callback used to apply interpolated FColor values.
+	 * @param setter Callback used to apply interpolated FColor values.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
@@ -262,16 +262,16 @@ public:
 		UObject* worldContextObject,
 		FLatentActionInfo latentInfo,
 		EQuickTweenLatentSteps& latentStep,
-		FColor from,
-		FColor to,
-		FColorSetter setterFunction,
+		const FColor& from,
+		const FColor& to,
+		FColorSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -287,7 +287,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param from Starting integer value.
 	 * @param to Target integer value.
-	 * @param setterFunction Callback used to apply interpolated int32 values.
+	 * @param setter Callback used to apply interpolated int32 values.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
@@ -307,14 +307,14 @@ public:
 		EQuickTweenLatentSteps& latentStep,
 		int32 from,
 		int32 to,
-		FIntSetter setterFunction,
+		FIntSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -344,22 +344,22 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
 	static UQuickVectorTween* QuickTweenLatentMoveTo_SceneComponent(
-			UObject* worldContextObject,
-			FLatentActionInfo latentInfo,
-			EQuickTweenLatentSteps& latentStep,
-			USceneComponent* component,
-			FVector to,
-			float duration = 1.0f,
-			float timeScale = 1.0f,
-			EEaseType easeType = EEaseType::Linear,
-			UCurveFloat* easeCurve = nullptr,
-			int32 loops = 1,
-			ELoopType loopType = ELoopType::Restart,
-			EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
-			FString tweenTag = "",
-			bool bShouldAutoKill = false,
-			bool bShouldPlayWhilePaused = false,
-			bool bShouldAutoPlay = false);
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		USceneComponent* component,
+		const FVector& to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent ScaleTo tween for a scene component.
@@ -390,7 +390,7 @@ public:
 		FLatentActionInfo latentInfo,
 		EQuickTweenLatentSteps& latentStep,
 		USceneComponent* component,
-		FVector to,
+		const FVector& to,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -398,7 +398,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
-		FString tweenTag = "",
+		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -429,23 +429,23 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Rotator | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
 	static UQuickRotatorTween* QuickTweenLatentRotateTo_SceneComponent(
-        	UObject* worldContextObject,
-        	FLatentActionInfo latentInfo,
-			EQuickTweenLatentSteps& latentStep,
-        	USceneComponent* component,
-        	FRotator to,
-        	bool bUseShortestPath = true,
-        	float duration = 1.0f,
-        	float timeScale = 1.0f,
-        	EEaseType easeType = EEaseType::Linear,
-        	UCurveFloat* easeCurve = nullptr,
-        	int32 loops = 1,
-        	ELoopType loopType = ELoopType::Restart,
-        	EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
-        	FString tweenTag = "",
-        	bool bShouldAutoKill = false,
-        	bool bShouldPlayWhilePaused = false,
-        	bool bShouldAutoPlay = false);
+        UObject* worldContextObject,
+        FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+        USceneComponent* component,
+        const FRotator& to,
+        bool bUseShortestPath = true,
+        float duration = 1.0f,
+        float timeScale = 1.0f,
+        EEaseType easeType = EEaseType::Linear,
+        UCurveFloat* easeCurve = nullptr,
+        int32 loops = 1,
+        ELoopType loopType = ELoopType::Restart,
+        EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
+        const FString& tweenTag = "",
+        bool bShouldAutoKill = false,
+        bool bShouldPlayWhilePaused = false,
+        bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent RotateBy tween for a scene component.
@@ -473,23 +473,23 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Rotator | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
 	static UQuickRotatorTween* QuickTweenLatentRotateBy_SceneComponent(
-			UObject* worldContextObject,
-			FLatentActionInfo latentInfo,
-			EQuickTweenLatentSteps& latentStep,
-			USceneComponent* component,
-			FRotator by,
-			bool bUseShortestPath = true,
-			float duration = 1.0f,
-			float timeScale = 1.0f,
-			EEaseType easeType = EEaseType::Linear,
-			UCurveFloat* easeCurve = nullptr,
-			int32 loops = 1,
-			ELoopType loopType = ELoopType::Restart,
-			EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
-			FString tweenTag = "",
-			bool bShouldAutoKill = false,
-			bool bShouldPlayWhilePaused = false,
-			bool bShouldAutoPlay = false);
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		USceneComponent* component,
+		const FRotator& by,
+		bool bUseShortestPath = true,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent LookAt rotator tween for a scene component.
@@ -516,22 +516,22 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Rotator | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
     static UQuickRotatorTween* QuickTweenLatentLookAt_SceneComponent(
-        	UObject* worldContextObject,
-        	FLatentActionInfo latentInfo,
-			EQuickTweenLatentSteps& latentStep,
-        	USceneComponent* component,
-        	FVector to,
-        	bool bUseShortestPath = true,
-        	float duration = 1.0f,
-        	float timeScale = 1.0f,
-        	EEaseType easeType = EEaseType::Linear,
-        	UCurveFloat* easeCurve = nullptr,
-        	int32 loops = 1,
-        	ELoopType loopType = ELoopType::Restart,
-        	FString tweenTag = "",
-        	bool bShouldAutoKill = false,
-        	bool bShouldPlayWhilePaused = false,
-        	bool bShouldAutoPlay = false);
+        UObject* worldContextObject,
+        FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+        USceneComponent* component,
+        const FVector& to,
+        bool bUseShortestPath = true,
+        float duration = 1.0f,
+        float timeScale = 1.0f,
+        EEaseType easeType = EEaseType::Linear,
+        UCurveFloat* easeCurve = nullptr,
+        int32 loops = 1,
+        ELoopType loopType = ELoopType::Restart,
+        const FString& tweenTag = "",
+        bool bShouldAutoKill = false,
+        bool bShouldPlayWhilePaused = false,
+        bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent RotateAround tween for a scene component.
@@ -560,22 +560,22 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
     static UQuickFloatTween* QuickTweenLatentRotateAroundPoint_SceneComponent(
-        	UObject* worldContextObject,
-        	FLatentActionInfo latentInfo,
-			EQuickTweenLatentSteps& latentStep,
-        	USceneComponent* component,
-        	float from,
-        	float to,
-        	FVector point,
-        	FVector normal,
-        	float duration = 1.0f,
-        	float timeScale = 1.0f,
-        	EEaseType easeType = EEaseType::Linear,
-        	UCurveFloat* easeCurve = nullptr,
-        	int32 loops = 1,
-        	ELoopType loopType = ELoopType::Restart,
-        	FString tweenTag = "",
-        	bool bShouldAutoKill = false,
-        	bool bShouldPlayWhilePaused = false,
-        	bool bShouldAutoPlay = false);
+        UObject* worldContextObject,
+        FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+        USceneComponent* component,
+        float from,
+        float to,
+        const FVector& point,
+        const FVector& normal,
+        float duration = 1.0f,
+        float timeScale = 1.0f,
+        EEaseType easeType = EEaseType::Linear,
+        UCurveFloat* easeCurve = nullptr,
+        int32 loops = 1,
+        ELoopType loopType = ELoopType::Restart,
+        const FString& tweenTag = "",
+        bool bShouldAutoKill = false,
+        bool bShouldPlayWhilePaused = false,
+        bool bShouldAutoPlay = false);
 };

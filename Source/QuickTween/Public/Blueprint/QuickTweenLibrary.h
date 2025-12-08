@@ -80,8 +80,8 @@ public:
 	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Vector", meta = (Keywords = "Tween | Vector", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVectorTween* QuickTweenCreateTweenVector(
 		UObject* worldContextObject,
-		FVector from,
-		FVector to,
+		const FVector& from,
+		const FVector& to,
 		FVectorSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
@@ -117,8 +117,8 @@ public:
 	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Rotator", meta = (Keywords = "Tween | Rotator", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickRotatorTween* QuickTweenCreateTweenRotator(
 		UObject* worldContextObject,
-		FRotator from,
-		FRotator to,
+		const FRotator& from,
+		const FRotator& to,
 		FRotatorSetter setter,
 		bool bUseShortestPath,
 		float duration = 1.0f,
@@ -194,8 +194,8 @@ public:
 	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Vector2D", meta = (Keywords = "Tween | Vector", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVector2DTween* QuickTweenCreateTweenVector2D(
 		UObject* worldContextObject,
-		FVector2D from,
-		FVector2D to,
+		const FVector2D& from,
+		const FVector2D& to,
 		FVector2DSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
@@ -233,8 +233,8 @@ public:
 	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Color", meta = (Keywords = "Tween | Color", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickColorTween* QuickTweenCreateTweenColor(
 		UObject* worldContextObject,
-		FColor from,
-		FColor to,
+		const FColor& from,
+		const FColor& to,
 		FColorSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
@@ -311,7 +311,7 @@ public:
 	static UQuickVectorTween* QuickTweenMoveTo_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
-		FVector to,
+		const FVector& to,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -328,7 +328,7 @@ public:
 	static UQuickVectorTween* QuickTweenMoveBy_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
-		FVector by,
+		const FVector& by,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -366,7 +366,7 @@ public:
 	static UQuickVectorTween* QuickTweenScaleTo_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
-		FVector to,
+		const FVector& to,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -405,7 +405,7 @@ public:
 	static UQuickRotatorTween* QuickTweenRotateTo_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
-		FRotator to,
+		const FRotator& to,
 		bool bUseShortestPath = true,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
@@ -449,7 +449,7 @@ public:
 	static UQuickRotatorTween* QuickTweenRotateBy_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
-		FRotator by,
+		const FRotator& by,
 		bool bUseShortestPath = true,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
@@ -490,7 +490,7 @@ public:
 	static UQuickRotatorTween* QuickTweenLookAt_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
-		FVector to,
+		const FVector& to,
 		bool bUseShortestPath = true,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
@@ -536,8 +536,8 @@ public:
 		USceneComponent* component,
 		float from,
 		float to,
-		FVector point,
-		FVector normal,
+		const FVector& point,
+		const FVector& normal,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
