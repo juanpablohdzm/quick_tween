@@ -72,7 +72,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenVector(
 		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenCreateLatentTweenVector: Setter function is not bound."));
 		return nullptr;
 	}
-	
+
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
 	{
 		FLatentActionManager& latentActionManager = world->GetLatentActionManager();

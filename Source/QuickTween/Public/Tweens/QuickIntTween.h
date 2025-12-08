@@ -26,7 +26,7 @@ private:
 	void SetUp(
 		FNativeIntGetter from,
 		FNativeIntGetter to,
-		FNativeIntSetter setterFunction,
+		FNativeIntSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -41,7 +41,7 @@ private:
 	{
 		From = MoveTemp(from);
 		To = MoveTemp(to);
-		SetterFunction = MoveTemp(setterFunction);
+		setter = MoveTemp(setter);
 		UQuickTweenBase::SetUp(
 			duration,
 			timeScale,
@@ -65,7 +65,7 @@ public:
 	 *
 	 * @param from Function to get the FROM value.
 	 * @param to Function to get the TO value.
-	 * @param setterFunction Function to apply the interpolated value.
+	 * @param setter Function to apply the interpolated value.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Multiplier for the tween's speed.
 	 * @param easeType Type of easing to apply.
@@ -81,7 +81,7 @@ public:
 	static UQuickIntTween* CreateTween(
 		FNativeIntGetter from,
 		FNativeIntGetter to,
-		FNativeIntSetter setterFunction,
+		FNativeIntSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -94,11 +94,17 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false)
 	{
+		if (!from.IsBound() || !to.IsBound() || !setter.IsBound())
+		{
+			UE_LOG(LogQuickTweenBase, Warning, TEXT("UQuickIntTween::CreateTween: One or more delegate functions are not bound."));
+			return nullptr;
+		}
+		
 		UQuickIntTween* tween = NewObject<UQuickIntTween>();
 		tween->SetUp(
 			MoveTemp(from),
 			MoveTemp(to),
-			MoveTemp(setterFunction),
+			MoveTemp(setter),
 			duration,
 			timeScale,
 			easeType,
@@ -135,7 +141,7 @@ private:
 	TOptional<int32> StartValue;
 
 	/** Function to set the interpolated FVector value. */
-	FNativeIntSetter SetterFunction;
+	FNativeIntSetter Setter;
 
 	/** Current interpolated value. */
 	int32 CurrentValue = 0;

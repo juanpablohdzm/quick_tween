@@ -29,7 +29,7 @@ private:
 		FNativeRotatorGetter from,
 		FNativeRotatorGetter to,
 		bool bUseShortestPath,
-		FNativeRotatorSetter setterFunction,
+		FNativeRotatorSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -44,7 +44,7 @@ private:
 	{
 		From = MoveTemp(from);
 		To = MoveTemp(to);
-		SetterFunction = MoveTemp(setterFunction);
+		setter = MoveTemp(setter);
 		bShortestPath = bUseShortestPath;
 		UQuickTweenBase::SetUp(
 			duration,
@@ -70,7 +70,7 @@ public:
 	 * @param from Function to get the FROM value.
 	 * @param to Function to get the TO value.
 	 * @param bUseShortestPath Whether to use the shortest path for interpolation.
-	 * @param setterFunction Function to apply the interpolated value.
+	 * @param setter Function to apply the interpolated value.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Multiplier for the tween's speed.
 	 * @param easeType Type of easing to apply.
@@ -87,7 +87,7 @@ public:
 		FNativeRotatorGetter from,
 		FNativeRotatorGetter to,
 		bool bUseShortestPath,
-		FNativeRotatorSetter setterFunction,
+		FNativeRotatorSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -100,12 +100,18 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false)
 	{
+		if (!from.IsBound() || !to.IsBound() || !setter.IsBound())
+		{
+			UE_LOG(LogQuickTweenBase, Warning, TEXT("UQuickRotatorTween::CreateTween: One or more delegate functions are not bound."));
+			return nullptr;
+		}
+		
 		UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
 		tween->SetUp(
 			MoveTemp(from),
 			MoveTemp(to),
 			bUseShortestPath,
-			MoveTemp(setterFunction),
+			MoveTemp(setter),
 			duration,
 			timeScale,
 			easeType,
@@ -142,7 +148,7 @@ private:
 	TOptional<FRotator> StartValue;
 
 	/** Function to set the interpolated FRotator value. */
-	FNativeRotatorSetter SetterFunction;
+	FNativeRotatorSetter Setter;
 
 	/** Whether to use the shortest path for interpolation. */
 	bool bShortestPath = true;

@@ -11,6 +11,8 @@
 class UQuickTweenSequence;
 class UQuickTweenBase;
 
+DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenBase, Log, All);
+
 DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateTween, UQuickTweenBase*);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDynamicDelegateTween, UQuickTweenBase*, Tween);
 

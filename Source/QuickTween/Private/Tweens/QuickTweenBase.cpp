@@ -4,8 +4,6 @@
 #include "QuickTweenManager.h"
 #include "Utils/CommonValues.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenBase, Log, All);
-
 UQuickTweenBase::~UQuickTweenBase()
 {
 	if (!WorldContextObject || Owner)

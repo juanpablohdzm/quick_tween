@@ -44,7 +44,7 @@ void UQuickColorTween::Update(float deltaTime, UQuickTweenable* instigator)
 	value.B = FEaseFunctions<uint8>::Ease(startValue.B, endValue.B, progress, GetEaseType());
 	value.A = FEaseFunctions<uint8>::Ease(startValue.A, endValue.A, progress, GetEaseType());
 
-	SetterFunction.Execute(value, this);
+	Setter.Execute(value, this);
 	CurrentValue = value;
 	if (OnUpdate.IsBound())
 	{
@@ -58,7 +58,7 @@ void UQuickColorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 
 	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
 	{
-		SetterFunction.Execute(StartValue.GetValue(), this);
+		Setter.Execute(StartValue.GetValue(), this);
 		return Super::Complete(instigator, false);
 	}
 
@@ -68,7 +68,7 @@ void UQuickColorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 	}
 
 	FColor value = bSnapToEnd ? To.Execute(this) : StartValue.GetValue();
-	SetterFunction.Execute(value, this);
+	Setter.Execute(value, this);
 	CurrentValue = value;
 	return Super::Complete(instigator, bSnapToEnd);
 }
