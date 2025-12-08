@@ -175,7 +175,64 @@ public:
 		EQuickTweenLatentSteps& latentStep,
 		float from,
 		float to,
-		FloatSetter setterFunction,
+		FFloatSetter setterFunction,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		FString tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickVector2DTween* QuickTweenCreateLatentTweenVector2D(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		FVector2D from,
+		FVector2D to,
+		FVector2DSetter setterFunction,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		FString tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Color | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickColorTween* QuickTweenCreateLatentTweenColor(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		FColor from,
+		FColor to,
+		FColorSetter setterFunction,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		FString tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Int | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickIntTween* QuickTweenCreateLatentTweenInt(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		int32 from,
+		int32 to,
+		FIntSetter setterFunction,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,

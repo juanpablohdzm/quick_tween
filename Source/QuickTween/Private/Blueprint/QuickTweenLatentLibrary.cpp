@@ -9,8 +9,11 @@
 #include "Tweens/QuickFloatTween.h"
 #include "Tweens/QuickTweenSequence.h"
 #include "Tweens/QuickVectorTween.h"
-#include "Engine.h"
+#include "Tweens/QuickColorTween.h"
+#include "Tweens/QuickIntTween.h"
+#include "Tweens/QuickVector2DTween.h"
 #include "Engine/World.h"
+#include "Engine.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenLatentLibrary, Log, All);
 
@@ -148,13 +151,163 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenRotator
 	return nullptr;
 }
 
+UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenVector2D(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	FVector2D from,
+	FVector2D to,
+	FVector2DSetter setterFunction,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickVector2DTween* tween = UQuickTweenLibrary::QuickTweenCreateTweenVector2D(
+				worldContextObject,
+				from,
+				to,
+				MoveTemp(setterFunction),
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+	return nullptr;
+}
+
+UQuickColorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenColor(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	FColor from,
+	FColor to,
+	FColorSetter setterFunction,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickColorTween* tween = UQuickTweenLibrary::QuickTweenCreateTweenColor(
+				worldContextObject,
+				from,
+				to,
+				MoveTemp(setterFunction),
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+	return nullptr;
+}
+
+UQuickIntTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenInt(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	int32 from,
+	int32 to,
+	FIntSetter setterFunction,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickIntTween* tween = UQuickTweenLibrary::QuickTweenCreateTweenInt(
+				worldContextObject,
+				from,
+				to,
+				MoveTemp(setterFunction),
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+	return nullptr;
+}
+
 UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenFloat(
 	UObject* worldContextObject,
 	FLatentActionInfo latentInfo,
 	EQuickTweenLatentSteps& latentStep,
 	float from,
 	float to,
-	FloatSetter setterFunction,
+	FFloatSetter setterFunction,
 	float duration,
 	float timeScale,
 	EEaseType easeType,

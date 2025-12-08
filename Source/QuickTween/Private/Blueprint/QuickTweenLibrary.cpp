@@ -9,6 +9,9 @@
 #include "Tweens/QuickTweenSequence.h"
 #include "Tweens/QuickVectorTween.h"
 #include "Components/SceneComponent.h"
+#include "Tweens/QuickColorTween.h"
+#include "Tweens/QuickIntTween.h"
+#include "Tweens/QuickVector2DTween.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenLibrary, Log, All);
 
@@ -103,7 +106,7 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenCreateTweenFloat(
 	UObject* worldContextObject,
 	float from,
 	float to,
-	FloatSetter setterFunction,
+	FFloatSetter setterFunction,
 	float duration,
 	float timeScale,
 	EEaseType easeType,
@@ -119,6 +122,108 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenCreateTweenFloat(
 		FNativeFloatGetter::CreateLambda([from](UQuickFloatTween*) -> float { return from; }),
 		FNativeFloatGetter::CreateLambda([to](UQuickFloatTween*) -> float { return to; }),
 		FNativeFloatSetter::CreateWeakLambda(setterFunction.GetUObject(), [setterFunction = MoveTemp(setterFunction)](const float v, UQuickFloatTween* tween) { setterFunction.Execute(v, tween); }),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		worldContextObject,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickVector2DTween* UQuickTweenLibrary::QuickTweenCreateTweenVector2D(
+	UObject* worldContextObject,
+	FVector2D from,
+	FVector2D to,
+	FVector2DSetter setterFunction,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	return UQuickVector2DTween::CreateTween(
+		FNativeVector2DGetter::CreateLambda([from](UQuickVector2DTween*) -> FVector2D { return from; }),
+		FNativeVector2DGetter::CreateLambda([to](UQuickVector2DTween*) -> FVector2D { return to; }),
+		FNativeVector2DSetter::CreateWeakLambda(setterFunction.GetUObject(), [setterFunction = MoveTemp(setterFunction)](const FVector2D& v, UQuickVector2DTween* tween) { setterFunction.Execute(v, tween); }),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		worldContextObject,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickColorTween* UQuickTweenLibrary::QuickTweenCreateTweenColor(
+	UObject* worldContextObject,
+	FColor from,
+	FColor to,
+	FColorSetter setterFunction,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	return UQuickColorTween::CreateTween(
+		FNativeColorGetter::CreateLambda([from](UQuickColorTween*) -> FColor { return from; }),
+		FNativeColorGetter::CreateLambda([to](UQuickColorTween*) -> FColor { return to; }),
+		FNativeColorSetter::CreateWeakLambda(setterFunction.GetUObject(), [setterFunction = MoveTemp(setterFunction)](const FColor& v, UQuickColorTween* tween) { setterFunction.Execute(v, tween); }),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		worldContextObject,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickIntTween* UQuickTweenLibrary::QuickTweenCreateTweenInt(
+	UObject* worldContextObject,
+	int32 from,
+	int32 to,
+	FIntSetter setterFunction,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	FString tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	return UQuickIntTween::CreateTween(
+		FNativeIntGetter::CreateLambda([from](UQuickIntTween*) -> int32 { return from; }),
+		FNativeIntGetter::CreateLambda([to](UQuickIntTween*) -> int32 { return to; }),
+		FNativeIntSetter::CreateWeakLambda(setterFunction.GetUObject(), [setterFunction = MoveTemp(setterFunction)](const int32 v, UQuickIntTween* tween) { setterFunction.Execute(v, tween); }),
 		duration,
 		timeScale,
 		easeType,

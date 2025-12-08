@@ -7,7 +7,10 @@
 
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FVectorSetter, const FVector&, value, UQuickTweenable*, tween);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FRotatorSetter, const FRotator&, value, UQuickTweenable*, tween);
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FloatSetter, const float, value, UQuickTweenable*, tween);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FFloatSetter, const float, value, UQuickTweenable*, tween);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FVector2DSetter, const FVector2D&, value, UQuickTweenable*, tween);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FColorSetter, const FColor&, value, UQuickTweenable*, tween);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FIntSetter, const int32, value, UQuickTweenable*, tween);
 
 /**
  *  Enum defining the space in which a QuickTween operates.

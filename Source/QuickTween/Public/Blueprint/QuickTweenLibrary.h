@@ -9,6 +9,9 @@
 #include "Utils/CommonValues.h"
 #include "QuickTweenLibrary.generated.h"
 
+class UQuickIntTween;
+class UQuickColorTween;
+class UQuickVector2DTween;
 class UQuickTweenable;
 class UQuickTweenSequence;
 class UQuickVectorTween;
@@ -153,7 +156,125 @@ public:
 		UObject* worldContextObject,
 		float from,
 		float to,
-		FloatSetter setterFunction,
+		FFloatSetter setterFunction,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		FString tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a Vector2D tween that interpolates between two FVector2D values and applies the
+	 * interpolated value via the provided setter delegate each tick.
+	 *
+	 * The tween will evaluate easing using either a predefined EEaseType or an optional
+	 * UCurveFloat. The start and target values are provided directly as parameters.
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param from               Starting FVector2D value.
+	 * @param to                 Target FVector2D value.
+	 * @param setterFunction     Delegate invoked each update with the current interpolated FVector2D.
+	 * @param duration           Time in seconds for the tween to complete.
+	 * @param timeScale          Multiplier applied to the tween time.
+	 * @param easeType           Predefined easing function to use for interpolation.
+	 * @param easeCurve          Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops              Number of times to loop the tween. Use -1 for infinite.
+	 * @param loopType           How the tween loops (Restart, PingPong, etc.).
+	 * @param tweenTag           Optional tag to identify the created tween.
+	 * @param bShouldAutoKill    If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay    If true the tween will start playing immediately after creation.
+	 * @return                   Pointer to the created UQuickVector2DTween.
+	 */
+	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Vector2D", meta = (Keywords = "Tween | Vector", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickVector2DTween* QuickTweenCreateTweenVector2D(
+		UObject* worldContextObject,
+		FVector2D from,
+		FVector2D to,
+		FVector2DSetter setterFunction,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		FString tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a Color tween that interpolates between two FColor values and applies the
+	 * interpolated value via the provided setter delegate each tick.
+	 *
+	 * Easing can be controlled with a predefined EEaseType or by supplying a UCurveFloat.
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param from               Starting FColor value.
+	 * @param to                 Target FColor value.
+	 * @param setterFunction     Delegate invoked each update with the current interpolated FColor.
+	 * @param duration           Time in seconds for the tween to complete.
+	 * @param timeScale          Multiplier applied to the tween time.
+	 * @param easeType           Predefined easing function to use for interpolation.
+	 * @param easeCurve          Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops              Number of times to loop the tween. Use -1 for infinite.
+	 * @param loopType           How the tween loops (Restart, PingPong, etc.).
+	 * @param tweenTag           Optional tag to identify the created tween.
+	 * @param bShouldAutoKill    If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay    If true the tween will start playing immediately after creation.
+	 * @return                   Pointer to the created UQuickColorTween.
+	 */
+	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Color", meta = (Keywords = "Tween | Color", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickColorTween* QuickTweenCreateTweenColor(
+		UObject* worldContextObject,
+		FColor from,
+		FColor to,
+		FColorSetter setterFunction,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		FString tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create an Int tween that interpolates between two integer values and applies the
+	 * interpolated value via the provided setter delegate each tick.
+	 *
+	 * The tween uses floating point easing internally but outputs integer values to the setter.
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param from               Starting integer value.
+	 * @param to                 Target integer value.
+	 * @param setterFunction     Delegate invoked each update with the current interpolated integer.
+	 * @param duration           Time in seconds for the tween to complete.
+	 * @param timeScale          Multiplier applied to the tween time.
+	 * @param easeType           Predefined easing function to use for interpolation.
+	 * @param easeCurve          Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops              Number of times to loop the tween. Use -1 for infinite.
+	 * @param loopType           How the tween loops (Restart, PingPong, etc.).
+	 * @param tweenTag           Optional tag to identify the created tween.
+	 * @param bShouldAutoKill    If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay    If true the tween will start playing immediately after creation.
+	 * @return                   Pointer to the created UQuickIntTween.
+	 */
+	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Int", meta = (Keywords = "Tween | Int", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickIntTween* QuickTweenCreateTweenInt(
+		UObject* worldContextObject,
+		int32 from,
+		int32 to,
+		FIntSetter setterFunction,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
