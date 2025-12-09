@@ -4,6 +4,8 @@
 #include "Blueprint/QuickTweenLibrary.h"
 
 #include "QuickTweenManager.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
 #include "Tweens/QuickFloatTween.h"
 #include "Tweens/QuickRotatorTween.h"
 #include "Tweens/QuickTweenSequence.h"
@@ -382,6 +384,12 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveTo_Widget(
 				return FVector2D::ZeroVector;
 			}
 
+			if (UCanvasPanelSlot* slot = Cast<UCanvasPanelSlot>(widget->Slot))
+			{
+				return slot->GetPosition();
+			}
+
+			UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveTo_Widget: Widget is not in a CanvasPanelSlot, using RenderTranslation instead."));
 			return widget->GetRenderTransform().Translation;
 		}),
 		FNativeVector2DGetter::CreateLambda([to](UQuickVector2DTween*)->FVector2D { return to; }),
@@ -392,6 +400,13 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveTo_Widget(
 				return;
 			}
 
+			if (UCanvasPanelSlot* slot = Cast<UCanvasPanelSlot>(widget->Slot))
+			{
+				slot->SetPosition(v);
+				return;
+			}
+
+			UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveTo_Widget: Widget is not in a CanvasPanelSlot, using RenderTranslation instead."));
 			widget->SetRenderTranslation(v);
 		}),
 		duration,
@@ -756,7 +771,7 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 
 			return component->GetComponentRotation();
 		}),
-		FNativeRotatorGetter::CreateWeakLambda(component, [to, component = TWeakObjectPtr(component)](UQuickRotatorTween*)->FRotator
+		FNativeRotatorGetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), to](UQuickRotatorTween*)->FRotator
 		{
 			if (!component.IsValid())
 			{
@@ -815,22 +830,38 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent
 		return nullptr;
 	}
 
-	const FVector startPoint  = component->GetComponentLocation();
-	const FVector dirFromPoint = startPoint - point;
+	struct FStartPosHolder
+	{
+		bool bInitialized = false;
+		FVector Start{FVector::ZeroVector};
+	};
+
+	TSharedPtr<FStartPosHolder> startPosPtr = MakeShared<FStartPosHolder>();
 
 	return UQuickFloatTween::CreateTween(
 		FNativeFloatGetter::CreateLambda([from](UQuickFloatTween*)->float
 		{
 			return from;
 		}),
-		FNativeFloatGetter::CreateLambda([to](UQuickFloatTween*)->float { return to; }),
-		FNativeFloatSetter::CreateWeakLambda(component, [dirFromPoint, point, normal, component = TWeakObjectPtr(component)](const float v, UQuickFloatTween*)
+		FNativeFloatGetter::CreateLambda([to](UQuickFloatTween*)->float
+		{
+			return to;
+		}),
+		FNativeFloatSetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), startPosPtr, point, normal](const float v, UQuickFloatTween* tween)
 		{
 			if (!component.IsValid())
 			{
 				return;
 			}
 
+			// ... lazy initialize start position
+			if (!startPosPtr->bInitialized)
+			{
+				startPosPtr->Start = component->GetComponentLocation();
+				startPosPtr->bInitialized = true;
+			}
+
+			const FVector dirFromPoint = (startPosPtr->Start - point);
 			const FVector rotatedPosition = point + dirFromPoint.RotateAngleAxis(v, normal.GetSafeNormal());
 			component->SetWorldLocation(rotatedPosition);
 		}),
@@ -853,7 +884,7 @@ UQuickTweenable* UQuickTweenLibrary::QuickTweenFindTweenByTag(const UObject* wor
 {
 	if (tweenTag.IsEmpty())
 	{
-		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("Tween tag is empty in FindTweenByTag."));
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenFindByTag: Tween tag is empty."));
 		return nullptr;
 	}
 
@@ -865,6 +896,6 @@ UQuickTweenable* UQuickTweenLibrary::QuickTweenFindTweenByTag(const UObject* wor
 		});
 	}
 
-	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("Failed to get QuickTweenManager in FindTweenByTag."));
+	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenFindByTag: Failed to get QuickTweenManager."));
 	return nullptr;
 }
