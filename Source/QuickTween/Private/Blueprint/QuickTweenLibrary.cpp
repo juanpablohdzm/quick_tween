@@ -1481,6 +1481,375 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenChangeDistanceBy_SpringArm(
 	);
 }
 
+UQuickVectorTween* UQuickTweenLibrary::QuickTweenVectorParameterTo_Material(
+	UObject* worldContextObject,
+	UMaterialInstanceDynamic* material,
+	const FName& parameterName,
+	const FVector& to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!material)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenVectorParameterTo_Material: MaterialInstanceDynamic is null."));
+		return nullptr;
+	}
+
+	return UQuickVectorTween::CreateTween(
+		worldContextObject,
+		FNativeVectorGetter::CreateWeakLambda(material, [material = TWeakObjectPtr(material), parameterName](UQuickVectorTween*)->FVector
+		{
+			if (!material.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenVectorParameterTo_Material: MaterialInstanceDynamic is no longer valid."));
+				return FVector::ZeroVector;
+			}
+
+			FLinearColor color;
+			material->GetVectorParameterValue(parameterName, color);
+			return FVector(color.R, color.G, color.B);
+		}),
+		FNativeVectorGetter::CreateLambda([to](UQuickVectorTween*)->FVector { return to; }),
+		FNativeVectorSetter::CreateWeakLambda(material, [material = TWeakObjectPtr(material), parameterName](const FVector& v, UQuickVectorTween*)
+		{
+			if (!material.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenVectorParameterTo_Material: MaterialInstanceDynamic is no longer valid."));
+				return;
+			}
+
+			material->SetVectorParameterValue(parameterName, FLinearColor(v.X, v.Y, v.Z));
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickVectorTween* UQuickTweenLibrary::QuickTweenVectorParameterBy_Material(
+	UObject* worldContextObject,
+	UMaterialInstanceDynamic* material,
+	const FName& parameterName,
+	const FVector& by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!material)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenVectorParameterBy_Material: MaterialInstanceDynamic is null."));
+		return nullptr;
+	}
+
+	return UQuickVectorTween::CreateTween(
+		worldContextObject,
+		FNativeVectorGetter::CreateWeakLambda(material, [material = TWeakObjectPtr(material), parameterName](UQuickVectorTween*)->FVector
+		{
+			if (!material.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenVectorParameterBy_Material: MaterialInstanceDynamic is no longer valid."));
+				return FVector::ZeroVector;
+			}
+
+			FLinearColor color;
+			material->GetVectorParameterValue(parameterName, color);
+			return FVector(color.R, color.G, color.B);
+		}),
+		FNativeVectorGetter::CreateLambda([by](UQuickVectorTween* tween)->FVector { return tween->GetStartValue() + by; }),
+		FNativeVectorSetter::CreateWeakLambda(material, [material = TWeakObjectPtr(material), parameterName](const FVector& v, UQuickVectorTween*)
+		{
+			if (!material.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenVectorParameterBy_Material: MaterialInstanceDynamic is no longer valid."));
+				return;
+			}
+
+			material->SetVectorParameterValue(parameterName, FLinearColor(v.X, v.Y, v.Z));
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickFloatTween* UQuickTweenLibrary::QuickTweenScalarParameterTo_Material(
+	UObject* worldContextObject,
+	UMaterialInstanceDynamic* material,
+	const FName& parameterName,
+	float to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!material)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScalarParameterTo_Material: MaterialInstanceDynamic is null."));
+		return nullptr;
+	}
+
+	return UQuickFloatTween::CreateTween(
+		worldContextObject,
+		FNativeFloatGetter::CreateWeakLambda(material, [material = TWeakObjectPtr(material), parameterName](UQuickFloatTween*)->float
+		{
+			if (!material.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScalarParameterTo_Material: MaterialInstanceDynamic is no longer valid."));
+				return 0.0f;
+			}
+
+			float value = 0.0f;
+			material->GetScalarParameterValue(parameterName, value);
+			return value;
+		}),
+		FNativeFloatGetter::CreateLambda([to](UQuickFloatTween*)->float { return to; }),
+		FNativeFloatSetter::CreateWeakLambda(material, [material = TWeakObjectPtr(material), parameterName](float v, UQuickFloatTween*)
+		{
+			if (!material.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScalarParameterTo_Material: MaterialInstanceDynamic is no longer valid."));
+				return;
+			}
+
+			material->SetScalarParameterValue(parameterName, v);
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickFloatTween* UQuickTweenLibrary::QuickTweenScalarParameterBy_Material(
+	UObject* worldContextObject,
+	UMaterialInstanceDynamic* material,
+	const FName& parameterName,
+	float by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!material)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScalarParameterTo_Material: MaterialInstanceDynamic is null."));
+		return nullptr;
+	}
+
+	return UQuickFloatTween::CreateTween(
+		worldContextObject,
+		FNativeFloatGetter::CreateWeakLambda(material, [material = TWeakObjectPtr(material), parameterName](UQuickFloatTween*)->float
+		{
+			if (!material.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScalarParameterTo_Material: MaterialInstanceDynamic is no longer valid."));
+				return 0.0f;
+			}
+
+			float value = 0.0f;
+			material->GetScalarParameterValue(parameterName, value);
+			return value;
+		}),
+		FNativeFloatGetter::CreateLambda([by](UQuickFloatTween* tween)->float { return  tween->GetStartValue() + by; }),
+		FNativeFloatSetter::CreateWeakLambda(material, [material = TWeakObjectPtr(material), parameterName](float v, UQuickFloatTween*)
+		{
+			if (!material.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScalarParameterTo_Material: MaterialInstanceDynamic is no longer valid."));
+				return;
+			}
+
+			material->SetScalarParameterValue(parameterName, v);
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickColorTween* UQuickTweenLibrary::QuickTweenColorParameterTo_Material(
+	UObject* worldContextObject,
+	UMaterialInstanceDynamic* material,
+	const FName& parameterName,
+	const FColor& to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!material)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenColorParameterTo_Material: MaterialInstanceDynamic is null."));
+		return nullptr;
+	}
+
+	return UQuickColorTween::CreateTween(
+		worldContextObject,
+		FNativeColorGetter::CreateWeakLambda(material, [material = TWeakObjectPtr(material), parameterName](UQuickColorTween*)->FColor
+		{
+			if (!material.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenColorParameterTo_Material: MaterialInstanceDynamic is no longer valid."));
+				return FColor::White;
+			}
+
+			FLinearColor color;
+			material->GetVectorParameterValue(parameterName, color);
+			return color.ToFColor(true);
+		}),
+		FNativeColorGetter::CreateLambda([to](UQuickColorTween*)->FColor { return to; }),
+		FNativeColorSetter::CreateWeakLambda(material, [material = TWeakObjectPtr(material), parameterName](const FColor& v, UQuickColorTween*)
+		{
+			if (!material.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenColorParameterTo_Material: MaterialInstanceDynamic is no longer valid."));
+				return;
+			}
+
+			material->SetVectorParameterValue(parameterName, FLinearColor(v));
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickColorTween* UQuickTweenLibrary::QuickTweenColorParameterBy_Material(
+	UObject* worldContextObject,
+	UMaterialInstanceDynamic* material,
+	const FName& parameterName,
+	float by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!material)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenColorParameterBy_Material: MaterialInstanceDynamic is null."));
+		return nullptr;
+	}
+
+	return UQuickColorTween::CreateTween(
+		worldContextObject,
+		FNativeColorGetter::CreateWeakLambda(material, [material = TWeakObjectPtr(material), parameterName](UQuickColorTween*)->FColor
+		{
+			if (!material.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenColorParameterBy_Material: MaterialInstanceDynamic is no longer valid."));
+				return FColor::White;
+			}
+
+			FLinearColor color;
+			material->GetVectorParameterValue(parameterName, color);
+			return color.ToFColor(true);
+		}),
+		FNativeColorGetter::CreateLambda([by](UQuickColorTween* tween)->FColor
+		{
+			FColor start = tween->GetStartValue();
+			return FColor(
+				FMath::Clamp(start.R + by, 0.0f, 255.0f),
+				FMath::Clamp(start.G + by, 0.0f, 255.0f),
+				FMath::Clamp(start.B + by, 0.0f, 255.0f),
+				FMath::Clamp(start.A + by, 0.0f, 255.0f)
+			);
+		}),
+		FNativeColorSetter::CreateWeakLambda(material, [material = TWeakObjectPtr(material), parameterName](const FColor& v, UQuickColorTween*)
+		{
+			if (!material.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenColorParameterBy_Material: MaterialInstanceDynamic is no longer valid."));
+				return;
+			}
+
+			material->SetVectorParameterValue(parameterName, FLinearColor(v));
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
 
 UQuickTweenable* UQuickTweenLibrary::QuickTweenFindTweenByTag(const UObject* worldContextObject, const FString& tweenTag)
 {

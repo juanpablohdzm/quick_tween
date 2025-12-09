@@ -21,6 +21,7 @@ class UQuickTweenSequence;
 class UQuickVectorTween;
 class UQuickRotatorTween;
 class UQuickFloatTween;
+class UMaterialInstanceDynamic;
 
 
 /**
@@ -1040,6 +1041,249 @@ public:
 	static UQuickFloatTween* QuickTweenChangeDistanceBy_SpringArm(
 		UObject* worldContextObject,
 		USpringArmComponent* springArm,
+		float by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+		 * Create a vector tween that animates a vector parameter on a dynamic material instance.
+		 *
+		 * The tween will sample the material parameter's current value on the first update and
+		 * interpolate from that start value to the provided `to` value over `duration` seconds.
+		 * Easing is controlled using `easeType` or overridden by `easeCurve` when provided.
+		 *
+		 * @param worldContextObject Context object used to find the world for the tween.
+		 * @param material           The UMaterialInstanceDynamic containing the vector parameter.
+		 * @param parameterName      The name of the vector parameter to animate.
+		 * @param to                 Target FVector value for the material parameter.
+		 * @param duration           Time in seconds for the tween to complete.
+		 * @param timeScale          Multiplier applied to the tween time.
+		 * @param easeType           Predefined easing function to use for interpolation.
+		 * @param easeCurve          Optional custom UCurveFloat used for easing (overrides easeType when provided).
+		 * @param loops              Number of times to loop the tween. Use -1 for infinite.
+		 * @param loopType           How the tween loops (Restart, PingPong, etc.).
+		 * @param tweenTag           Optional tag to identify the created tween.
+		 * @param bShouldAutoKill    If true the tween will be automatically killed when complete.
+		 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+		 * @param bShouldAutoPlay    If true the tween will start playing immediately after creation.
+		 * @return                   Pointer to the created UQuickVectorTween, or nullptr on failure.
+		 */
+		UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Vector | Material", WorldContext = "worldContextObject"), Category = "QuickTween")
+		static UQuickVectorTween* QuickTweenVectorParameterTo_Material(
+			UObject* worldContextObject,
+			UMaterialInstanceDynamic* material,
+			const FName& parameterName,
+			const FVector& to,
+			float duration = 1.0f,
+			float timeScale = 1.0f,
+			EEaseType easeType = EEaseType::Linear,
+			UCurveFloat* easeCurve = nullptr,
+			int32 loops = 1,
+			ELoopType loopType = ELoopType::Restart,
+			const FString& tweenTag = "",
+			bool bShouldAutoKill = false,
+			bool bShouldPlayWhilePaused = false,
+			bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a vector tween that animates a vector parameter on a dynamic material instance by a relative amount.
+	 *
+	 * The tween samples the material parameter's current value on its first update and interpolates from that start
+	 * value to (start + by) over the specified duration. Easing is controlled by \p easeType or overridden by
+	 * \p easeCurve when provided.
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param material The UMaterialInstanceDynamic containing the vector parameter.
+	 * @param parameterName The name of the vector parameter to animate.
+	 * @param by Relative FVector value to add to the sampled start value.
+	 * @param duration Time in seconds for the tween to complete.
+	 * @param timeScale Multiplier applied to the tween time.
+	 * @param easeType Predefined easing function to use for interpolation.
+	 * @param easeCurve Optional custom UCurveFloat used for easing (overrides \p easeType when provided).
+	 * @param loops Number of times to loop the tween. Use -1 for infinite.
+	 * @param loopType How the tween loops (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag to identify the created tween.
+	 * @param bShouldAutoKill If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay If true the tween will start playing immediately after creation.
+	 * @return Pointer to the created UQuickVectorTween, or nullptr on failure.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Vector | Material", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickVectorTween* QuickTweenVectorParameterBy_Material(
+		UObject* worldContextObject,
+		UMaterialInstanceDynamic* material,
+		const FName& parameterName,
+		const FVector& by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+
+	/**
+	 * Create a float tween that animates a scalar parameter on a dynamic material instance.
+	 *
+	 * The tween will sample the material parameter's current value on the first update and
+	 * interpolate from that start value to the provided `to` value over `duration` seconds.
+	 * Easing is controlled using `easeType` or overridden by `easeCurve` when provided.
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param material The UMaterialInstanceDynamic containing the scalar parameter.
+	 * @param parameterName The name of the scalar parameter to animate.
+	 * @param to Target float value for the material parameter.
+	 * @param duration Time in seconds for the tween to complete (default 1.0f).
+	 * @param timeScale Multiplier applied to the tween time (default 1.0f).
+	 * @param easeType Predefined easing function to use for interpolation.
+	 * @param easeCurve Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops Number of times to loop the tween (-1 for infinite, default 1).
+	 * @param loopType How the tween loops (Restart, PingPong, etc., default ELoopType::Restart).
+	 * @param tweenTag Optional tag to identify the created tween (default empty).
+	 * @param bShouldAutoKill If true the tween will be automatically killed when complete (default false).
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused (default false).
+	 * @param bShouldAutoPlay If true the tween will start playing immediately after creation (default false).
+	 * @return Pointer to the created UQuickFloatTween, or nullptr on failure.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Float | Material", WorldContext = "worldContextObject"), Category = "QuickTween")
+		static UQuickFloatTween* QuickTweenScalarParameterTo_Material(
+		UObject* worldContextObject,
+		UMaterialInstanceDynamic* material,
+		const FName& parameterName,
+		float to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+
+	/**
+	 * Create a float tween that animates a scalar parameter on a dynamic material instance by a relative amount.
+	 *
+	 * The tween samples the material parameter's current value on the first update and interpolates
+	 * from that start value to (start + by) over the specified duration. Easing is controlled by
+	 * `easeType` or overridden by `easeCurve` when provided.
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param material The UMaterialInstanceDynamic containing the scalar parameter.
+	 * @param parameterName The name of the scalar parameter to animate.
+	 * @param by Relative float value to add to the sampled start value.
+	 * @param duration Time in seconds for the tween to complete (default 1.0f).
+	 * @param timeScale Multiplier applied to the tween time (default 1.0f).
+	 * @param easeType Predefined easing function to use for interpolation.
+	 * @param easeCurve Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops Number of times to loop the tween (-1 for infinite, default 1).
+	 * @param loopType How the tween loops (Restart, PingPong, etc., default ELoopType::Restart).
+	 * @param tweenTag Optional tag to identify the created tween (default empty).
+	 * @param bShouldAutoKill If true the tween will be automatically killed when complete (default false).
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused (default false).
+	 * @param bShouldAutoPlay If true the tween will start playing immediately after creation (default false).
+	 * @return Pointer to the created UQuickFloatTween, or nullptr on failure.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Float | Material", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenScalarParameterBy_Material(
+		UObject* worldContextObject,
+		UMaterialInstanceDynamic* material,
+		const FName& parameterName,
+		float by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a color tween that animates a vector/color parameter on a dynamic material instance to an absolute color.
+	 *
+	 * The material parameter's starting color is sampled on the first update and the tween will interpolate
+	 * from that start value to the provided `to` FColor over `duration` seconds. Easing may be controlled
+	 * using a predefined `EEaseType` or an optional `UCurveFloat` (`easeCurve` overrides `easeType` when provided).
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param material           The UMaterialInstanceDynamic containing the color parameter.
+	 * @param parameterName      The name of the color parameter to animate.
+	 * @param to                  Target FColor value for the material parameter.
+	 * @param duration           Time in seconds for the tween to complete (default 1.0f).
+	 * @param timeScale          Multiplier applied to the tween time (default 1.0f).
+	 * @param easeType           Predefined easing function to use for interpolation (default EEaseType::Linear).
+	 * @param easeCurve          Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops              Number of times to loop the tween (-1 for infinite, default 1).
+	 * @param loopType           How the tween loops (Restart, PingPong, etc., default ELoopType::Restart).
+	 * @param tweenTag           Optional tag to identify the created tween (default empty).
+	 * @param bShouldAutoKill    If true the tween will be automatically killed when complete (default false).
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused (default false).
+	 * @param bShouldAutoPlay    If true the tween will start playing immediately after creation (default false).
+	 * @return                   Pointer to the created UQuickColorTween, or nullptr on failure.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Color | Material", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickColorTween* QuickTweenColorParameterTo_Material(
+		UObject* worldContextObject,
+		UMaterialInstanceDynamic* material,
+		const FName& parameterName,
+		const FColor& to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a color tween that animates a material color parameter by a relative amount.
+	 *
+	 * The material parameter's starting value is sampled on the first update and the tween will interpolate
+	 * from that start value to (start + by) over `duration` seconds. Note: the `by` parameter is provided
+	 * as a float and should be interpreted according to how the material parameter consumes the value
+	 * (e.g., intensity or a scalar channel modifier).
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param material           The UMaterialInstanceDynamic containing the color parameter.
+	 * @param parameterName      The name of the color parameter to animate.
+	 * @param by                 Relative float value to add to the sampled start value.
+	 * @param duration           Time in seconds for the tween to complete (default 1.0f).
+	 * @param timeScale          Multiplier applied to the tween time (default 1.0f).
+	 * @param easeType           Predefined easing function to use for interpolation (default EEaseType::Linear).
+	 * @param easeCurve          Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops              Number of times to loop the tween (-1 for infinite, default 1).
+	 * @param loopType           How the tween loops (Restart, PingPong, etc., default ELoopType::Restart).
+	 * @param tweenTag           Optional tag to identify the created tween (default empty).
+	 * @param bShouldAutoKill    If true the tween will be automatically killed when complete (default false).
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused (default false).
+	 * @param bShouldAutoPlay    If true the tween will start playing immediately after creation (default false).
+	 * @return                   Pointer to the created UQuickColorTween, or nullptr on failure.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Color | Material", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickColorTween* QuickTweenColorParameterBy_Material(
+		UObject* worldContextObject,
+		UMaterialInstanceDynamic* material,
+		const FName& parameterName,
 		float by,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
