@@ -325,6 +325,29 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
+	/**
+	 * Create a Vector2D tween that moves a UWidget to a target absolute position.
+	 *
+	 * The widget's start position is sampled on the first update and the tween interpolates
+	 * from that start position to the specified `to` value over `duration` seconds.
+	 * Easing is controlled via `easeType` or an optional `easeCurve`. The returned tween
+	 * will apply interpolated FVector2D values to the widget each tick.
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param widget The UWidget to move.
+	 * @param to Target position as an FVector2D.
+	 * @param duration Time in seconds for the tween to complete (default 1.0f).
+	 * @param timeScale Multiplier applied to the tween time (default 1.0f).
+	 * @param easeType Predefined easing function to use (default EEaseType::Linear).
+	 * @param easeCurve Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops Number of times to loop the tween (-1 for infinite, default 1).
+	 * @param loopType How the tween loops (Restart, PingPong, etc., default ELoopType::Restart).
+	 * @param tweenTag Optional tag to identify the created tween (default empty).
+	 * @param bShouldAutoKill If true the tween will be automatically killed when complete (default false).
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused (default false).
+	 * @param bShouldAutoPlay If true the tween will start playing immediately after creation (default false).
+	 * @return Pointer to the created UQuickVector2DTween, or nullptr on failure.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVector2DTween* QuickTweenMoveTo_Widget(
 		UObject* worldContextObject,
@@ -384,6 +407,30 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
+	/**
+	 * Create a Vector2D tween that moves a UWidget by a relative offset.
+	 *
+	 * The tween samples the widget's current position/translation on its first update
+	 * and interpolates from that start value to (start + by) over `duration` seconds.
+	 * The interpolated FVector2D is applied to the widget each tick via the tween's
+	 * internal setter. Easing may be controlled using a predefined `EEaseType` or by
+	 * supplying a custom `UCurveFloat`.
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param widget             The UWidget to move.
+	 * @param by                 Relative offset to add to the widget's start position.
+	 * @param duration           Time in seconds for the tween to complete.
+	 * @param timeScale          Multiplier applied to the tween time.
+	 * @param easeType           Predefined easing function to use for interpolation.
+	 * @param easeCurve          Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops              Number of times to loop the tween. Use -1 for infinite.
+	 * @param loopType           How the tween loops (Restart, PingPong, etc.).
+	 * @param tweenTag           Optional tag to identify the created tween.
+	 * @param bShouldAutoKill    If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay    If true the tween will start playing immediately after creation.
+	 * @return                   Pointer to the created UQuickVector2DTween, or nullptr on failure.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVector2DTween* QuickTweenMoveBy_Widget(
 		UObject* worldContextObject,
@@ -438,6 +485,29 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
+	/**
+	 * Create a Vector2D tween that scales a UWidget to a target absolute scale.
+	 *
+	 * This function creates a UQuickVector2DTween which will sample the widget's
+	 * current scale on the first update and interpolate from that start value to
+	 * the provided `to` target over `duration` seconds. Easing may be controlled
+	 * using a predefined `EEaseType` or by supplying a custom `UCurveFloat`.
+	 *
+	 * @param worldContextObject    Context object used to find the world for the tween.
+	 * @param widget                The UWidget to scale.
+	 * @param to                    Target absolute scale as an FVector2D.
+	 * @param duration              Time in seconds for the tween to complete. Defaults to 1.0f.
+	 * @param timeScale             Multiplier applied to the tween time. Defaults to 1.0f.
+	 * @param easeType              Predefined easing function to use for interpolation. Defaults to EEaseType::Linear.
+	 * @param easeCurve             Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops                 Number of times to loop the tween. Use -1 for infinite. Defaults to 1.
+	 * @param loopType              How the tween loops (Restart, PingPong, etc.). Defaults to ELoopType::Restart.
+	 * @param tweenTag              Optional tag to identify the created tween. Defaults to empty string.
+	 * @param bShouldAutoKill       If true the tween will be automatically killed when complete. Defaults to false.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused. Defaults to false.
+	 * @param bShouldAutoPlay       If true the tween will start playing immediately after creation. Defaults to false.
+	 * @return                      Pointer to the created UQuickVector2DTween, or nullptr on failure.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVector2DTween* QuickTweenScaleTo_Widget(
 		UObject* worldContextObject,
@@ -496,6 +566,30 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
+	/**
+	 * Create a Vector2D tween that scales a UWidget by a relative amount.
+	 *
+	 * This function creates a UQuickVector2DTween which will drive the widget's scale
+	 * from its current value (sampled at the first update) by adding the provided \p by
+	 * vector to the start scale. Easing may be controlled using a predefined \p EEaseType
+	 * or by supplying a custom \p UCurveFloat. The tween will apply the interpolated
+	 * FVector2D value to the widget each tick.
+	 *
+	 * @param worldContextObject    Context object used to find the world for the tween.
+	 * @param widget                The UWidget to scale.
+	 * @param by                    Relative scale vector to apply (added to the start scale).
+	 * @param duration              Time in seconds for the tween to complete.
+	 * @param timeScale             Multiplier applied to the tween time.
+	 * @param easeType              Predefined easing function to use for interpolation.
+	 * @param easeCurve             Optional custom UCurveFloat used for easing (overrides \p easeType when provided).
+	 * @param loops                 Number of times to loop the tween. Use -1 for infinite.
+	 * @param loopType              How the tween loops (Restart, PingPong, etc.).
+	 * @param tweenTag              Optional tag to identify the created tween.
+	 * @param bShouldAutoKill       If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay       If true the tween will start playing immediately after creation.
+	 * @return                      Pointer to the created UQuickVector2DTween, or nullptr on failure.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVector2DTween* QuickTweenScaleBy_Widget(
 		UObject* worldContextObject,
@@ -552,6 +646,30 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
+	/**
+	 * Create a float tween that rotates a UWidget to a target absolute angle.
+	 *
+	 * This tween drives a single float value representing the widget's rotation angle
+	 * and interpolates from the widget's current rotation (sampled at first update)
+	 * to the specified target \p to over \p duration seconds.
+	 *
+	 * Easing may be controlled using a predefined \p EEaseType or a custom \p UCurveFloat.
+	 *
+	 * @param worldContextObject    Context object used to find the world for the tween.
+	 * @param widget                The UWidget to rotate.
+	 * @param to                    Target absolute angle in degrees to rotate the widget to.
+	 * @param duration              Time in seconds for the tween to complete.
+	 * @param timeScale             Multiplier applied to the tween time.
+	 * @param easeType              Predefined easing function to use for interpolation.
+	 * @param easeCurve             Optional custom UCurveFloat used for easing (overrides \p easeType when provided).
+	 * @param loops                 Number of times to loop the tween. Use -1 for infinite.
+	 * @param loopType              How the tween loops (Restart, PingPong, etc.).
+	 * @param tweenTag              Optional tag to identify the created tween.
+	 * @param bShouldAutoKill       If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay       If true the tween will start playing immediately after creation.
+	 * @return                      Pointer to the created UQuickFloatTween, or nullptr on failure.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickFloatTween* QuickTweenRotateTo_Widget(
 		UObject* worldContextObject,
@@ -612,6 +730,29 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
+	/**
+	 * Create a float tween that rotates a UWidget by a relative angle.
+	 *
+	 * The tween will drive a single float value representing the widget's rotation angle
+	 * and apply a relative change of `by` degrees over `duration`. The widget's starting
+	 * rotation is sampled when the tween first updates. Easing may be controlled using a
+	 * predefined `EEaseType` or a custom `UCurveFloat`.
+	 *
+	 * @param worldContextObject    Context object used to find the world for the tween.
+	 * @param widget                The UWidget to rotate.
+	 * @param by                    Relative angle in degrees to rotate the widget (added to start rotation).
+	 * @param duration              Time in seconds for the tween to complete.
+	 * @param timeScale             Multiplier applied to the tween time.
+	 * @param easeType              Predefined easing function to use for interpolation.
+	 * @param easeCurve             Optional custom `UCurveFloat` used for easing (overrides `easeType` when provided).
+	 * @param loops                 Number of times to loop the tween. Use -1 for infinite.
+	 * @param loopType              How the tween loops (Restart, PingPong, etc.).
+	 * @param tweenTag              Optional tag to identify the created tween.
+	 * @param bShouldAutoKill       If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay       If true the tween will start playing immediately after creation.
+	 * @return                      Pointer to the created `UQuickFloatTween`.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickFloatTween* QuickTweenRotateBy_Widget(
 		UObject* worldContextObject,
