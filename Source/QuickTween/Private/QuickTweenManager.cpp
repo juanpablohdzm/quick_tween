@@ -2,6 +2,7 @@
 
 #include "QuickTweenManager.h"
 #include "QuickTweenable.h"
+#include "Algo/AllOf.h"
 #include "Algo/Find.h"
 #include "Engine/World.h"
 
@@ -98,4 +99,17 @@ UQuickTweenable* UQuickTweenManager::FindTweenByPredicate(TFunctionRef<bool(UQui
 {
 	UQuickTweenable* const* const ptr = Algo::FindByPredicate(QuickTweens, predicate);
 	return ptr ? *ptr : nullptr;
+}
+
+TArray<UQuickTweenable*> UQuickTweenManager::FindAllTweensByPredicate(TFunctionRef<bool(UQuickTweenable*)> predicate) const
+{
+	TArray<UQuickTweenable*> results;
+	for (UQuickTweenable* tween : QuickTweens)
+	{
+		if (predicate(tween))
+		{
+			results.Add(tween);
+		}
+	}
+	return results;
 }

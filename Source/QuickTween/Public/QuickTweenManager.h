@@ -107,7 +107,12 @@ public:
 	 */
 	UQuickTweenable* FindTweenByPredicate(TFunctionRef<bool(UQuickTweenable*)> predicate) const;
 
-
+	/** Find all tweens matching the given predicate.
+	 *
+	 * @param predicate - Function that returns true for the desired tweens.
+	 * @return An array of pointers to the found tweens.
+	 */
+	TArray<UQuickTweenable*> FindAllTweensByPredicate(TFunctionRef<bool(UQuickTweenable*)> predicate) const;
 private:
 
 	/** Array of active tweens managed by this subsystem. Transient so not serialized. */
