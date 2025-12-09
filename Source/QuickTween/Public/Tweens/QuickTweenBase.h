@@ -29,6 +29,7 @@ public:
 #pragma region Tween Creation
 	/**
 	 * Set up the tween with the specified parameters.
+	 * @param worldContextObject Context object for world access.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Time scale multiplier.
 	 * @param easeType Type of easing to use.
@@ -36,12 +37,12 @@ public:
 	 * @param loops Number of loops (0 = infinite).
 	 * @param loopType Looping behavior.
 	 * @param tweenTag Optional tag for identification.
-	 * @param worldContextObject Context object for world access.
 	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
 	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
 	 * @param bShouldAutoPlay Whether the tween should start playing immediately.
 	 */
 	void SetUp(
+		const UObject* worldContextObject,
 		float duration,
 		float timeScale,
 		EEaseType easeType,
@@ -49,7 +50,6 @@ public:
 		int32 loops,
 		ELoopType loopType,
 		const FString& tweenTag = FString(),
-		const UObject* worldContextObject = nullptr,
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);

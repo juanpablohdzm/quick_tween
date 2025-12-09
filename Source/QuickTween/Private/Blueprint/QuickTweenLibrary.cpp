@@ -4,13 +4,13 @@
 #include "Blueprint/QuickTweenLibrary.h"
 
 #include "QuickTweenManager.h"
-#include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Tweens/QuickFloatTween.h"
 #include "Tweens/QuickRotatorTween.h"
 #include "Tweens/QuickTweenSequence.h"
 #include "Tweens/QuickVectorTween.h"
 #include "Components/SceneComponent.h"
+#include "Components/PanelSlot.h"
 #include "Components/Widget.h"
 #include "Tweens/QuickColorTween.h"
 #include "Tweens/QuickIntTween.h"
@@ -58,6 +58,7 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenCreateTweenVector(
 	}
 
 	return UQuickVectorTween::CreateTween(
+		worldContextObject,
 		FNativeVectorGetter::CreateLambda([from](UQuickVectorTween*) -> FVector { return from; }),
 		FNativeVectorGetter::CreateLambda([to](UQuickVectorTween*) -> FVector { return to; }),
 		FNativeVectorSetter::CreateWeakLambda(setter.GetUObject(), [setter](const FVector& v, UQuickVectorTween* tween)
@@ -71,7 +72,6 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenCreateTweenVector(
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
@@ -102,6 +102,7 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenCreateTweenRotator(
 	}
 
 	return UQuickRotatorTween::CreateTween(
+		worldContextObject,
 		FNativeRotatorGetter::CreateLambda([from](UQuickRotatorTween*) -> FRotator { return from; }),
 		FNativeRotatorGetter::CreateLambda([to](UQuickRotatorTween*) -> FRotator { return to; }),
 		bUseShortestPath,
@@ -116,7 +117,6 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenCreateTweenRotator(
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
@@ -146,6 +146,7 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenCreateTweenFloat(
 	}
 
 	return UQuickFloatTween::CreateTween(
+		worldContextObject,
 		FNativeFloatGetter::CreateLambda([from](UQuickFloatTween*) -> float { return from; }),
 		FNativeFloatGetter::CreateLambda([to](UQuickFloatTween*) -> float { return to; }),
 		FNativeFloatSetter::CreateWeakLambda(setter.GetUObject(), [setter](const float v, UQuickFloatTween* tween)
@@ -159,7 +160,6 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenCreateTweenFloat(
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
@@ -189,6 +189,7 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenCreateTweenVector2D(
 	}
 
 	return UQuickVector2DTween::CreateTween(
+		worldContextObject,
 		FNativeVector2DGetter::CreateLambda([from](UQuickVector2DTween*) -> FVector2D { return from; }),
 		FNativeVector2DGetter::CreateLambda([to](UQuickVector2DTween*) -> FVector2D { return to; }),
 		FNativeVector2DSetter::CreateWeakLambda(setter.GetUObject(), [setter](const FVector2D& v, UQuickVector2DTween* tween)
@@ -202,7 +203,6 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenCreateTweenVector2D(
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
@@ -232,6 +232,7 @@ UQuickColorTween* UQuickTweenLibrary::QuickTweenCreateTweenColor(
 	}
 
 	return UQuickColorTween::CreateTween(
+		worldContextObject,
 		FNativeColorGetter::CreateLambda([from](UQuickColorTween*) -> FColor { return from; }),
 		FNativeColorGetter::CreateLambda([to](UQuickColorTween*) -> FColor { return to; }),
 		FNativeColorSetter::CreateWeakLambda(setter.GetUObject(), [setter](const FColor& v, UQuickColorTween* tween)
@@ -245,7 +246,6 @@ UQuickColorTween* UQuickTweenLibrary::QuickTweenCreateTweenColor(
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
@@ -275,6 +275,7 @@ UQuickIntTween* UQuickTweenLibrary::QuickTweenCreateTweenInt(
 	}
 
 	return UQuickIntTween::CreateTween(
+		worldContextObject,
 		FNativeIntGetter::CreateLambda([from](UQuickIntTween*) -> int32 { return from; }),
 		FNativeIntGetter::CreateLambda([to](UQuickIntTween*) -> int32 { return to; }),
 		FNativeIntSetter::CreateWeakLambda(setter.GetUObject(), [setter](const int32 v, UQuickIntTween* tween)
@@ -288,7 +289,6 @@ UQuickIntTween* UQuickTweenLibrary::QuickTweenCreateTweenInt(
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
@@ -318,6 +318,7 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
 	}
 
 	return UQuickVectorTween::CreateTween(
+		worldContextObject,
 		FNativeVectorGetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), space](UQuickVectorTween*)->FVector
 		{
 			if (!component.IsValid())
@@ -348,7 +349,6 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
@@ -377,6 +377,7 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveTo_Widget(
 	}
 
 	return UQuickVector2DTween::CreateTween(
+		worldContextObject,
 		FNativeVector2DGetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](UQuickVector2DTween*)->FVector2D
 		{
 			if (!widget.IsValid())
@@ -389,8 +390,8 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveTo_Widget(
 				return slot->GetPosition();
 			}
 
-			UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveTo_Widget: Widget is not in a CanvasPanelSlot, using RenderTranslation instead."));
-			return widget->GetRenderTransform().Translation;
+			UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveTo_Widget: Widget is not in a CanvasPanelSlot."));
+			return FVector2D::ZeroVector;
 		}),
 		FNativeVector2DGetter::CreateLambda([to](UQuickVector2DTween*)->FVector2D { return to; }),
 		FNativeVector2DSetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](const FVector2D& v, UQuickVector2DTween*)
@@ -406,8 +407,7 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveTo_Widget(
 				return;
 			}
 
-			UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveTo_Widget: Widget is not in a CanvasPanelSlot, using RenderTranslation instead."));
-			widget->SetRenderTranslation(v);
+			UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveTo_Widget: Widget is not in a CanvasPanelSlot."));
 		}),
 		duration,
 		timeScale,
@@ -416,7 +416,6 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveTo_Widget(
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
@@ -446,6 +445,7 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveBy_SceneComponent(
 	}
 
 	return UQuickVectorTween::CreateTween(
+		worldContextObject,
 		FNativeVectorGetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), space](UQuickVectorTween*)->FVector
 		{
 			if (!component.IsValid())
@@ -476,7 +476,6 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveBy_SceneComponent(
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay);
@@ -505,6 +504,7 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
 	}
 
 	return UQuickVectorTween::CreateTween(
+		worldContextObject,
 		FNativeVectorGetter::CreateWeakLambda(component,[component = TWeakObjectPtr(component), space](UQuickVectorTween*)->FVector
 		{
 			if (!component.IsValid())
@@ -535,7 +535,6 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
@@ -565,6 +564,7 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleBy_SceneComponent(
 	}
 
 	return UQuickVectorTween::CreateTween(
+		worldContextObject,
 		FNativeVectorGetter::CreateWeakLambda(component,[component = TWeakObjectPtr(component), space](UQuickVectorTween*)->FVector
 		{
 			if (!component.IsValid())
@@ -595,7 +595,6 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleBy_SceneComponent(
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
@@ -626,6 +625,7 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 	}
 
 	return UQuickRotatorTween::CreateTween(
+		worldContextObject,
 		FNativeRotatorGetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), space](UQuickRotatorTween*)->FRotator
 		{
 			if (!component.IsValid())
@@ -657,7 +657,6 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
@@ -688,6 +687,7 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
 	}
 
 	return UQuickRotatorTween::CreateTween(
+		worldContextObject,
 		FNativeRotatorGetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), space](UQuickRotatorTween*)->FRotator
 		{
 			if (!component.IsValid())
@@ -732,7 +732,6 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
@@ -762,6 +761,7 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 	}
 
 	return UQuickRotatorTween::CreateTween(
+		worldContextObject,
 		FNativeRotatorGetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component)](UQuickRotatorTween*)->FRotator
 		{
 			if (!component.IsValid())
@@ -799,7 +799,6 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay
@@ -839,6 +838,7 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent
 	TSharedPtr<FStartPosHolder> startPosPtr = MakeShared<FStartPosHolder>();
 
 	return UQuickFloatTween::CreateTween(
+		worldContextObject,
 		FNativeFloatGetter::CreateLambda([from](UQuickFloatTween*)->float
 		{
 			return from;
@@ -872,7 +872,6 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent
 		loops,
 		loopType,
 		tweenTag,
-		worldContextObject,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay

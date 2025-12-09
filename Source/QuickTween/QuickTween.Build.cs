@@ -1,5 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+using System.IO;
 using UnrealBuildTool;
 
 public class QuickTween : ModuleRules
@@ -11,16 +12,24 @@ public class QuickTween : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
+				Path.Combine(ModuleDirectory, "Public"),
+				Path.Combine(ModuleDirectory, "Public", "Tweens"),
+				Path.Combine(ModuleDirectory, "Public", "Utils"),
+				Path.Combine(ModuleDirectory, "Public", "Blueprint"),
+				Path.Combine(ModuleDirectory, "Public", "Blueprint", "Latent")
 			}
 			);
 				
 		
 		PrivateIncludePaths.AddRange(
-			new string[] {
-				// ... add other private include paths required here ...
-			}
+				new string[] {
+					// internal headers only used within this module
+					Path.Combine(ModuleDirectory, "Private"),
+					Path.Combine(ModuleDirectory, "Private", "Tweens"),
+					Path.Combine(ModuleDirectory, "Private", "Blueprint"),
+					Path.Combine(ModuleDirectory, "Private", "Blueprint", "Latent"),
+				}
 			);
-			
 		
 		PublicDependencyModuleNames.AddRange(
 			new string[]
@@ -38,6 +47,7 @@ public class QuickTween : ModuleRules
 			{
 				"Slate",
 				"SlateCore",
+				"UMG",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

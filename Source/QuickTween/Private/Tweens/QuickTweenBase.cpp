@@ -18,6 +18,7 @@ UQuickTweenBase::~UQuickTweenBase()
 }
 
 void UQuickTweenBase::SetUp(
+	const UObject* worldContextObject,
 	float duration,
 	float timeScale,
 	EEaseType easeType,
@@ -25,11 +26,11 @@ void UQuickTweenBase::SetUp(
 	int32 loops,
 	ELoopType loopType,
 	const FString& tweenTag,
-	const UObject* worldContextObject,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
+	WorldContextObject = worldContextObject;
 	Duration = duration;
 	TimeScale = timeScale;
 	EaseType = easeType;
@@ -39,7 +40,6 @@ void UQuickTweenBase::SetUp(
 	TweenTag = tweenTag;
 	bAutoKill = bShouldAutoKill;
 	bPlayWhilePaused = bShouldPlayWhilePaused;
-	WorldContextObject = worldContextObject;
 
 	UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject);
 	if (!manager)

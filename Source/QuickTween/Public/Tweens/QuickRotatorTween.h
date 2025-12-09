@@ -26,6 +26,7 @@ private:
 	 * Set up the rotator tween with the specified parameters.
 	 */
 	void SetUp(
+		const UObject* worldContextObject,
 		FNativeRotatorGetter from,
 		FNativeRotatorGetter to,
 		bool bUseShortestPath,
@@ -37,7 +38,6 @@ private:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = FString(),
-		const UObject* worldContextObject = nullptr,
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false)
@@ -47,6 +47,7 @@ private:
 		setter = MoveTemp(setter);
 		bShortestPath = bUseShortestPath;
 		UQuickTweenBase::SetUp(
+			worldContextObject,
 			duration,
 			timeScale,
 			easeType,
@@ -54,7 +55,6 @@ private:
 			loops,
 			loopType,
 			tweenTag,
-			worldContextObject,
 			bShouldAutoKill,
 			bShouldPlayWhilePaused,
 			bShouldAutoPlay);
@@ -67,6 +67,7 @@ public:
 	 *
 	 * Note: The start value will be cached from the component's current location at the first update.
 	 *
+	 * @param worldContextObject Context object for world access.
 	 * @param from Function to get the FROM value.
 	 * @param to Function to get the TO value.
 	 * @param bUseShortestPath Whether to use the shortest path for interpolation.
@@ -78,12 +79,12 @@ public:
 	 * @param loops Number of times to loop the tween.
 	 * @param loopType Type of looping behavior.
 	 * @param tweenTag Optional tag for identifying the tween.
-	 * @param worldContextObject Context object for world access.
 	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
 	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
 	 * @param bShouldAutoPlay Whether to start playing the tween immediately after setup.
 	 */
 	static UQuickRotatorTween* CreateTween(
+		UObject* worldContextObject,
 		FNativeRotatorGetter from,
 		FNativeRotatorGetter to,
 		bool bUseShortestPath,
@@ -95,7 +96,6 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = FString(),
-		const UObject* worldContextObject = nullptr,
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false)
@@ -106,8 +106,9 @@ public:
 			return nullptr;
 		}
 		
-		UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>();
+		UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>(worldContextObject);
 		tween->SetUp(
+			worldContextObject,
 			MoveTemp(from),
 			MoveTemp(to),
 			bUseShortestPath,
@@ -119,7 +120,6 @@ public:
 			loops,
 			loopType,
 			tweenTag,
-			worldContextObject,
 			bShouldAutoKill,
 			bShouldPlayWhilePaused,
 			bShouldAutoPlay);

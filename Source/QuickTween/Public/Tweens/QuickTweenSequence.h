@@ -46,7 +46,7 @@ private:
 	 * Set up the sequence with optional looping parameters.
 	 */
 	void SetUp(
-		const UObject* worldContextObject = nullptr,
+		const UObject* worldContextObject,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& id = FString(),
@@ -70,14 +70,14 @@ public:
 	 * @return Pointer to the created tween sequence.
 	 */
 	static UQuickTweenSequence* CreateSequence(
-		const UObject* worldContextObject = nullptr,
+		UObject* worldContextObject,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& id = FString(),
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false)
 	{
-		UQuickTweenSequence* sequence = NewObject<UQuickTweenSequence>();
+		UQuickTweenSequence* sequence = NewObject<UQuickTweenSequence>(worldContextObject);
 		sequence->SetUp(
 			worldContextObject,
 			loops,
