@@ -9,6 +9,7 @@
 #include "Utils/CommonValues.h"
 #include "QuickTweenLibrary.generated.h"
 
+class UWidget;
 class UQuickIntTween;
 class UQuickColorTween;
 class UQuickVector2DTween;
@@ -319,6 +320,22 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Move to Widget", meta = (Keywords = "Tween | Movement | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickVector2DTween* QuickTweenMoveTo_Widget(
+		UObject* worldContextObject,
+		UWidget* widget,
+		const FVector2D& to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,

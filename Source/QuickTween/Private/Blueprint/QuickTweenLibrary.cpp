@@ -9,6 +9,7 @@
 #include "Tweens/QuickTweenSequence.h"
 #include "Tweens/QuickVectorTween.h"
 #include "Components/SceneComponent.h"
+#include "Components/Widget.h"
 #include "Tweens/QuickColorTween.h"
 #include "Tweens/QuickIntTween.h"
 #include "Tweens/QuickVector2DTween.h"
@@ -315,18 +316,83 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
 	}
 
 	return UQuickVectorTween::CreateTween(
-		FNativeVectorGetter::CreateWeakLambda(component, [component, space](UQuickVectorTween*)->FVector
+		FNativeVectorGetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), space](UQuickVectorTween*)->FVector
 		{
+			if (!component.IsValid())
+			{
+				return FVector::ZeroVector;
+			}
+
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->GetComponentLocation() :
 				component->GetRelativeLocation();
 		}),
 		FNativeVectorGetter::CreateLambda([to](UQuickVectorTween*)->FVector{ return to; }),
-		FNativeVectorSetter::CreateWeakLambda(component, [component, space](const FVector& v, UQuickVectorTween*)
+		FNativeVectorSetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), space](const FVector& v, UQuickVectorTween*)
 		{
+			if (!component.IsValid())
+			{
+				return;
+			}
+
 			space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldLocation(v, true, nullptr, ETeleportType::None) :
 				component->SetRelativeLocation(v, true, nullptr, ETeleportType::None);
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		worldContextObject,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveTo_Widget(
+	UObject* worldContextObject,
+	UWidget* widget,
+	const FVector2D& to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveTo_Widget: Widget is null."));
+		return nullptr;
+	}
+
+	return UQuickVector2DTween::CreateTween(
+		FNativeVector2DGetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](UQuickVector2DTween*)->FVector2D
+		{
+			if (!widget.IsValid())
+			{
+				return FVector2D::ZeroVector;
+			}
+
+			return widget->GetRenderTransform().Translation;
+		}),
+		FNativeVector2DGetter::CreateLambda([to](UQuickVector2DTween*)->FVector2D { return to; }),
+		FNativeVector2DSetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](const FVector2D& v, UQuickVector2DTween*)
+		{
+			if (!widget.IsValid())
+			{
+				return;
+			}
+
+			widget->SetRenderTranslation(v);
 		}),
 		duration,
 		timeScale,
@@ -365,15 +431,25 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveBy_SceneComponent(
 	}
 
 	return UQuickVectorTween::CreateTween(
-		FNativeVectorGetter::CreateWeakLambda(component, [component, space](UQuickVectorTween*)->FVector
+		FNativeVectorGetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), space](UQuickVectorTween*)->FVector
 		{
+			if (!component.IsValid())
+			{
+				return FVector::ZeroVector;
+			}
+
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->GetComponentLocation() :
 				component->GetRelativeLocation();
 		}),
 		FNativeVectorGetter::CreateLambda([by](UQuickVectorTween* tween)->FVector{ return tween->GetStartValue() + by; }),
-		FNativeVectorSetter::CreateWeakLambda(component, [component, space](const FVector& v, UQuickVectorTween*)
+		FNativeVectorSetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), space](const FVector& v, UQuickVectorTween*)
 		{
+			if (!component.IsValid())
+			{
+				return;
+			}
+
 			space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldLocation(v, true, nullptr, ETeleportType::None) :
 				component->SetRelativeLocation(v, true, nullptr, ETeleportType::None);
@@ -414,15 +490,25 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
 	}
 
 	return UQuickVectorTween::CreateTween(
-		FNativeVectorGetter::CreateWeakLambda(component,[component, space](UQuickVectorTween*)->FVector
+		FNativeVectorGetter::CreateWeakLambda(component,[component = TWeakObjectPtr(component), space](UQuickVectorTween*)->FVector
 		{
+			if (!component.IsValid())
+			{
+				return FVector::ZeroVector;
+			}
+
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->GetComponentScale() :
 				component->GetRelativeScale3D();
 		}),
 		FNativeVectorGetter::CreateLambda([to](UQuickVectorTween*)->FVector { return to; }),
-		FNativeVectorSetter::CreateWeakLambda(component, [component, space](const FVector& v, UQuickVectorTween*)
+		FNativeVectorSetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), space](const FVector& v, UQuickVectorTween*)
 		{
+			if (!component.IsValid())
+			{
+				return;
+			}
+
 			space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldScale3D(v) :
 				component->SetRelativeScale3D(v);
@@ -464,15 +550,25 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleBy_SceneComponent(
 	}
 
 	return UQuickVectorTween::CreateTween(
-		FNativeVectorGetter::CreateWeakLambda(component,[component, space](UQuickVectorTween*)->FVector
+		FNativeVectorGetter::CreateWeakLambda(component,[component = TWeakObjectPtr(component), space](UQuickVectorTween*)->FVector
 		{
+			if (!component.IsValid())
+			{
+				return FVector::ZeroVector;
+			}
+
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->GetComponentScale() :
 				component->GetRelativeScale3D();
 		}),
 		FNativeVectorGetter::CreateLambda([by](UQuickVectorTween* tween)->FVector { return tween->GetStartValue() + by; }),
-		FNativeVectorSetter::CreateWeakLambda(component, [component, space](const FVector& v, UQuickVectorTween*)
+		FNativeVectorSetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), space](const FVector& v, UQuickVectorTween*)
 		{
+			if (!component.IsValid())
+			{
+				return;
+			}
+
 			space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldScale3D(v) :
 				component->SetRelativeScale3D(v);
@@ -515,16 +611,26 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 	}
 
 	return UQuickRotatorTween::CreateTween(
-		FNativeRotatorGetter::CreateWeakLambda(component, [component, space](UQuickRotatorTween*)->FRotator
+		FNativeRotatorGetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), space](UQuickRotatorTween*)->FRotator
 		{
+			if (!component.IsValid())
+			{
+				return FRotator::ZeroRotator;
+			}
+
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->GetComponentRotation() :
 				component->GetRelativeRotation();
 		}),
 		FNativeRotatorGetter::CreateLambda([to](UQuickRotatorTween*)->FRotator { return to; }),
 		bUseShortestPath,
-		FNativeRotatorSetter::CreateWeakLambda(component, [component, space](const FRotator& v, UQuickRotatorTween*)
+		FNativeRotatorSetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), space](const FRotator& v, UQuickRotatorTween*)
 		{
+			if (!component.IsValid())
+			{
+				return;
+			}
+
 			space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldRotation(v) :
 				component->SetRelativeRotation(v);
@@ -567,8 +673,13 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
 	}
 
 	return UQuickRotatorTween::CreateTween(
-		FNativeRotatorGetter::CreateWeakLambda(component, [component, space](UQuickRotatorTween*)->FRotator
+		FNativeRotatorGetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), space](UQuickRotatorTween*)->FRotator
 		{
+			if (!component.IsValid())
+			{
+				return FRotator::ZeroRotator;
+			}
+
 			return space == EQuickTweenSpace::WorldSpace ?
 				component->GetComponentRotation() :
 				component->GetRelativeRotation();
@@ -588,8 +699,13 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
 			return end.Rotator();
 		}),
 		bUseShortestPath,
-		FNativeRotatorSetter::CreateWeakLambda(component, [component, space](const FRotator& v, UQuickRotatorTween*)
+		FNativeRotatorSetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component), space](const FRotator& v, UQuickRotatorTween*)
 		{
+			if (!component.IsValid())
+			{
+				return;
+			}
+
 			space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldRotation(v) :
 				component->SetRelativeRotation(v);
@@ -631,15 +747,36 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 	}
 
 	return UQuickRotatorTween::CreateTween(
-		FNativeRotatorGetter::CreateWeakLambda(component, [component](UQuickRotatorTween*)->FRotator { return component->GetComponentRotation(); }),
-		FNativeRotatorGetter::CreateWeakLambda(component, [to, component](UQuickRotatorTween*)->FRotator
+		FNativeRotatorGetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component)](UQuickRotatorTween*)->FRotator
 		{
+			if (!component.IsValid())
+			{
+				return FRotator::ZeroRotator;
+			}
+
+			return component->GetComponentRotation();
+		}),
+		FNativeRotatorGetter::CreateWeakLambda(component, [to, component = TWeakObjectPtr(component)](UQuickRotatorTween*)->FRotator
+		{
+			if (!component.IsValid())
+			{
+				return FRotator::ZeroRotator;
+			}
+
 			const FVector direction = (to - component->GetComponentLocation()).GetSafeNormal();
 			FRotator targetRotation = direction.Rotation();
 			return targetRotation;
 		}),
 		bUseShortestPath,
-		FNativeRotatorSetter::CreateWeakLambda(component, [component](const FRotator& v, UQuickRotatorTween*) { component->SetWorldRotation(v); }),
+		FNativeRotatorSetter::CreateWeakLambda(component, [component = TWeakObjectPtr(component)](const FRotator& v, UQuickRotatorTween*)
+		{
+			if (!component.IsValid())
+			{
+				return;
+			}
+
+			component->SetWorldRotation(v);
+		}),
 		duration,
 		timeScale,
 		easeType,
@@ -687,8 +824,13 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent
 			return from;
 		}),
 		FNativeFloatGetter::CreateLambda([to](UQuickFloatTween*)->float { return to; }),
-		FNativeFloatSetter::CreateWeakLambda(component, [dirFromPoint, point, normal, component](const float v, UQuickFloatTween*)
+		FNativeFloatSetter::CreateWeakLambda(component, [dirFromPoint, point, normal, component = TWeakObjectPtr(component)](const float v, UQuickFloatTween*)
 		{
+			if (!component.IsValid())
+			{
+				return;
+			}
+
 			const FVector rotatedPosition = point + dirFromPoint.RotateAngleAxis(v, normal.GetSafeNormal());
 			component->SetWorldLocation(rotatedPosition);
 		}),
