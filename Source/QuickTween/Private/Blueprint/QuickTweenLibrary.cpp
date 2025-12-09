@@ -4,7 +4,9 @@
 #include "Blueprint/QuickTweenLibrary.h"
 
 #include "QuickTweenManager.h"
+#include "Camera/CameraComponent.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Components/Image.h"
 #include "Tweens/QuickFloatTween.h"
 #include "Tweens/QuickRotatorTween.h"
 #include "Tweens/QuickTweenSequence.h"
@@ -12,6 +14,7 @@
 #include "Components/SceneComponent.h"
 #include "Components/PanelSlot.h"
 #include "Components/Widget.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Tweens/QuickColorTween.h"
 #include "Tweens/QuickIntTween.h"
 #include "Tweens/QuickVector2DTween.h"
@@ -1179,6 +1182,291 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent
 			const FVector dirFromPoint = (startPosPtr->Start - point);
 			const FVector rotatedPosition = point + dirFromPoint.RotateAngleAxis(v, normal.GetSafeNormal());
 			component->SetWorldLocation(rotatedPosition);
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickColorTween* UQuickTweenLibrary::QuickTweenChangeColorTo_Image(
+	UObject* worldContextObject,
+	UImage* widget,
+	const FColor& to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenColorTo_Widget: Widget is null."));
+		return nullptr;
+	}
+
+	return UQuickColorTween::CreateTween(
+		worldContextObject,
+		FNativeColorGetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](UQuickColorTween*)->FColor
+		{
+			if (!widget.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenColorTo_Widget: Widget is no longer valid."));
+				return FColor::White;
+			}
+
+			return widget->GetColorAndOpacity().ToFColor(true);
+		}),
+		FNativeColorGetter::CreateLambda([to](UQuickColorTween*)->FColor { return to; }),
+		FNativeColorSetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](const FColor& v, UQuickColorTween*)
+		{
+			if (!widget.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenColorTo_Widget: Widget is no longer valid."));
+				return;
+			}
+
+			widget->SetColorAndOpacity(FLinearColor(v));
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickFloatTween* UQuickTweenLibrary::QuickTweenChangeOpacityTo_Widget(
+	UObject* worldContextObject,
+	UWidget* widget,
+	float to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenOpacityTo_Widget: Widget is null."));
+		return nullptr;
+	}
+
+	return UQuickFloatTween::CreateTween(
+		worldContextObject,
+		FNativeFloatGetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](UQuickFloatTween*)->float
+		{
+			if (!widget.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenOpacityTo_Widget: Widget is no longer valid."));
+				return 1.0f;
+			}
+
+			return widget->GetRenderOpacity();
+		}),
+		FNativeFloatGetter::CreateLambda([to](UQuickFloatTween*)->float { return to; }),
+		FNativeFloatSetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](float v, UQuickFloatTween*)
+		{
+			if (!widget.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenOpacityTo_Widget: Widget is no longer valid."));
+				return;
+			}
+
+			widget->SetRenderOpacity(v);
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickFloatTween* UQuickTweenLibrary::QuickTweenChangeFovTo_Camera(
+	UObject* worldContextObject,
+	UCameraComponent* camera,
+	float to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!camera)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenToFov_Camera: CameraComponent is null."));
+		return nullptr;
+	}
+
+	return UQuickFloatTween::CreateTween(
+		worldContextObject,
+		FNativeFloatGetter::CreateWeakLambda(camera, [camera = TWeakObjectPtr(camera)](UQuickFloatTween*)->float
+		{
+			if (!camera.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenToFov_Camera: CameraComponent is no longer valid."));
+				return 90.0f;
+			}
+
+			return camera->FieldOfView;
+		}),
+		FNativeFloatGetter::CreateLambda([to](UQuickFloatTween*)->float { return to; }),
+		FNativeFloatSetter::CreateWeakLambda(camera, [camera = TWeakObjectPtr(camera)](float v, UQuickFloatTween*)
+		{
+			if (!camera.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenToFov_Camera: CameraComponent is no longer valid."));
+				return;
+			}
+
+			camera->SetFieldOfView(v);
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickFloatTween* UQuickTweenLibrary::QuickTweenChangeDistanceTo_SpringArm(
+	UObject* worldContextObject,
+	USpringArmComponent* springArm,
+	float to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!springArm)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenDistanceTo_SpringArm: SpringArmComponent is null."));
+		return nullptr;
+	}
+
+	return UQuickFloatTween::CreateTween(
+		worldContextObject,
+		FNativeFloatGetter::CreateWeakLambda(springArm, [springArm = TWeakObjectPtr(springArm)](UQuickFloatTween*)->float
+		{
+			if (!springArm.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenDistanceTo_SpringArm: SpringArmComponent is no longer valid."));
+				return 300.0f;
+			}
+
+			return springArm->TargetArmLength;
+		}),
+		FNativeFloatGetter::CreateLambda([to](UQuickFloatTween*)->float { return to; }),
+		FNativeFloatSetter::CreateWeakLambda(springArm, [springArm = TWeakObjectPtr(springArm)](float v, UQuickFloatTween*)
+		{
+			if (!springArm.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenDistanceTo_SpringArm: SpringArmComponent is no longer valid."));
+				return;
+			}
+
+			springArm->TargetArmLength = v;
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickFloatTween* UQuickTweenLibrary::QuickTweenChangeDistanceBy_SpringArm(
+	UObject* worldContextObject,
+	USpringArmComponent* springArm,
+	float by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!springArm)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenDistanceBy_SpringArm: SpringArmComponent is null."));
+		return nullptr;
+	}
+
+	return UQuickFloatTween::CreateTween(
+		worldContextObject,
+		FNativeFloatGetter::CreateWeakLambda(springArm, [springArm = TWeakObjectPtr(springArm)](UQuickFloatTween*)->float
+		{
+			if (!springArm.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenDistanceBy_SpringArm: SpringArmComponent is no longer valid."));
+				return 300.0f;
+			}
+
+			return springArm->TargetArmLength;
+		}),
+		FNativeFloatGetter::CreateLambda([by](UQuickFloatTween* tween)->float { return tween->GetStartValue() + by; }),
+		FNativeFloatSetter::CreateWeakLambda(springArm, [springArm = TWeakObjectPtr(springArm)](float v, UQuickFloatTween*)
+		{
+			if (!springArm.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenDistanceBy_SpringArm: SpringArmComponent is no longer valid."));
+				return;
+			}
+
+			springArm->TargetArmLength = v;
 		}),
 		duration,
 		timeScale,

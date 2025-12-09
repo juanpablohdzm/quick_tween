@@ -9,6 +9,9 @@
 #include "Utils/CommonValues.h"
 #include "QuickTweenLibrary.generated.h"
 
+class USpringArmComponent;
+class UCameraComponent;
+class UImage;
 class UWidget;
 class UQuickIntTween;
 class UQuickColorTween;
@@ -844,6 +847,200 @@ public:
 		float to,
 		const FVector& point,
 		const FVector& normal,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a color tween that animates a `UImage`'s color/tint to a target `FColor`.
+	 *
+	 * The widget's start color is sampled on the first update and the tween will
+	 * interpolate from that start value to the specified `to` value over `duration`
+	 * seconds. Easing can be controlled with a predefined `EEaseType` or by supplying
+	 * a custom `UCurveFloat` (`easeCurve` overrides `easeType` when provided).
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param widget The `UImage` widget whose color will be animated.
+	 * @param to Target color to animate to.
+	 * @param duration Time in seconds for the tween to complete (default 1.0f).
+	 * @param timeScale Multiplier applied to the tween time (default 1.0f).
+	 * @param easeType Predefined easing function to use for interpolation.
+	 * @param easeCurve Optional custom `UCurveFloat` used for easing (overrides `easeType` when provided).
+	 * @param loops Number of times to loop the tween (-1 for infinite).
+	 * @param loopType How the tween loops (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag to identify the created tween.
+	 * @param bShouldAutoKill If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay If true the tween will start playing immediately after creation.
+	 * @return Pointer to the created `UQuickColorTween`, or nullptr on failure.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Color | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickColorTween* QuickTweenChangeColorTo_Image(
+		UObject* worldContextObject,
+		UImage* widget,
+		const FColor& to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a float tween that animates a UWidget's opacity to a target value.
+	 *
+	 * The widget's start opacity is sampled on the first update and the tween will
+	 * interpolate from that start value to the specified `to` value over `duration`
+	 * seconds. Easing may be controlled using a predefined `EEaseType` or by
+	 * supplying a custom `UCurveFloat` (`easeCurve` overrides `easeType` when set).
+	 *
+	 * @param worldContextObject    Context object used to find the world for the tween.
+	 * @param widget                The UWidget whose opacity will be animated.
+	 * @param to                    Target opacity value (0.0 = transparent, 1.0 = opaque).
+	 * @param duration              Time in seconds for the tween to complete.
+	 * @param timeScale             Multiplier applied to the tween time.
+	 * @param easeType              Predefined easing function to use for interpolation.
+	 * @param easeCurve             Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops                 Number of times to loop the tween (-1 for infinite).
+	 * @param loopType              How the tween loops (e.g., Restart, PingPong).
+	 * @param tweenTag              Optional tag to identify the created tween.
+	 * @param bShouldAutoKill       If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay       If true the tween will start playing immediately after creation.
+	 * @return                      Pointer to the created UQuickFloatTween, or nullptr on failure.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Color | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenChangeOpacityTo_Widget(
+		UObject* worldContextObject,
+		UWidget* widget,
+		float to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Animate camera field of view (FOV) to a target value.
+	 *
+	 * Creates a UQuickFloatTween that interpolates the camera's FOV from the
+	 * camera's current FOV (sampled at first update) to the provided \p to value
+	 * over \p duration seconds. Easing can be selected via \p easeType or an
+	 * optional \p easeCurve (when provided, \p easeCurve overrides \p easeType).
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param camera             The UCameraComponent whose FOV will be animated.
+	 * @param to                 Target FOV value in degrees.
+	 * @param duration           Time in seconds for the tween to complete (default 1.0f).
+	 * @param timeScale          Multiplier applied to the tween time (default 1.0f).
+	 * @param easeType           Predefined easing function to use (default EEaseType::Linear).
+	 * @param easeCurve          Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops              Number of times to loop the tween (-1 for infinite, default 1).
+	 * @param loopType           How the tween loops (Restart, PingPong, etc., default ELoopType::Restart).
+	 * @param tweenTag           Optional tag to identify the created tween (default empty).
+	 * @param bShouldAutoKill    If true the tween will be automatically killed when complete (default false).
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused (default false).
+	 * @param bShouldAutoPlay    If true the tween will start playing immediately after creation (default false).
+	 * @return                   Pointer to the created UQuickFloatTween, or nullptr on failure.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Color | Camera", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenChangeFovTo_Camera(
+		UObject* worldContextObject,
+		UCameraComponent* camera,
+		float to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Animate the spring arm's distance (TargetArmLength) to a target value.
+	 *
+	 * Creates a UQuickFloatTween that interpolates the spring arm's current arm length
+	 * (sampled at the first update) to the provided \p to value over \p duration seconds.
+	 * Easing can be controlled with a predefined \p EEaseType or by supplying a custom
+	 * \p UCurveFloat (when provided, \p easeCurve overrides \p easeType).
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param springArm          The USpringArmComponent whose TargetArmLength will be animated.
+	 * @param to                 Target arm length (world units).
+	 * @param duration           Time in seconds for the tween to complete.
+	 * @param timeScale          Multiplier applied to the tween time.
+	 * @param easeType           Predefined easing function to use for interpolation.
+	 * @param easeCurve          Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops              Number of times to loop the tween (-1 for infinite).
+	 * @param loopType           How the tween loops (Restart, PingPong, etc.).
+	 * @param tweenTag           Optional tag to identify the created tween.
+	 * @param bShouldAutoKill    If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay    If true the tween will start playing immediately after creation.
+	 * @return                   Pointer to the created UQuickFloatTween, or nullptr on failure.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Distance | Camera", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenChangeDistanceTo_SpringArm(
+		UObject* worldContextObject,
+		USpringArmComponent* springArm,
+		float to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a float tween that animates the spring arm's TargetArmLength by a relative amount.
+	 *
+	 * This function creates a UQuickFloatTween which samples the spring arm's current
+	 * TargetArmLength on the first update and interpolates to (start + by) over \p duration seconds.
+	 * Easing is controlled by \p easeType or overridden by \p easeCurve when provided.
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param springArm The USpringArmComponent whose TargetArmLength will be animated.
+	 * @param by Relative change to apply to the spring arm's current TargetArmLength.
+	 * @param duration Time in seconds for the tween to complete.
+	 * @param timeScale Multiplier applied to the tween time.
+	 * @param easeType Predefined easing function to use for interpolation.
+	 * @param easeCurve Optional custom UCurveFloat used for easing (overrides easeType when provided).
+	 * @param loops Number of times to loop the tween (-1 for infinite).
+	 * @param loopType How the tween loops (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag to identify the created tween.
+	 * @param bShouldAutoKill If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay If true the tween will start playing immediately after creation.
+	 * @return Pointer to the created UQuickFloatTween, or nullptr on failure.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Distance | Camera", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenChangeDistanceBy_SpringArm(
+		UObject* worldContextObject,
+		USpringArmComponent* springArm,
+		float by,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
