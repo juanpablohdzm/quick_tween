@@ -42,7 +42,7 @@ private:
 	{
 		From = MoveTemp(from);
 		To = MoveTemp(to);
-		setter = MoveTemp(setter);
+		Setter = MoveTemp(setter);
 		UQuickTweenBase::SetUp(
 			worldContextObject,
 			duration,

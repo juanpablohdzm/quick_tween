@@ -323,6 +323,7 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveTo_SceneComponent: SceneComponent is no longer valid."));
 				return FVector::ZeroVector;
 			}
 
@@ -335,6 +336,7 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveTo_SceneComponent: SceneComponent is no longer valid."));
 				return;
 			}
 
@@ -382,6 +384,7 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveTo_Widget(
 		{
 			if (!widget.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveTo_Widget: Widget is no longer valid."));
 				return FVector2D::ZeroVector;
 			}
 
@@ -398,6 +401,7 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveTo_Widget(
 		{
 			if (!widget.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveTo_Widget: Widget is no longer valid."));
 				return;
 			}
 
@@ -450,6 +454,7 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveBy_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveBy_SceneComponent: SceneComponent is no longer valid."));
 				return FVector::ZeroVector;
 			}
 
@@ -462,6 +467,7 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveBy_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveBy_SceneComponent: SceneComponent is no longer valid."));
 				return;
 			}
 
@@ -479,6 +485,75 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveBy_SceneComponent(
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
 		bShouldAutoPlay);
+}
+
+UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveBy_Widget(
+	UObject* worldContextObject,
+	UWidget* widget,
+	const FVector2D& by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveBy_Widget: Widget is null."));
+		return nullptr;
+	}
+
+	return UQuickVector2DTween::CreateTween(
+		worldContextObject,
+		FNativeVector2DGetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](UQuickVector2DTween*)->FVector2D
+		{
+			if (!widget.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveBy_Widget: Widget is no longer valid."));
+				return FVector2D::ZeroVector;
+			}
+
+			if (UCanvasPanelSlot* slot = Cast<UCanvasPanelSlot>(widget->Slot))
+			{
+				return slot->GetPosition();
+			}
+
+			UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveBy_Widget: Widget is not in a CanvasPanelSlot."));
+			return FVector2D::ZeroVector;
+		}),
+		FNativeVector2DGetter::CreateLambda([by](UQuickVector2DTween* tween)->FVector2D { return tween->GetStartValue() + by; }),
+		FNativeVector2DSetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](const FVector2D& v, UQuickVector2DTween*)
+		{
+			if (!widget.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveBy_Widget: Widget is no longer valid."));
+				return;
+			}
+
+			if (UCanvasPanelSlot* slot = Cast<UCanvasPanelSlot>(widget->Slot))
+			{
+				slot->SetPosition(v);
+				return;
+			}
+
+			UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenMoveBy_Widget: Widget is not in a CanvasPanelSlot."));
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
 }
 
 UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
@@ -509,6 +584,7 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScaleTo_SceneComponent: SceneComponent is no longer valid."));
 				return FVector::ZeroVector;
 			}
 
@@ -521,12 +597,70 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScaleTo_SceneComponent: SceneComponent is no longer valid."));
 				return;
 			}
 
 			space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldScale3D(v) :
 				component->SetRelativeScale3D(v);
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickVector2DTween* UQuickTweenLibrary::QuickTweenScaleTo_Widget(
+	UObject* worldContextObject,
+	UWidget* widget,
+	const FVector2D& to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScaleTo_Widget: Widget is null."));
+		return nullptr;
+	}
+
+	return UQuickVector2DTween::CreateTween(
+		worldContextObject,
+		FNativeVector2DGetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](UQuickVector2DTween*)->FVector2D
+		{
+			if (!widget.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScaleTo_Widget: Widget is no longer valid."));
+				return FVector2D::ZeroVector;
+			}
+
+			return widget->GetRenderTransform().Scale;
+		}),
+		FNativeVector2DGetter::CreateLambda([to](UQuickVector2DTween*)->FVector2D { return to; }),
+		FNativeVector2DSetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](const FVector2D& v, UQuickVector2DTween*)
+		{
+			if (!widget.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScaleTo_Widget: Widget is no longer valid."));
+				return;
+			}
+
+			widget->SetRenderScale(v);
 		}),
 		duration,
 		timeScale,
@@ -569,6 +703,7 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleBy_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScaleBy_SceneComponent: SceneComponent is no longer valid."));
 				return FVector::ZeroVector;
 			}
 
@@ -581,12 +716,70 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleBy_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScaleBy_SceneComponent: SceneComponent is no longer valid."));
 				return;
 			}
 
 			space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldScale3D(v) :
 				component->SetRelativeScale3D(v);
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickVector2DTween* UQuickTweenLibrary::QuickTweenScaleBy_Widget(
+	UObject* worldContextObject,
+	UWidget* widget,
+	const FVector2D& by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScaleBy_Widget: Widget is null."));
+		return nullptr;
+	}
+
+	return UQuickVector2DTween::CreateTween(
+		worldContextObject,
+		FNativeVector2DGetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](UQuickVector2DTween*)->FVector2D
+		{
+			if (!widget.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScaleBy_Widget: Widget is no longer valid."));
+				return FVector2D::ZeroVector;
+			}
+
+			return widget->GetRenderTransform().Scale;
+		}),
+		FNativeVector2DGetter::CreateLambda([by](UQuickVector2DTween* tween)->FVector2D { return tween->GetStartValue() + by; }),
+		FNativeVector2DSetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](const FVector2D& v, UQuickVector2DTween*)
+		{
+			if (!widget.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScaleBy_Widget: Widget is no longer valid."));
+				return;
+			}
+
+			widget->SetRenderScale(v);
 		}),
 		duration,
 		timeScale,
@@ -630,6 +823,7 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenRotateTo_SceneComponent: SceneComponent is no longer valid."));
 				return FRotator::ZeroRotator;
 			}
 
@@ -643,12 +837,70 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenRotateTo_SceneComponent: SceneComponent is no longer valid."));
 				return;
 			}
 
 			space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldRotation(v) :
 				component->SetRelativeRotation(v);
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateTo_Widget(
+	UObject* worldContextObject,
+	UWidget* widget,
+	float to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenRotateTo_Widget: Widget is null."));
+		return nullptr;
+	}
+
+	return UQuickFloatTween::CreateTween(
+		worldContextObject,
+		FNativeFloatGetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](UQuickFloatTween*)->float
+		{
+			if (!widget.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenRotateTo_Widget: Widget is no longer valid."));
+				return 0.0f;
+			}
+
+			return widget->GetRenderTransform().Angle;
+		}),
+		FNativeFloatGetter::CreateLambda([to](UQuickFloatTween*)->float { return to; }),
+		FNativeFloatSetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](float v, UQuickFloatTween*)
+		{
+			if (!widget.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenRotateTo_Widget: Widget is no longer valid."));
+				return;
+			}
+
+			widget->SetRenderTransformAngle(v);
 		}),
 		duration,
 		timeScale,
@@ -692,6 +944,7 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenRotateBy_SceneComponent: SceneComponent is no longer valid."));
 				return FRotator::ZeroRotator;
 			}
 
@@ -718,12 +971,70 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenRotateBy_SceneComponent: SceneComponent is no longer valid."));
 				return;
 			}
 
 			space == EQuickTweenSpace::WorldSpace ?
 				component->SetWorldRotation(v) :
 				component->SetRelativeRotation(v);
+		}),
+		duration,
+		timeScale,
+		easeType,
+		easeCurve,
+		loops,
+		loopType,
+		tweenTag,
+		bShouldAutoKill,
+		bShouldPlayWhilePaused,
+		bShouldAutoPlay
+	);
+}
+
+UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateBy_Widget(
+	UObject* worldContextObject,
+	UWidget* widget,
+	float by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenRotateTo_Widget: Widget is null."));
+		return nullptr;
+	}
+
+	return UQuickFloatTween::CreateTween(
+		worldContextObject,
+		FNativeFloatGetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](UQuickFloatTween*)->float
+		{
+			if (!widget.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenRotateBy_Widget: Widget is no longer valid."));
+				return 0.0f;
+			}
+
+			return widget->GetRenderTransform().Angle;
+		}),
+		FNativeFloatGetter::CreateLambda([by](UQuickFloatTween* tween)->float { return tween->GetStartValue() + by; }),
+		FNativeFloatSetter::CreateWeakLambda(widget, [widget = TWeakObjectPtr(widget)](float v, UQuickFloatTween*)
+		{
+			if (!widget.IsValid())
+			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenRotateBy_Widget: Widget is no longer valid."));
+				return;
+			}
+
+			widget->SetRenderTransformAngle(v);
 		}),
 		duration,
 		timeScale,
@@ -766,6 +1077,7 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenLookAt_SceneComponent: SceneComponent is no longer valid."));
 				return FRotator::ZeroRotator;
 			}
 
@@ -775,6 +1087,7 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenLookAt_SceneComponent: SceneComponent is no longer valid."));
 				return FRotator::ZeroRotator;
 			}
 
@@ -787,6 +1100,7 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenLookAt_SceneComponent: SceneComponent is no longer valid."));
 				return;
 			}
 
@@ -851,6 +1165,7 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent
 		{
 			if (!component.IsValid())
 			{
+				UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenRotateAroundPoint_SceneComponent: SceneComponent is no longer valid."));
 				return;
 			}
 

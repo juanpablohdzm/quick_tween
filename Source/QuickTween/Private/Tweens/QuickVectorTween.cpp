@@ -41,7 +41,7 @@ void UQuickVectorTween::Update(float deltaTime, UQuickTweenable* instigator)
 		progress = curve->GetFloatValue(progress);
 	}
 
-	if (To.IsBound())
+	if (!To.IsBound())
 	{
 		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::Update: 'To' delegate is not bound, unable to interpolate."));
 		return;
@@ -77,7 +77,7 @@ void UQuickVectorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 		bSnapToEnd = !bSnapToEnd;
 	}
 
-	if (To.IsBound())
+	if (!To.IsBound())
 	{
 		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::Complete: 'To' delegate is not bound, unable to interpolate."));
 		return Super::Complete(instigator, bSnapToEnd);

@@ -78,7 +78,7 @@ public:
 	 * @param bShouldAutoPlay If true the tween will start playing immediately after creation. Defaults to false.
 	 * @return A pointer to the created UQuickVectorTween.
 	 */
-	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Vector", meta = (Keywords = "Tween | Vector", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween | Vector", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVectorTween* QuickTweenCreateTweenVector(
 		UObject* worldContextObject,
 		const FVector& from,
@@ -115,7 +115,7 @@ public:
 	 * @param bShouldAutoPlay If true, the tween will start playing immediately after creation.
 	 * @return A pointer to the created UQuickRotatorTween, or nullptr on failure.
 	 */
-	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Rotator", meta = (Keywords = "Tween | Rotator", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween | Rotator", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickRotatorTween* QuickTweenCreateTweenRotator(
 		UObject* worldContextObject,
 		const FRotator& from,
@@ -152,7 +152,7 @@ public:
 	 * @param bShouldAutoPlay If true, the tween will start playing immediately after creation.
 	 * @return A pointer to the created `UQuickFloatTween`.
 	 */
-	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Float", meta = (Keywords = "Tween | Float", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween | Float", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickFloatTween* QuickTweenCreateTweenFloat(
 		UObject* worldContextObject,
 		float from,
@@ -192,7 +192,7 @@ public:
 	 * @param bShouldAutoPlay    If true the tween will start playing immediately after creation.
 	 * @return                   Pointer to the created UQuickVector2DTween.
 	 */
-	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Vector2D", meta = (Keywords = "Tween | Vector", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween | Vector", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVector2DTween* QuickTweenCreateTweenVector2D(
 		UObject* worldContextObject,
 		const FVector2D& from,
@@ -231,7 +231,7 @@ public:
 	 * @param bShouldAutoPlay    If true the tween will start playing immediately after creation.
 	 * @return                   Pointer to the created UQuickColorTween.
 	 */
-	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Color", meta = (Keywords = "Tween | Color", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween | Color", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickColorTween* QuickTweenCreateTweenColor(
 		UObject* worldContextObject,
 		const FColor& from,
@@ -270,7 +270,7 @@ public:
 	 * @param bShouldAutoPlay    If true the tween will start playing immediately after creation.
 	 * @return                   Pointer to the created UQuickIntTween.
 	 */
-	UFUNCTION(BlueprintPure, DisplayName = "Quick Tween Create Tween Int", meta = (Keywords = "Tween | Int", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween | Int", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickIntTween* QuickTweenCreateTweenInt(
 		UObject* worldContextObject,
 		int32 from,
@@ -308,7 +308,7 @@ public:
 	 * @param bShouldAutoPlay     If true the tween will start playing immediately after creation.
 	 * @return                    A UQuickVectorTween pointer controlling the movement.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Move To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVectorTween* QuickTweenMoveTo_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -325,7 +325,7 @@ public:
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Move to Widget", meta = (Keywords = "Tween | Movement | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVector2DTween* QuickTweenMoveTo_Widget(
 		UObject* worldContextObject,
 		UWidget* widget,
@@ -367,7 +367,7 @@ public:
 	 * @param bShouldAutoPlay     If true the tween will start playing immediately after creation.
 	 * @return                    A UQuickVectorTween pointer controlling the movement.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Move By SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVectorTween* QuickTweenMoveBy_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -379,6 +379,22 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickVector2DTween* QuickTweenMoveBy_Widget(
+		UObject* worldContextObject,
+		UWidget* widget,
+		const FVector2D& by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
@@ -405,7 +421,7 @@ public:
 	 * @param bShouldAutoPlay     If true the tween will start playing immediately after creation.
 	 * @return                    A UQuickVectorTween pointer controlling the scale tween.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Scale To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVectorTween* QuickTweenScaleTo_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -417,6 +433,22 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickVector2DTween* QuickTweenScaleTo_Widget(
+		UObject* worldContextObject,
+		UWidget* widget,
+		const FVector2D& to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
@@ -447,7 +479,7 @@ public:
 	 * @param bShouldAutoPlay       If true the tween will start playing immediately after creation.
 	 * @return                      A UQuickVectorTween pointer controlling the scale tween.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Scale By SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickVectorTween* QuickTweenScaleBy_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -459,6 +491,22 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickVector2DTween* QuickTweenScaleBy_Widget(
+		UObject* worldContextObject,
+		UWidget* widget,
+		const FVector2D& by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
@@ -486,7 +534,7 @@ public:
 	 * @param bShouldAutoPlay     If true the tween will start playing immediately after creation.
 	 * @return                    A UQuickRotatorTween pointer controlling the rotation.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate To SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickRotatorTween* QuickTweenRotateTo_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -499,6 +547,22 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenRotateTo_Widget(
+		UObject* worldContextObject,
+		UWidget* widget,
+		float to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
@@ -530,7 +594,7 @@ public:
 	 * @param bShouldAutoPlay     If true the tween will start playing immediately after creation.
 	 * @return                    A UQuickRotatorTween pointer controlling the rotation.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate By SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickRotatorTween* QuickTweenRotateBy_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -543,6 +607,22 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | Widget", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenRotateBy_Widget(
+		UObject* worldContextObject,
+		UWidget* widget,
+		float by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
@@ -571,7 +651,7 @@ public:
 	 * @param bShouldAutoPlay     If true the tween will start playing immediately after creation.
 	 * @return                    A UQuickRotatorTween pointer controlling the look-at rotation.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween LookAt SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickRotatorTween* QuickTweenLookAt_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -615,7 +695,7 @@ public:
 	 * @param bShouldAutoPlay            If true the tween will start playing immediately after creation.
 	 * @return                           A UQuickFloatTween pointer controlling the rotation, or nullptr on failure.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Quick Tween Rotate Around Point SceneComponent", meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Movement | SceneComponent", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickFloatTween* QuickTweenRotateAroundPoint_SceneComponent(
 		UObject* worldContextObject,
 		USceneComponent* component,
@@ -641,6 +721,6 @@ public:
 	 * @param tweenTag            Tag identifying the tween to find.
 	 * @return                    Pointer to the found UQuickTweenable instance, or nullptr if none found.
 	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Find | By Tag", WorldContext = "worldContextObject"), DisplayName= "Quick Tween Query Find Tween By Tag", Category = "QuickTween")
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Find | By Tag", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickTweenable* QuickTweenFindTweenByTag(const UObject* worldContextObject, const FString& tweenTag);
 };

@@ -44,7 +44,7 @@ private:
 	{
 		From = MoveTemp(from);
 		To = MoveTemp(to);
-		setter = MoveTemp(setter);
+		Setter = MoveTemp(setter);
 		bShortestPath = bUseShortestPath;
 		UQuickTweenBase::SetUp(
 			worldContextObject,
