@@ -1785,7 +1785,7 @@ UQuickColorTween* UQuickTweenLibrary::QuickTweenColorParameterBy_Material(
 	UObject* worldContextObject,
 	UMaterialInstanceDynamic* material,
 	const FName& parameterName,
-	float by,
+	const FColor& by,
 	float duration,
 	float timeScale,
 	EEaseType easeType,
@@ -1821,10 +1821,10 @@ UQuickColorTween* UQuickTweenLibrary::QuickTweenColorParameterBy_Material(
 		{
 			FColor start = tween->GetStartValue();
 			return FColor(
-				FMath::Clamp(start.R + by, 0.0f, 255.0f),
-				FMath::Clamp(start.G + by, 0.0f, 255.0f),
-				FMath::Clamp(start.B + by, 0.0f, 255.0f),
-				FMath::Clamp(start.A + by, 0.0f, 255.0f)
+				FMath::Clamp(start.R + by.R, 0.0f, 255.0f),
+				FMath::Clamp(start.G + by.G, 0.0f, 255.0f),
+				FMath::Clamp(start.B + by.B, 0.0f, 255.0f),
+				FMath::Clamp(start.A + by.A, 0.0f, 255.0f)
 			);
 		}),
 		FNativeColorSetter::CreateWeakLambda(material, [material = TWeakObjectPtr(material), parameterName](const FColor& v, UQuickColorTween*)

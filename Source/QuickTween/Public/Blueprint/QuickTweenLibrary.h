@@ -1266,7 +1266,7 @@ public:
 	 * @param worldContextObject Context object used to find the world for the tween.
 	 * @param material           The UMaterialInstanceDynamic containing the color parameter.
 	 * @param parameterName      The name of the color parameter to animate.
-	 * @param by                 Relative float value to add to the sampled start value.
+	 * @param by                 Relative FColor value to add to the sampled start value.
 	 * @param duration           Time in seconds for the tween to complete (default 1.0f).
 	 * @param timeScale          Multiplier applied to the tween time (default 1.0f).
 	 * @param easeType           Predefined easing function to use for interpolation (default EEaseType::Linear).
@@ -1284,7 +1284,7 @@ public:
 		UObject* worldContextObject,
 		UMaterialInstanceDynamic* material,
 		const FName& parameterName,
-		float by,
+		const FColor& by,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,

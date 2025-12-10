@@ -10,6 +10,10 @@
 #include "Utils/LoopType.h"
 #include "QuickTweenLatentLibrary.generated.h"
 
+class USpringArmComponent;
+class UCameraComponent;
+class UImage;
+class UWidget;
 class UQuickIntTween;
 class UQuickColorTween;
 class UQuickVector2DTween;
@@ -18,6 +22,7 @@ class UQuickTweenSequence;
 class UQuickVectorTween;
 class UQuickRotatorTween;
 class UQuickFloatTween;
+class UMaterialInstanceDynamic;
 
 /**
  * Blueprint-accessible library exposing latent QuickTween creation helpers.
@@ -362,6 +367,134 @@ public:
 		bool bShouldAutoPlay = false);
 
 	/**
+	 * Create a latent MoveTo tween for a UWidget.
+	 *
+	 * Moves the provided widget to the target position over the given duration.
+	 * Exposed as a latent Blueprint node; execution can continue based on the
+	 * expanded \c EQuickTweenLatentSteps output pins.
+	 *
+	 * @param worldContextObject World context used for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param widget Target widget to move.
+	 * @param to Target local position for the widget.
+	 * @param duration Duration of the move in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve; when provided it overrides \c easeType.
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag to identify the created tween.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickVector2DTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickVector2DTween* QuickTweenLatentMoveTo_Widget(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UWidget* widget,
+		const FVector2D& to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent MoveBy tween for a scene component.
+	 *
+	 * Moves the provided scene component by the specified delta vector over time.
+	 * Exposed as a latent Blueprint node; execution can continue based on the
+	 * expanded \c EQuickTweenLatentSteps output pins.
+	 *
+	 * @param worldContextObject World context used for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param component Scene component to move.
+	 * @param by Delta vector to add to the component's current location.
+	 * @param duration Duration of the move in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve; overrides \c easeType when provided.
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param space Whether movement uses world or local space.
+	 * @param tweenTag Optional tag to identify the created tween.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickVectorTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickVectorTween* QuickTweenLatentMoveBy_SceneComponent(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		USceneComponent* component,
+		const FVector& by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent MoveBy tween for a UWidget.
+	 *
+	 * Moves the provided widget by the specified delta over the given duration.
+	 * Exposed as a latent Blueprint node; execution can continue based on the
+	 * expanded \c EQuickTweenLatentSteps output pins.
+	 *
+	 * @param worldContextObject World context used for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param widget Target widget to move.
+	 * @param by Delta 2D vector to add to the widget's current position.
+	 * @param duration Duration of the move in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve; overrides \c easeType when provided.
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag to identify the created tween.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickVector2DTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector2D | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickVector2DTween* QuickTweenLatentMoveBy_Widget(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UWidget* widget,
+		const FVector2D& by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
 	 * Create a latent ScaleTo tween for a scene component.
 	 *
 	 * Tweens the scale of the provided scene component to \p to.
@@ -398,6 +531,128 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent ScaleTo tween for a UWidget.
+	 *
+	 * Tweens the widget's render scale to the specified target over time.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param widget Target widget whose scale will be changed.
+	 * @param to Target 2D scale.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve.
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickVector2DTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector2D | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickVector2DTween* QuickTweenLatentScaleTo_Widget(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UWidget* widget,
+		const FVector2D& to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent ScaleBy tween for a scene component.
+	 *
+	 * Tweens the scale of the provided scene component by the given delta.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param component Scene component whose scale will be adjusted.
+	 * @param by Delta scale to be applied to current scale.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve.
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param space Whether the delta applies in WorldSpace or LocalSpace.
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickVectorTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vecto | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickVectorTween* QuickTweenLatentScaleBy_SceneComponent(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		USceneComponent* component,
+		const FVector& by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent ScaleBy tween for a UWidget.
+	 *
+	 * Tweens the widget's render scale by the specified delta.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param widget Target widget whose scale will be changed.
+	 * @param by 2D delta scale to apply to current scale.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve.
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickVector2DTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector2D | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickVector2DTween* QuickTweenLatentScaleBy_Widget(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UWidget* widget,
+		const FVector2D& by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
@@ -448,6 +703,48 @@ public:
         bool bShouldAutoPlay = false);
 
 	/**
+	 * Create a latent RotateTo tween for a widget.
+	 *
+	 * Tweens a widget's rotation value to the target angle over the specified duration.
+	 * This is exposed as a latent Blueprint node so execution can continue based on
+	 * the latent step enum (EQuickTweenLatentSteps).
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param widget Target widget whose rotation will be changed.
+	 * @param to Target rotation value (in degrees).
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickFloatTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Flo | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenLatentRotateTo_Widget(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UWidget* widget,
+		float to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
 	 * Create a latent RotateBy tween for a scene component.
 	 *
 	 * Rotates the provided scene component by the specified rotator delta over time.
@@ -486,6 +783,47 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent RotateBy tween for a widget.
+	 *
+	 * Rotates the provided widget by the specified delta over time. Exposed as a latent
+	 * Blueprint node so execution can continue based on the latent step.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param widget Widget to rotate.
+	 * @param by Rotation delta to apply (added to current rotation).
+	 * @param duration Duration of the rotation in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickRotatorTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Rotator | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenLatentRotateBy_Widget(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UWidget* widget,
+		float by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
@@ -578,4 +916,458 @@ public:
         bool bShouldAutoKill = false,
         bool bShouldPlayWhilePaused = false,
         bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent ChangeColor tween for a UImage widget.
+	 *
+	 * Tweens the image's color to the specified target color over time.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param widget UImage widget whose color will be changed.
+	 * @param to Target color.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickColorTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Color | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickColorTween* QuickTweenLatentChangeColorTo_Image(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UImage* widget,
+		const FColor& to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent ChangeOpacity tween for a generic widget.
+	 *
+	 * Tweens a widget's opacity to the given value over the specified duration.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param widget Target widget whose opacity will be changed.
+	 * @param to Target opacity value (0.0 - 1.0).
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickFloatTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenLatentChangeOpacityTo_Widget(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UWidget* widget,
+		float to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent ChangeFov tween for a camera component.
+	 *
+	 * Tweens the camera's field of view to the target value over time.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param camera Camera component whose FOV will be changed.
+	 * @param to Target FOV value in degrees.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior.
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickFloatTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenLatentChangeFovTo_Camera(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UCameraComponent* camera,
+		float to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent ChangeDistance tween for a spring arm (to target).
+	 *
+	 * Tweens the spring arm's target arm length to the specified value.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param springArm Spring arm component whose length will be changed.
+	 * @param to Target arm length.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior.
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickFloatTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenLatentChangeDistanceTo_SpringArm(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		USpringArmComponent* springArm,
+		float to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent ChangeDistanceBy tween for a spring arm (by delta).
+	 *
+	 * Tweens the spring arm's target arm length by adding the given delta to the current length.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param springArm Spring arm component whose length will be changed.
+	 * @param by Delta to add to the current arm length.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior.
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickFloatTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenLatentChangeDistanceBy_SpringArm(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		USpringArmComponent* springArm,
+		float by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent VectorParameterTo tween for a material instance.
+	 *
+	 * Tweens the named vector parameter on the dynamic material to the target vector value.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param material Dynamic material instance to modify.
+	 * @param parameterName Name of the vector parameter.
+	 * @param to Target vector value.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickVectorTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickVectorTween* QuickTweenLatentVectorParameterTo_Material(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UMaterialInstanceDynamic* material,
+		const FName& parameterName,
+		const FVector& to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent VectorParameterBy tween for a material instance.
+	 *
+	 * Tweens the named vector parameter on the dynamic material by the provided delta.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param material Dynamic material instance to modify.
+	 * @param parameterName Name of the vector parameter.
+	 * @param by Vector delta to add to the current parameter value.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickVectorTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickVectorTween* QuickTweenLatentVectorParameterBy_Material(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UMaterialInstanceDynamic* material,
+		const FName& parameterName,
+		const FVector& by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent ScalarParameterTo tween for a material instance.
+	 *
+	 * Tweens the named scalar parameter on the dynamic material to the target value.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param material Dynamic material instance to modify.
+	 * @param parameterName Name of the scalar parameter.
+	 * @param to Target scalar value.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickFloatTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenLatentScalarParameterTo_Material(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UMaterialInstanceDynamic* material,
+		const FName& parameterName,
+		float to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent ScalarParameterBy tween for a material instance.
+	 *
+	 * Tweens the named scalar parameter on the dynamic material by the specified delta.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param material Dynamic material instance to modify.
+	 * @param parameterName Name of the scalar parameter.
+	 * @param by Delta to add to the current scalar parameter.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickFloatTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickFloatTween* QuickTweenLatentScalarParameterBy_Material(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UMaterialInstanceDynamic* material,
+		const FName& parameterName,
+		float by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent ColorParameterTo tween for a material instance.
+	 *
+	 * Tweens the named color parameter on the dynamic material to the target color.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param material Dynamic material instance to modify.
+	 * @param parameterName Name of the color parameter.
+	 * @param to Target color value.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickColorTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Color | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickColorTween* QuickTweenLatentColorParameterTo_Material(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UMaterialInstanceDynamic* material,
+		const FName& parameterName,
+		const FColor& to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent ColorParameterBy tween for a material instance.
+	 *
+	 * Tweens the named color parameter on the dynamic material by the specified scalar delta.
+	 * Typically used to adjust color channels uniformly by a value; implementation may interpret
+	 * the delta according to the material setup.
+	 *
+	 * @param worldContextObject World context for latent action execution.
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param material Dynamic material instance to modify.
+	 * @param parameterName Name of the color parameter.
+	 * @param by FColor delta to apply.
+	 * @param duration Duration of the tween in seconds.
+	 * @param timeScale Global time scale multiplier for the tween.
+	 * @param easeType Built-in easing type to apply.
+	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
+	 * @param loops Number of times the tween will loop.
+	 * @param loopType Looping behavior (Restart, PingPong, etc.).
+	 * @param tweenTag Optional tag for identification.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickColorTween.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Color | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickColorTween* QuickTweenLatentColorParameterBy_Material(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		UMaterialInstanceDynamic* material,
+		const FName& parameterName,
+		const FColor& by,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 };

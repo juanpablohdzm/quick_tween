@@ -12,8 +12,12 @@
 #include "Tweens/QuickColorTween.h"
 #include "Tweens/QuickIntTween.h"
 #include "Tweens/QuickVector2DTween.h"
+#include "Components/Widget.h"
+#include "Components/Image.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Engine/World.h"
-#include "Engine.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenLatentLibrary, Log, All);
 
@@ -443,6 +447,173 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentMoveTo_SceneCompone
 	return nullptr;
 }
 
+UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenLatentMoveTo_Widget(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UWidget* widget,
+	const FVector2D& to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentMoveTo_Widget: Widget is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickVector2DTween* tween = UQuickTweenLibrary::QuickTweenMoveTo_Widget(
+				worldContextObject,
+				widget,
+				to,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
+UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentMoveBy_SceneComponent(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	USceneComponent* component,
+	const FVector& by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	EQuickTweenSpace space,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!component)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentMoveBy_SceneComponent: SceneComponent is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickVectorTween* tween = UQuickTweenLibrary::QuickTweenMoveBy_SceneComponent(
+				worldContextObject,
+				component,
+				by,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				space,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
+UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenLatentMoveBy_Widget(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UWidget* widget,
+	const FVector2D& by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentMoveBy_Widget: Widget is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickVector2DTween* tween = UQuickTweenLibrary::QuickTweenMoveBy_Widget(
+				worldContextObject,
+				widget,
+				by,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
 UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleTo_SceneComponent(
 	UObject* worldContextObject,
 	FLatentActionInfo latentInfo,
@@ -496,6 +667,173 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleTo_SceneCompon
 			return tween;
 		}
 	}
+	return nullptr;
+}
+
+UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleTo_Widget(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UWidget* widget,
+	const FVector2D& to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentScaleTo_Widget: Widget is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickVector2DTween* tween = UQuickTweenLibrary::QuickTweenScaleTo_Widget(
+				worldContextObject,
+				widget,
+				to,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
+UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleBy_SceneComponent(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	USceneComponent* component,
+	const FVector& by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	EQuickTweenSpace space,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!component)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentScaleBy_SceneComponent: SceneComponent is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickVectorTween* tween = UQuickTweenLibrary::QuickTweenScaleBy_SceneComponent(
+				worldContextObject,
+				component,
+				by,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				space,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
+UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleBy_Widget(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UWidget* widget,
+	const FVector2D& by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentScaleBy_Widget: Widget is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickVector2DTween* tween = UQuickTweenLibrary::QuickTweenScaleBy_Widget(
+				worldContextObject,
+				widget,
+				by,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
 	return nullptr;
 }
 
@@ -554,6 +892,62 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateTo_SceneComp
 			return tween;
 		}
 	}
+
+	return nullptr;
+}
+
+UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateTo_Widget(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UWidget* widget,
+	float to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentRotateTo_Widget: Widget is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickFloatTween* tween = UQuickTweenLibrary::QuickTweenRotateTo_Widget(
+				worldContextObject,
+				widget,
+				to,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
 	return nullptr;
 }
 
@@ -600,6 +994,59 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateBy_SceneComp
 				loops,
 				loopType,
 				space,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+	return nullptr;
+}
+
+UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateBy_Widget(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UWidget* widget,
+	float by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentRotateBy_Widget: Widget is null."));
+		return nullptr;
+	}
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickFloatTween* tween = UQuickTweenLibrary::QuickTweenRotateBy_Widget(
+				worldContextObject,
+				widget,
+				by,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
 				tweenTag,
 				bShouldAutoKill,
 				bShouldPlayWhilePaused);
@@ -668,6 +1115,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentLookAt_SceneCompon
 			return tween;
 		}
 	}
+
 	return nullptr;
 }
 
@@ -728,5 +1176,623 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateAroundPoint_Sc
 			return tween;
 		}
 	}
+
+	return nullptr;
+}
+
+UQuickColorTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeColorTo_Image(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UImage* widget,
+	const FColor& to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentChangeColorTo_Image: Image widget is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickColorTween* tween = UQuickTweenLibrary::QuickTweenChangeColorTo_Image(
+				worldContextObject,
+				widget,
+				to,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
+UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeOpacityTo_Widget(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UWidget* widget,
+	float to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!widget)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentChangeOpacityTo_Widget: Widget is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickFloatTween* tween = UQuickTweenLibrary::QuickTweenChangeOpacityTo_Widget(
+				worldContextObject,
+				widget,
+				to,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
+UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeFovTo_Camera(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UCameraComponent* camera,
+	float to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!camera)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentChangeFovTo_Camera: CameraComponent is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickFloatTween* tween = UQuickTweenLibrary::QuickTweenChangeFovTo_Camera(
+				worldContextObject,
+				camera,
+				to,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
+UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeDistanceTo_SpringArm(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	USpringArmComponent* springArm,
+	float to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!springArm)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentChangeDistanceTo_SpringArm: SpringArmComponent is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickFloatTween* tween = UQuickTweenLibrary::QuickTweenChangeDistanceTo_SpringArm(
+				worldContextObject,
+				springArm,
+				to,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
+UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeDistanceBy_SpringArm(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	USpringArmComponent* springArm,
+	float by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!springArm)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentChangeDistanceBy_SpringArm: SpringArmComponent is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickFloatTween* tween = UQuickTweenLibrary::QuickTweenChangeDistanceBy_SpringArm(
+				worldContextObject,
+				springArm,
+				by,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
+UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentVectorParameterTo_Material(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UMaterialInstanceDynamic* material,
+	const FName& parameterName,
+	const FVector& to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!material)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentVectorParameterTo_Material: MaterialInstanceDynamic is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickVectorTween* tween = UQuickTweenLibrary::QuickTweenVectorParameterTo_Material(
+				worldContextObject,
+				material,
+				parameterName,
+				to,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
+UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentVectorParameterBy_Material(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UMaterialInstanceDynamic* material,
+	const FName& parameterName,
+	const FVector& by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!material)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentVectorParameterBy_Material: MaterialInstanceDynamic is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickVectorTween* tween = UQuickTweenLibrary::QuickTweenVectorParameterBy_Material(
+				worldContextObject,
+				material,
+				parameterName,
+				by,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
+UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentScalarParameterTo_Material(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UMaterialInstanceDynamic* material,
+	const FName& parameterName,
+	float to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!material)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentScalarParameterTo_Material: MaterialInstanceDynamic is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickFloatTween* tween = UQuickTweenLibrary::QuickTweenScalarParameterTo_Material(
+				worldContextObject,
+				material,
+				parameterName,
+				to,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
+UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentScalarParameterBy_Material(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UMaterialInstanceDynamic* material,
+	const FName& parameterName,
+	float by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!material)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentScalarParameterBy_Material: MaterialInstanceDynamic is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickFloatTween* tween = UQuickTweenLibrary::QuickTweenScalarParameterBy_Material(
+				worldContextObject,
+				material,
+				parameterName,
+				by,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
+UQuickColorTween* UQuickTweenLatentLibrary::QuickTweenLatentColorParameterTo_Material(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UMaterialInstanceDynamic* material,
+	const FName& parameterName,
+	const FColor& to,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!material)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentColorParameterTo_Material: MaterialInstanceDynamic is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickColorTween* tween = UQuickTweenLibrary::QuickTweenColorParameterTo_Material(
+				worldContextObject,
+				material,
+				parameterName,
+				to,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
+	return nullptr;
+}
+
+UQuickColorTween* UQuickTweenLatentLibrary::QuickTweenLatentColorParameterBy_Material(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	UMaterialInstanceDynamic* material,
+	const FName& parameterName,
+	const FColor& by,
+	float duration,
+	float timeScale,
+	EEaseType easeType,
+	UCurveFloat* easeCurve,
+	int32 loops,
+	ELoopType loopType,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (!material)
+	{
+		UE_LOG(LogQuickTweenLatentLibrary, Warning, TEXT("QuickTweenLatentColorParameterBy_Material: MaterialInstanceDynamic is null."));
+		return nullptr;
+	}
+
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickColorTween* tween = UQuickTweenLibrary::QuickTweenColorParameterBy_Material(
+				worldContextObject,
+				material,
+				parameterName,
+				by,
+				duration,
+				timeScale,
+				easeType,
+				easeCurve,
+				loops,
+				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+
 	return nullptr;
 }
