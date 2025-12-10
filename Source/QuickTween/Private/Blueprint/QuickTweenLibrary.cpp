@@ -1012,7 +1012,7 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateBy_Widget(
 {
 	if (!widget)
 	{
-		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenRotateTo_Widget: Widget is null."));
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenRotateBy_Widget: Widget is null."));
 		return nullptr;
 	}
 
@@ -1213,7 +1213,7 @@ UQuickColorTween* UQuickTweenLibrary::QuickTweenChangeColorTo_Image(
 {
 	if (!widget)
 	{
-		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenColorTo_Widget: Widget is null."));
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenColorTo_Image: Widget is null."));
 		return nullptr;
 	}
 
@@ -1679,7 +1679,7 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenScalarParameterBy_Material(
 {
 	if (!material)
 	{
-		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScalarParameterTo_Material: MaterialInstanceDynamic is null."));
+		UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenScalarParameterBy_Material: MaterialInstanceDynamic is null."));
 		return nullptr;
 	}
 
