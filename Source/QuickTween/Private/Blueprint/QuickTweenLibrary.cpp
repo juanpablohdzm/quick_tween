@@ -1870,3 +1870,101 @@ UQuickTweenable* UQuickTweenLibrary::QuickTweenFindTweenByTag(const UObject* wor
 	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenFindByTag: Failed to get QuickTweenManager."));
 	return nullptr;
 }
+
+TArray<UQuickTweenable*> UQuickTweenLibrary::QuickTweenFindAllTweensByPredicate(
+	const UObject* worldContextObject,
+	const FQuickConstTweenableAction& predicate)
+{
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject))
+	{
+		return manager->FindAllTweensByPredicate(
+			[&predicate](const UQuickTweenable* tween)->bool
+			{
+				return predicate.ExecuteIfBound(tween);
+			});
+	}
+}
+
+void UQuickTweenLibrary::QuickTweenKillAllTweens(const UObject* worldContextObject)
+{
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject))
+	{
+		manager->ExecutePredicateByCondition(
+			[](UQuickTweenable* tween){ tween->Kill(); },
+			[](const UQuickTweenable*){ return true; }); // ...kill all
+	}
+}
+
+void UQuickTweenLibrary::QuickTweenPauseAllTweens(const UObject* worldContextObject)
+{
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject))
+	{
+		manager->ExecutePredicateByCondition(
+			[](UQuickTweenable* tween){ tween->Pause(); },
+			[](const UQuickTweenable*){ return true; }); // ...pause all
+	}
+}
+
+void UQuickTweenLibrary::QuickTweenPlayAllTweens(const UObject* worldContextObject)
+{
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject))
+	{
+		manager->ExecutePredicateByCondition(
+			[](UQuickTweenable* tween){ tween->Play(); },
+			[](const UQuickTweenable*){ return true; }); // ...play all
+	}
+}
+
+void UQuickTweenLibrary::QuickTweenReverseAllTweens(const UObject* worldContextObject)
+{
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject))
+	{
+		manager->ExecutePredicateByCondition(
+			[](UQuickTweenable* tween){ tween->Reverse(); },
+			[](const UQuickTweenable*){ return true; }); // ...reverse all
+	}
+}
+
+void UQuickTweenLibrary::QuickTweenCompleteAllTweens(const UObject* worldContextObject)
+{
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject))
+	{
+		manager->ExecutePredicateByCondition(
+			[](UQuickTweenable* tween){ tween->Complete(); },
+			[](const UQuickTweenable*){ return true; }); // ...complete all
+	}
+}
+
+void UQuickTweenLibrary::QuickTweenStopAllTweens(const UObject* worldContextObject)
+{
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject))
+	{
+		manager->ExecutePredicateByCondition(
+			[](UQuickTweenable* tween){ tween->Stop(); },
+			[](const UQuickTweenable*){ return true; }); // ...stop all
+	}
+}
+
+void UQuickTweenLibrary::QuickTweenExecuteActionOnAllTweens(
+	const UObject* worldContextObject,
+	const FQuickTweenableAction& action)
+{
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject))
+	{
+		manager->ExecutePredicateByCondition(
+			[&action](UQuickTweenable* tween){ action.ExecuteIfBound(tween); },
+			[](const UQuickTweenable*){ return true; }); // ...on all
+	}
+}
+
+void UQuickTweenLibrary::QuickTweenExecuteActionByPredicate(
+	const UObject* worldContextObject,
+	const FQuickConstTweenableAction& predicate, const FQuickTweenableAction& action)
+{
+	if (UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject))
+	{
+		manager->ExecutePredicateByCondition(
+			[&action](UQuickTweenable* tween){ action.ExecuteIfBound(tween); },
+			[&predicate](const UQuickTweenable* tween){ return predicate.ExecuteIfBound(tween); });
+	}
+}

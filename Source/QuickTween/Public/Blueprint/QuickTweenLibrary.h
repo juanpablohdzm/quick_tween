@@ -1076,22 +1076,22 @@ public:
 		 * @param bShouldAutoPlay    If true the tween will start playing immediately after creation.
 		 * @return                   Pointer to the created UQuickVectorTween, or nullptr on failure.
 		 */
-		UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Vector | Material", WorldContext = "worldContextObject"), Category = "QuickTween")
-		static UQuickVectorTween* QuickTweenVectorParameterTo_Material(
-			UObject* worldContextObject,
-			UMaterialInstanceDynamic* material,
-			const FName& parameterName,
-			const FVector& to,
-			float duration = 1.0f,
-			float timeScale = 1.0f,
-			EEaseType easeType = EEaseType::Linear,
-			UCurveFloat* easeCurve = nullptr,
-			int32 loops = 1,
-			ELoopType loopType = ELoopType::Restart,
-			const FString& tweenTag = "",
-			bool bShouldAutoKill = false,
-			bool bShouldPlayWhilePaused = false,
-			bool bShouldAutoPlay = false);
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Vector | Material", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickVectorTween* QuickTweenVectorParameterTo_Material(
+		UObject* worldContextObject,
+		UMaterialInstanceDynamic* material,
+		const FName& parameterName,
+		const FVector& to,
+		float duration = 1.0f,
+		float timeScale = 1.0f,
+		EEaseType easeType = EEaseType::Linear,
+		UCurveFloat* easeCurve = nullptr,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a vector tween that animates a vector parameter on a dynamic material instance by a relative amount.
@@ -1158,21 +1158,21 @@ public:
 	 * @return Pointer to the created UQuickFloatTween, or nullptr on failure.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (Keywords = "Tween | Float | Material", WorldContext = "worldContextObject"), Category = "QuickTween")
-		static UQuickFloatTween* QuickTweenScalarParameterTo_Material(
-		UObject* worldContextObject,
-		UMaterialInstanceDynamic* material,
-		const FName& parameterName,
-		float to,
-		float duration = 1.0f,
-		float timeScale = 1.0f,
-		EEaseType easeType = EEaseType::Linear,
-		UCurveFloat* easeCurve = nullptr,
-		int32 loops = 1,
-		ELoopType loopType = ELoopType::Restart,
-		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false);
+	static UQuickFloatTween* QuickTweenScalarParameterTo_Material(
+	UObject* worldContextObject,
+	UMaterialInstanceDynamic* material,
+	const FName& parameterName,
+	float to,
+	float duration = 1.0f,
+	float timeScale = 1.0f,
+	EEaseType easeType = EEaseType::Linear,
+	UCurveFloat* easeCurve = nullptr,
+	int32 loops = 1,
+	ELoopType loopType = ELoopType::Restart,
+	const FString& tweenTag = "",
+	bool bShouldAutoKill = false,
+	bool bShouldPlayWhilePaused = false,
+	bool bShouldAutoPlay = false);
 
 
 	/**
@@ -1305,4 +1305,117 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Find | By Tag", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static UQuickTweenable* QuickTweenFindTweenByTag(const UObject* worldContextObject, const FString& tweenTag);
+
+	/**
+	 * Find all active QuickTweens that match a specified predicate within the world context.
+	 *
+	 * This function searches through all active tweens managed by the tween manager
+	 * associated with the provided \p worldContextObject and returns an array of
+	 * UQuickTweenable instances that satisfy the given \p predicate.
+	 *
+	 * @param worldContextObject Context object used to locate the world that contains the tweens.
+	 * @param predicate          The predicate function used to filter tweens.
+	 * @return                   An array of UQuickTweenable pointers that match the predicate.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Find | All", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static TArray<UQuickTweenable*> QuickTweenFindAllTweensByPredicate(const UObject* worldContextObject, const FQuickConstTweenableAction& predicate);
+
+	/**
+	 * Kill all active QuickTweens within the specified world context.
+	 *
+	 * This function locates the tween manager for the provided \p worldContextObject
+	 * and immediately kills/removes all active tweens. Use this to forcefully stop
+	 * any running tweens (useful for cleanup, level transitions, or global reset).
+	 *
+	 * @param worldContextObject Context object used to locate the world that contains the tweens.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Kill | All", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static void QuickTweenKillAllTweens(const UObject* worldContextObject);
+
+	/**
+	 * Pause all active QuickTweens within the specified world context.
+	 *
+	 * This function finds the tween manager associated with \p worldContextObject
+	 * and pauses all currently active tweens. Paused tweens retain their state and
+	 * can be resumed later. This does not kill or destroy tweens.
+	 *
+	 * @param worldContextObject Context object used to locate the world that contains the tweens.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Pause | All", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static void QuickTweenPauseAllTweens(const UObject* worldContextObject);
+
+	/**
+	 * Play all QuickTweens within the specified world context.
+	 *
+	 * This function locates the tween manager for the provided \p worldContextObject
+	 * and resumes all tweens that were previously paused. Active tweens that are not
+	 * paused remain unaffected.
+	 *
+	 * @param worldContextObject Context object used to locate the world that contains the tweens.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Play | All", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static void QuickTweenPlayAllTweens(const UObject* worldContextObject);
+
+	/**
+	 * Reverse all active QuickTweens within the specified world context.
+	 *
+	 * This function finds the tween manager associated with \p worldContextObject
+	 * and reverses the playback direction of all currently active tweens. Tweens
+	 * that were playing forward will play backward, and vice versa.
+	 *
+	 * @param worldContextObject Context object used to locate the world that contains the tweens.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Reverse | All", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static void QuickTweenReverseAllTweens(const UObject* worldContextObject);
+
+	/**
+	 * Complete all active QuickTweens within the specified world context.
+	 *
+	 * This function locates the tween manager for the provided \p worldContextObject
+	 * and immediately completes all active tweens, setting them to their end state.
+	 * Completed tweens may be auto-killed based on their configuration.
+	 *
+	 * @param worldContextObject Context object used to locate the world that contains the tweens.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Complete | All", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static void QuickTweenCompleteAllTweens(const UObject* worldContextObject);
+
+	/**
+	 * Stop all active QuickTweens within the specified world context.
+	 *
+	 * This function finds the tween manager associated with \p worldContextObject
+	 * and stops all currently active tweens. Stopped tweens are paused and reset
+	 * to their initial state (as if they were never played).
+	 *
+	 * @param worldContextObject Context object used to locate the world that contains the tweens.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Stop | All", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static void QuickTweenStopAllTweens(const UObject* worldContextObject);
+
+	/**
+	 * Execute a specified action on all active QuickTweens within the given world context.
+	 *
+	 * This function locates the tween manager for the provided \p worldContextObject
+	 * and performs the specified \p action on all active tweens. The action is defined
+	 * by the FQuickTweenableAction enum (e.g., Pause, Play, Reverse, etc.).
+	 *
+	 * @param worldContextObject Context object used to locate the world that contains the tweens.
+	 * @param action             The action to execute on all active tweens.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | All", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static void QuickTweenExecuteActionOnAllTweens(const UObject* worldContextObject,const FQuickTweenableAction& action);
+
+	/**
+	 * Execute a specified action on all active QuickTweens that match a given predicate within the world context.
+	 *
+	 * This function searches through all active tweens managed by the tween manager
+	 * associated with the provided \p worldContextObject. For each tween that satisfies
+	 * the given \p predicate, the specified \p action is executed.
+	 *
+	 * @param worldContextObject Context object used to locate the world that contains the tweens.
+	 * @param predicate          The predicate function used to filter tweens.
+	 * @param action             The action to execute on matching tweens.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Some", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static void QuickTweenExecuteActionByPredicate(const UObject* worldContextObject, const FQuickConstTweenableAction& predicate, const FQuickTweenableAction& action);
 };
