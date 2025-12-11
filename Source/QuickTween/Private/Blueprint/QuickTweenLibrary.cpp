@@ -18,6 +18,7 @@
 #include "Tweens/QuickColorTween.h"
 #include "Tweens/QuickIntTween.h"
 #include "Tweens/QuickVector2DTween.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenLibrary, Log, All);
 
