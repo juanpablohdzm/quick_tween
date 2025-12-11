@@ -19,6 +19,8 @@
 #include "Tweens/QuickIntTween.h"
 #include "Tweens/QuickVector2DTween.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Engine.h"
+#include "Engine/World.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenLibrary, Log, All);
 

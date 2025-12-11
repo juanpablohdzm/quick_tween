@@ -18,6 +18,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Engine/World.h"
+#include "Engine.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenLatentLibrary, Log, All);
 
