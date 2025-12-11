@@ -1883,6 +1883,8 @@ TArray<UQuickTweenable*> UQuickTweenLibrary::QuickTweenFindAllTweensByPredicate(
 				return predicate.ExecuteIfBound(tween);
 			});
 	}
+	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenFindAllByPredicate: Failed to get QuickTweenManager."));
+	return TArray<UQuickTweenable*>();
 }
 
 void UQuickTweenLibrary::QuickTweenKillAllTweens(const UObject* worldContextObject)
@@ -1893,6 +1895,7 @@ void UQuickTweenLibrary::QuickTweenKillAllTweens(const UObject* worldContextObje
 			[](UQuickTweenable* tween){ tween->Kill(); },
 			[](const UQuickTweenable*){ return true; }); // ...kill all
 	}
+	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenKillAllTweens: Failed to get QuickTweenManager."));
 }
 
 void UQuickTweenLibrary::QuickTweenPauseAllTweens(const UObject* worldContextObject)
@@ -1903,6 +1906,7 @@ void UQuickTweenLibrary::QuickTweenPauseAllTweens(const UObject* worldContextObj
 			[](UQuickTweenable* tween){ tween->Pause(); },
 			[](const UQuickTweenable*){ return true; }); // ...pause all
 	}
+	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenPauseAllTweens: Failed to get QuickTweenManager."));
 }
 
 void UQuickTweenLibrary::QuickTweenPlayAllTweens(const UObject* worldContextObject)
@@ -1913,6 +1917,7 @@ void UQuickTweenLibrary::QuickTweenPlayAllTweens(const UObject* worldContextObje
 			[](UQuickTweenable* tween){ tween->Play(); },
 			[](const UQuickTweenable*){ return true; }); // ...play all
 	}
+	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenPlayAllTweens: Failed to get QuickTweenManager."));
 }
 
 void UQuickTweenLibrary::QuickTweenReverseAllTweens(const UObject* worldContextObject)
@@ -1923,6 +1928,7 @@ void UQuickTweenLibrary::QuickTweenReverseAllTweens(const UObject* worldContextO
 			[](UQuickTweenable* tween){ tween->Reverse(); },
 			[](const UQuickTweenable*){ return true; }); // ...reverse all
 	}
+	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenReverseAllTweens: Failed to get QuickTweenManager."));
 }
 
 void UQuickTweenLibrary::QuickTweenCompleteAllTweens(const UObject* worldContextObject)
@@ -1933,6 +1939,7 @@ void UQuickTweenLibrary::QuickTweenCompleteAllTweens(const UObject* worldContext
 			[](UQuickTweenable* tween){ tween->Complete(); },
 			[](const UQuickTweenable*){ return true; }); // ...complete all
 	}
+	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenCompleteAllTweens: Failed to get QuickTweenManager."));
 }
 
 void UQuickTweenLibrary::QuickTweenStopAllTweens(const UObject* worldContextObject)
@@ -1943,6 +1950,7 @@ void UQuickTweenLibrary::QuickTweenStopAllTweens(const UObject* worldContextObje
 			[](UQuickTweenable* tween){ tween->Stop(); },
 			[](const UQuickTweenable*){ return true; }); // ...stop all
 	}
+	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenStopAllTweens: Failed to get QuickTweenManager."));
 }
 
 void UQuickTweenLibrary::QuickTweenExecuteActionOnAllTweens(
@@ -1955,6 +1963,7 @@ void UQuickTweenLibrary::QuickTweenExecuteActionOnAllTweens(
 			[&action](UQuickTweenable* tween){ action.ExecuteIfBound(tween); },
 			[](const UQuickTweenable*){ return true; }); // ...on all
 	}
+	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenExecuteActionOnAllTweens: Failed to get QuickTweenManager."));
 }
 
 void UQuickTweenLibrary::QuickTweenExecuteActionByPredicate(
@@ -1967,4 +1976,5 @@ void UQuickTweenLibrary::QuickTweenExecuteActionByPredicate(
 			[&action](UQuickTweenable* tween){ action.ExecuteIfBound(tween); },
 			[&predicate](const UQuickTweenable* tween){ return predicate.ExecuteIfBound(tween); });
 	}
+	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenExecuteActionByPredicate: Failed to get QuickTweenManager."));
 }
