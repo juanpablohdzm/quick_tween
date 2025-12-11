@@ -11,6 +11,8 @@
 class UQuickTweenSequence;
 class UQuickTweenBase;
 
+DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenBase, Log, All);
+
 DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateTween, UQuickTweenBase*);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDynamicDelegateTween, UQuickTweenBase*, Tween);
 
@@ -27,6 +29,7 @@ public:
 #pragma region Tween Creation
 	/**
 	 * Set up the tween with the specified parameters.
+	 * @param worldContextObject Context object for world access.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Time scale multiplier.
 	 * @param easeType Type of easing to use.
@@ -34,12 +37,12 @@ public:
 	 * @param loops Number of loops (0 = infinite).
 	 * @param loopType Looping behavior.
 	 * @param tweenTag Optional tag for identification.
-	 * @param worldContextObject Context object for world access.
 	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
 	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
 	 * @param bShouldAutoPlay Whether the tween should start playing immediately.
 	 */
 	void SetUp(
+		const UObject* worldContextObject,
 		float duration,
 		float timeScale,
 		EEaseType easeType,
@@ -47,7 +50,6 @@ public:
 		int32 loops,
 		ELoopType loopType,
 		const FString& tweenTag = FString(),
-		const UObject* worldContextObject = nullptr,
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
@@ -160,6 +162,14 @@ public:
 	void AssignOnKilledEvent(FDynamicDelegateTween callback);
 
 	/**
+	 * Assign a Blueprint dynamic delegate to be invoked when the tween loops.
+	 * @param callback Dynamic delegate with signature (UQuickTweenBase* Tween).
+	 *                 The provided delegate will be stored and called when the tween loops.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void AssignOnLoopEvent(FDynamicDelegateTween callback);
+
+	/**
 	 * Remove all bound Blueprint dynamic delegates for the start event that belong to the specified object.
 	 * @param object The UObject whose bindings should be removed. If nullptr, no action is taken.
 	 */
@@ -187,6 +197,12 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
 	void RemoveAllOnKilledEvent(const UObject* object);
 
+	/**
+	 * Remove all bound Blueprint dynamic delegates for the loop event that belong to the specified object.
+	 * @param object The UObject whose bindings should be removed. If nullptr, no action is taken.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void RemoveAllOnLoopEvent(const UObject* object);
 
 	/** Event triggered when the tween starts. */
 	FNativeDelegateTween OnStart;
@@ -199,6 +215,9 @@ public:
 
 	/** Event triggered when the tween is killed. */
 	FNativeDelegateTween OnKilled;
+
+	/** Event triggered when the tween loops. */
+	FNativeDelegateTween OnLoop;
 
 	/** Time elapsed since the tween started. */
 	float ElapsedTime = 0.0f;

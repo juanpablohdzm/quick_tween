@@ -2,7 +2,9 @@
 
 #include "QuickTweenManager.h"
 #include "QuickTweenable.h"
+#include "Algo/AllOf.h"
 #include "Algo/Find.h"
+#include "Algo/FindLast.h"
 #include "Engine/World.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenManager, Log, All);
@@ -98,4 +100,36 @@ UQuickTweenable* UQuickTweenManager::FindTweenByPredicate(TFunctionRef<bool(UQui
 {
 	UQuickTweenable* const* const ptr = Algo::FindByPredicate(QuickTweens, predicate);
 	return ptr ? *ptr : nullptr;
+}
+
+UQuickTweenable* UQuickTweenManager::FindLastTweenByPredicate(TFunctionRef<bool(UQuickTweenable*)> predicate) const
+{
+	UQuickTweenable* const* const ptr = Algo::FindLastByPredicate(QuickTweens, predicate);
+	return ptr ? *ptr : nullptr;
+}
+
+TArray<UQuickTweenable*> UQuickTweenManager::FindAllTweensByPredicate(TFunctionRef<bool(UQuickTweenable*)> predicate) const
+{
+	TArray<UQuickTweenable*> results;
+	for (UQuickTweenable* tween : QuickTweens)
+	{
+		if (predicate(tween))
+		{
+			results.Add(tween);
+		}
+	}
+	return results;
+}
+
+void UQuickTweenManager::ExecutePredicateByCondition(
+	TFunctionRef<void(UQuickTweenable*)> action,
+	TFunctionRef<bool(const UQuickTweenable*)> predicate) const
+{
+	for (UQuickTweenable* tween : QuickTweens)
+	{
+		if (predicate(tween))
+		{
+			action(tween);
+		}
+	}
 }

@@ -1,12 +1,12 @@
 ﻿// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
 
 
-#include "Tweens/QuickVectorTween.h"
+#include "Tweens/QuickColorTween.h"
 #include "Curves/CurveFloat.h"
 #include "Utils/EaseFunctions.h"
 
 
-void UQuickVectorTween::Update(float deltaTime, UQuickTweenable* instigator)
+void UQuickColorTween::Update(float deltaTime, UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -14,7 +14,7 @@ void UQuickVectorTween::Update(float deltaTime, UQuickTweenable* instigator)
 	{
 		if (!From.IsBound())
 		{
-			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::Update: 'From' delegate is not bound."));
+			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickColorTween::Update: 'From' delegate is not bound."));
 			return;
 		}
 		StartValue = From.Execute(this);
@@ -43,11 +43,18 @@ void UQuickVectorTween::Update(float deltaTime, UQuickTweenable* instigator)
 
 	if (!To.IsBound())
 	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::Update: 'To' delegate is not bound, unable to interpolate."));
+		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickColorTween::Update: 'To' delegate is not bound, unable to interpolate."));
 		return;
 	}
 
-	const FVector value = FEaseFunctions<FVector>::Ease(StartValue.GetValue(), To.Execute(this), progress, GetEaseType());
+	const FColor startValue = StartValue.GetValue();
+	const FColor endValue = To.Execute(this);
+	FColor value;
+	value.R = FEaseFunctions<uint8>::Ease(startValue.R, endValue.R, progress, GetEaseType());
+	value.G = FEaseFunctions<uint8>::Ease(startValue.G, endValue.G, progress, GetEaseType());
+	value.B = FEaseFunctions<uint8>::Ease(startValue.B, endValue.B, progress, GetEaseType());
+	value.A = FEaseFunctions<uint8>::Ease(startValue.A, endValue.A, progress, GetEaseType());
+
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);
@@ -59,7 +66,7 @@ void UQuickVectorTween::Update(float deltaTime, UQuickTweenable* instigator)
 	}
 }
 
-void UQuickVectorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
+void UQuickColorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
@@ -79,11 +86,11 @@ void UQuickVectorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 
 	if (!To.IsBound())
 	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::Complete: 'To' delegate is not bound, unable to interpolate."));
+		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickColorTween::Complete: 'To' delegate is not bound, unable to complete tween."));
 		return Super::Complete(instigator, bSnapToEnd);
 	}
 
-	FVector value = bSnapToEnd ? To.Execute(this) : StartValue.GetValue();
+	FColor value = bSnapToEnd ? To.Execute(this) : StartValue.GetValue();
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);

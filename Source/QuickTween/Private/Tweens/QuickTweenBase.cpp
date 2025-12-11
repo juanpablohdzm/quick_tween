@@ -4,8 +4,6 @@
 #include "QuickTweenManager.h"
 #include "Utils/CommonValues.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenBase, Log, All);
-
 UQuickTweenBase::~UQuickTweenBase()
 {
 	if (!WorldContextObject || Owner)
@@ -20,6 +18,7 @@ UQuickTweenBase::~UQuickTweenBase()
 }
 
 void UQuickTweenBase::SetUp(
+	const UObject* worldContextObject,
 	float duration,
 	float timeScale,
 	EEaseType easeType,
@@ -27,11 +26,11 @@ void UQuickTweenBase::SetUp(
 	int32 loops,
 	ELoopType loopType,
 	const FString& tweenTag,
-	const UObject* worldContextObject,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
 	bool bShouldAutoPlay)
 {
+	WorldContextObject = worldContextObject;
 	Duration = duration;
 	TimeScale = timeScale;
 	EaseType = easeType;
@@ -41,7 +40,6 @@ void UQuickTweenBase::SetUp(
 	TweenTag = tweenTag;
 	bAutoKill = bShouldAutoKill;
 	bPlayWhilePaused = bShouldPlayWhilePaused;
-	WorldContextObject = worldContextObject;
 
 	UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject);
 	if (!manager)
@@ -67,7 +65,15 @@ void UQuickTweenBase::Update_Restart(float deltaTime, UQuickTweenable* instigato
 	bool shouldComplete = false;
 	if (!bIsReversed)
 	{
-		CurrentLoop = (ElapsedTime / GetDuration()) + 1;
+		int32 loop = (ElapsedTime / GetDuration()) + 1;
+		if (CurrentLoop != loop)
+		{
+			CurrentLoop = loop;
+			if (OnLoop.IsBound())
+			{
+				OnLoop.Broadcast(this);
+			}
+		}
 		shouldComplete = CurrentLoop > Loops;
 	}
 	else
@@ -80,7 +86,14 @@ void UQuickTweenBase::Update_Restart(float deltaTime, UQuickTweenable* instigato
 		{
 			const float mod = FMath::Fmod(ElapsedTime, GetDuration());
 			const int32 loop = ElapsedTime / GetDuration();
-			CurrentLoop = loop + 1;
+			if (CurrentLoop != loop + 1)
+			{
+				CurrentLoop = loop + 1;
+				if (OnLoop.IsBound())
+				{
+					OnLoop.Broadcast(this);
+				}
+			}
 			shouldComplete = loop <= 0 && FMath::IsNearlyZero(mod);
 		}
 	}
@@ -132,6 +145,10 @@ void UQuickTweenBase::Update_PingPong(float deltaTime, UQuickTweenable* instigat
 
 		bIsBackwards = !bIsBackwards;
 		CurrentLoop = !bIsReversed ? CurrentLoop + 1 : CurrentLoop - 1;
+		if (OnLoop.IsBound())
+		{
+			OnLoop.Broadcast(this);
+		}
 	}
 }
 
@@ -187,6 +204,11 @@ void UQuickTweenBase::AssignOnKilledEvent(FDynamicDelegateTween callback)
 	OnKilled.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
 }
 
+void UQuickTweenBase::AssignOnLoopEvent(FDynamicDelegateTween callback)
+{
+	OnLoop.AddUFunction(callback.GetUObject(), callback.GetFunctionName());
+}
+
 void UQuickTweenBase::RemoveAllOnStartEvent(const UObject* object)
 {
 	OnStart.RemoveAll(object);
@@ -205,6 +227,11 @@ void UQuickTweenBase::RemoveAllOnCompleteEvent(const UObject* object)
 void UQuickTweenBase::RemoveAllOnKilledEvent(const UObject* object)
 {
 	OnKilled.RemoveAll(object);
+}
+
+void UQuickTweenBase::RemoveAllOnLoopEvent(const UObject* object)
+{
+	OnLoop.RemoveAll(object);
 }
 
 void UQuickTweenBase::SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator)

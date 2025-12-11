@@ -25,6 +25,8 @@ enum class EQuickTweenLatentSteps : uint8
 	OnStart,
 	/** The tween has produced an update/tick (OnUpdate event). */
 	OnUpdate,
+	/** The tween has looped (OnLoop event). */
+	OnLoop,
 	/** The tween completed successfully (OnComplete event). */
 	OnComplete,
 	/** The tween will no longer be usable. */
@@ -107,24 +109,29 @@ FQuickTweenLatentAction::FQuickTweenLatentAction(
 
 	HandleStep(EQuickTweenLatentSteps::Default);
 
-	tweenObj->OnStart.AddLambda([this](T* Tween)
+	tweenObj->OnStart.AddLambda([this](T*)
 	{
 		HandleStep(EQuickTweenLatentSteps::OnStart);
 	});
 
-	tweenObj->OnUpdate.AddLambda([this](T* Tween)
+	tweenObj->OnUpdate.AddLambda([this](T*)
 	{
 		HandleStep(EQuickTweenLatentSteps::OnUpdate);
 	});
 
-	tweenObj->OnComplete.AddLambda([this](T* Tween)
+	tweenObj->OnComplete.AddLambda([this](T*)
 	{
 		HandleStep(EQuickTweenLatentSteps::OnComplete);
 	});
 
-	tweenObj->OnKilled.AddLambda([this](T* Tween)
+	tweenObj->OnKilled.AddLambda([this](T*)
 	{
 		HandleStep(EQuickTweenLatentSteps::OnKilled);
+	});
+
+	tweenObj->OnLoop.AddLambda([this](T*)
+	{
+		HandleStep(EQuickTweenLatentSteps::OnLoop);
 	});
 }
 

@@ -4,33 +4,30 @@
 
 #include "CoreMinimal.h"
 #include "QuickTweenBase.h"
-#include "QuickRotatorTween.generated.h"
+#include "QuickIntTween.generated.h"
 
-class UQuickRotatorTween;
-
-DECLARE_DELEGATE_RetVal_OneParam(FRotator, FNativeRotatorGetter, UQuickRotatorTween*);
-DECLARE_DELEGATE_TwoParams( FNativeRotatorSetter, const FRotator&, UQuickRotatorTween* );
-
+class UQuickIntTween;
+DECLARE_DELEGATE_RetVal_OneParam(int32, FNativeIntGetter, UQuickIntTween*);
+DECLARE_DELEGATE_TwoParams( FNativeIntSetter, const int32, UQuickIntTween* );
 /**
- * Tween class for interpolating between two FRotator values over time.
- * Inherits from UQuickTweenBase and provides rotator-specific tweening functionality.
+ * Tween class for interpolating between two int32 values over time.
+ * Inherits from UQuickTweenBase and provides vector-specific tweening functionality.
  */
 UCLASS(BlueprintType)
-class QUICKTWEEN_API UQuickRotatorTween : public UQuickTweenBase
+class QUICKTWEEN_API UQuickIntTween : public UQuickTweenBase
 {
 	GENERATED_BODY()
 private:
-	UQuickRotatorTween() = default;
+	UQuickIntTween() = default;
 
 	/**
-	 * Set up the rotator tween with the specified parameters.
+	 * Set up the int tween with the specified parameters.
 	 */
 	void SetUp(
 		const UObject* worldContextObject,
-		FNativeRotatorGetter from,
-		FNativeRotatorGetter to,
-		bool bUseShortestPath,
-		FNativeRotatorSetter setter,
+		FNativeIntGetter from,
+		FNativeIntGetter to,
+		FNativeIntSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -45,7 +42,6 @@ private:
 		From = MoveTemp(from);
 		To = MoveTemp(to);
 		Setter = MoveTemp(setter);
-		bShortestPath = bUseShortestPath;
 		UQuickTweenBase::SetUp(
 			worldContextObject,
 			duration,
@@ -58,19 +54,18 @@ private:
 			bShouldAutoKill,
 			bShouldPlayWhilePaused,
 			bShouldAutoPlay);
-
 	}
+
 public:
 
 	/**
-	 * Creates a new rotator tween with the specified parameters.
+	 * Create and set up a UQuickIntTween with the specified parameters.
 	 *
 	 * Note: The start value will be cached from the component's current location at the first update.
 	 *
 	 * @param worldContextObject Context object for world access.
 	 * @param from Function to get the FROM value.
 	 * @param to Function to get the TO value.
-	 * @param bUseShortestPath Whether to use the shortest path for interpolation.
 	 * @param setter Function to apply the interpolated value.
 	 * @param duration Duration of the tween in seconds.
 	 * @param timeScale Multiplier for the tween's speed.
@@ -83,12 +78,11 @@ public:
 	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
 	 * @param bShouldAutoPlay Whether to start playing the tween immediately after setup.
 	 */
-	static UQuickRotatorTween* CreateTween(
+	static UQuickIntTween* CreateTween(
 		UObject* worldContextObject,
-		FNativeRotatorGetter from,
-		FNativeRotatorGetter to,
-		bool bUseShortestPath,
-		FNativeRotatorSetter setter,
+		FNativeIntGetter from,
+		FNativeIntGetter to,
+		FNativeIntSetter setter,
 		float duration = 1.0f,
 		float timeScale = 1.0f,
 		EEaseType easeType = EEaseType::Linear,
@@ -102,16 +96,15 @@ public:
 	{
 		if (!from.IsBound() || !to.IsBound() || !setter.IsBound())
 		{
-			UE_LOG(LogQuickTweenBase, Warning, TEXT("UQuickRotatorTween::CreateTween: One or more delegate functions are not bound."));
+			UE_LOG(LogQuickTweenBase, Warning, TEXT("UQuickIntTween::CreateTween: One or more delegate functions are not bound."));
 			return nullptr;
 		}
 		
-		UQuickRotatorTween* tween = NewObject<UQuickRotatorTween>(worldContextObject);
+		UQuickIntTween* tween = NewObject<UQuickIntTween>(worldContextObject);
 		tween->SetUp(
 			worldContextObject,
 			MoveTemp(from),
 			MoveTemp(to),
-			bUseShortestPath,
 			MoveTemp(setter),
 			duration,
 			timeScale,
@@ -130,29 +123,26 @@ public:
 
 	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
 
-	/** Get the current interpolated FRotator value. */
-	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] FRotator GetCurrentValue() const { return CurrentValue; }
+	/** Get the current interpolated int32 value. */
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category= "Tween|Info")
+	[[nodiscard]] int32 GetCurrentValue() const { return CurrentValue; }
 
-	/** Get the starting FRotator value. Set after the first tick */
-	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] FRotator GetStartValue() const { return StartValue.Get(FRotator::ZeroRotator); }
+	/** Get the starting int32 value. Set after the first tick */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category= "Tween|Info")
+	[[nodiscard]] int32 GetStartValue() const { return StartValue.Get(CurrentValue); }
 private:
-	/** Starting value or function returning FRotator. */
-	FNativeRotatorGetter From;
+	/** Starting function returning int32. */
+	FNativeIntGetter From;
 
-	/** Target FRotator function. */
-	FNativeRotatorGetter To;
+	/** Target function returning int32. */
+	FNativeIntGetter To;
 
 	/** Starting value. */
-	TOptional<FRotator> StartValue;
+	TOptional<int32> StartValue;
 
-	/** Function to set the interpolated FRotator value. */
-	FNativeRotatorSetter Setter;
-
-	/** Whether to use the shortest path for interpolation. */
-	bool bShortestPath = true;
+	/** Function to set the interpolated FVector value. */
+	FNativeIntSetter Setter;
 
 	/** Current interpolated value. */
-	FRotator CurrentValue;
+	int32 CurrentValue = 0;
 };

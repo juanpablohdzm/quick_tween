@@ -39,43 +39,70 @@ class QUICKTWEEN_API UQuickTweenSequence : public UQuickTweenable
 {
 	GENERATED_BODY()
 
-public:
-	virtual ~UQuickTweenSequence() override;
+private:
+	UQuickTweenSequence() = default;
 
-#pragma region Sequence Creation
 	/**
 	 * Set up the sequence with optional looping parameters.
-	 * @param worldContextObject Context object for world access.
-	 * @param loops Number of times to loop the sequence (-1 = infinite).
-	 * @param loopType Type of looping behavior.
-	 * @param id Optional identifier for the sequence.
-	 * @param bShouldAutoKill Whether to auto-kill the sequence on completion.
-	 * @param bShouldPlayWhilePaused Whether the sequence should play while the game is paused.
-	 * @return Reference to this sequence.
 	 */
 	void SetUp(
-		const UObject* worldContextObject = nullptr,
+		const UObject* worldContextObject,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& id = FString(),
 		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false);
 
+public:
+	virtual ~UQuickTweenSequence() override;
+
+#pragma region Sequence Creation
+
 	/**
-	 * Creates a new group and adds a new tween to it.
+	 * Creates a new tween sequence with the specified parameters.
+	 *
+	 * @param worldContextObject Context object for world access.
+	 * @param loops Number of loops (0 = infinite).
+	 * @param loopType Looping behavior.
+	 * @param id Optional identifier for the sequence.
+	 * @param bShouldAutoKill Whether to auto-kill the sequence on completion.
+	 * @param bShouldPlayWhilePaused Whether the sequence should play while the game is paused.
+	 * @return Pointer to the created tween sequence.
+	 */
+	static UQuickTweenSequence* CreateSequence(
+		UObject* worldContextObject,
+		int32 loops = 1,
+		ELoopType loopType = ELoopType::Restart,
+		const FString& id = FString(),
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false)
+	{
+		UQuickTweenSequence* sequence = NewObject<UQuickTweenSequence>(worldContextObject);
+		sequence->SetUp(
+			worldContextObject,
+			loops,
+			loopType,
+			id,
+			bShouldAutoKill,
+			bShouldPlayWhilePaused);
+		return sequence;
+	}
+
+	/**
+	 * Joins a tween to the previously created group, or creates a new one if it is the first.
 	 * @param tween The tween to join.
 	 * @return Reference to this sequence.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
-	void Join(UQuickTweenable* tween);
+	UQuickTweenSequence* Join(UQuickTweenable* tween);
 
 	/**
-	 * Appends a tween to the previously created group, or creates a new one if it is the first.
+	 * Creates a new group and adds a new tween to it.
 	 * @param tween The tween to append.
 	 * @return Reference to this sequence.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|Creation")
-	void Append(UQuickTweenable* tween);
+	UQuickTweenSequence* Append(UQuickTweenable* tween);
 
 	virtual void SetOwner(UQuickTweenable* owner) override { Owner = owner; }
 #pragma endregion
@@ -213,6 +240,14 @@ public:
 	void AssignOnKilledEvent(FDynamicDelegateTweenSequence callback);
 
 	/**
+	 * Assign a Blueprint dynamic delegate to be invoked when the tween loops.
+	 * @param callback Dynamic delegate with signature (UQuickTweenSequence* Tween).
+	 *                 The provided delegate will be stored and called when the tween loops.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void AssignOnLoopEvent(FDynamicDelegateTweenSequence callback);
+
+	/**
 	 * Remove all bound Blueprint dynamic delegates for the start event that belong to the specified object.
 	 * @param object The UObject whose bindings should be removed. If nullptr, no action is taken.
 	 */
@@ -240,6 +275,13 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
 	void RemoveAllOnKilledEvent(const UObject* object);
 
+	/**
+	 * Remove all bound Blueprint dynamic delegates for the loop event that belong to the specified object.
+	 * @param object The UObject whose bindings should be removed. If nullptr, no action is taken.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Event"), Category = "Tween|Info")
+	void RemoveAllOnLoopEvent(const UObject* object);
+
 	/** Called when the sequence starts. */
 	FNativeDelegateTweenSequence OnStart;
 
@@ -251,6 +293,9 @@ public:
 
 	/** Called when the sequence is killed. */
 	FNativeDelegateTweenSequence OnKilled;
+
+	/** Called when the sequence loops. */
+	FNativeDelegateTweenSequence OnLoop;
 #pragma endregion
 protected:
 	bool InstigatorIsOwner(UQuickTweenable* instigator) const

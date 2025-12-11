@@ -11,7 +11,13 @@ void UQuickRotatorTween::Update(float deltaTime, UQuickTweenable* instigator)
 
 	if (!StartValue.IsSet())
 	{
-		StartValue = From.Execute();
+		if (!From.IsBound())
+		{
+			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickRotatorTween::Update: 'From' delegate is not bound."));
+			return;
+		}
+
+		StartValue = From.Execute(this);
 	}
 
 	UQuickTweenBase::Update(deltaTime, instigator);
@@ -35,9 +41,20 @@ void UQuickRotatorTween::Update(float deltaTime, UQuickTweenable* instigator)
 		progress = curve->GetFloatValue(progress);
 	}
 
+	if (!To.IsBound())
+	{
+		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickRotatorTween::Update: 'To' delegate is not bound, unable to interpolate."));
+		return;
+	}
+
 	EEasePath Path = bShortestPath ? EEasePath::Shortest : EEasePath::Longest;
-	const FRotator value = FEaseFunctions<FRotator>::Ease(StartValue.GetValue(), To.Execute(), progress, GetEaseType(), Path);
-	SetterFunction.Execute(value);
+	const FRotator value = FEaseFunctions<FRotator>::Ease(StartValue.GetValue(), To.Execute(this), progress, GetEaseType(), Path);
+
+	if (Setter.IsBound())
+	{
+		Setter.Execute(value, this);
+	}
+
 	CurrentValue = value;
 	if (OnUpdate.IsBound())
 	{
@@ -51,7 +68,10 @@ void UQuickRotatorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 
 	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
 	{
-		SetterFunction.Execute(StartValue.GetValue());
+		if (Setter.IsBound())
+		{
+			Setter.Execute(StartValue.GetValue(), this);
+		}
 		return Super::Complete(instigator, false);
 	}
 
@@ -59,8 +79,18 @@ void UQuickRotatorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 	{
 		bSnapToEnd = !bSnapToEnd;
 	}
-	FRotator value = bSnapToEnd ? To.Execute() : StartValue.GetValue();
-	SetterFunction.Execute(value);
+
+	if (!To.IsBound())
+	{
+		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickRotatorTween::Complete: 'To' delegate is not bound, unable to complete tween."));
+		return Super::Complete(instigator, bSnapToEnd);
+	}
+
+	FRotator value = bSnapToEnd ? To.Execute(this) : StartValue.GetValue();
+	if (Setter.IsBound())
+	{
+		Setter.Execute(value, this);
+	}
 	CurrentValue = value;
 	return Super::Complete(instigator, bSnapToEnd);
 }
