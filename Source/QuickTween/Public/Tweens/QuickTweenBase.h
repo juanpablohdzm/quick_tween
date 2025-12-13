@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CommonValues.h"
 #include "QuickTweenable.h"
 #include "../Utils/EaseType.h"
 #include "../Utils/LoopType.h"
@@ -65,8 +66,6 @@ public:
 
 	virtual void Pause(UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Stop(UQuickTweenable* instigator = nullptr) override;
-
 	virtual void Reverse(UQuickTweenable* instigator = nullptr) override;
 
 	virtual void Restart(UQuickTweenable* instigator = nullptr) override;
@@ -76,14 +75,6 @@ public:
 	virtual void Kill(UQuickTweenable* instigator = nullptr) override;
 
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
-
-	virtual void SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator = nullptr) override;
-private:
-
-	void Update_Restart(float deltaTime, UQuickTweenable* instigator);
-
-
-	void Update_PingPong(float deltaTime, UQuickTweenable* instigator);
 
 #pragma endregion
 
@@ -98,11 +89,9 @@ public:
 
 	[[nodiscard]] virtual float GetTimeScale() const override { return TimeScale; }
 
-	[[nodiscard]] virtual bool GetIsPlaying() const override { return bIsPlaying; }
+	[[nodiscard]] virtual bool GetIsPlaying() const override { return TweenState == EQuickTweenState::Play; }
 
-	[[nodiscard]] virtual bool GetIsCompleted() const override { return bIsCompleted; }
-
-	[[nodiscard]] virtual bool GetIsBackwards() const override { return bIsBackwards; }
+	[[nodiscard]] virtual bool GetIsCompleted() const override { return TweenState == EQuickTweenState::Complete; }
 
 	[[nodiscard]] virtual bool GetIsReversed() const override { return bIsReversed; }
 
@@ -219,26 +208,25 @@ public:
 	/** Event triggered when the tween loops. */
 	FNativeDelegateTween OnLoop;
 
+protected:
+
+	/** Apply the current alpha value to the tweened property. */
+	virtual void ApplyAlphaValue(float alpha);
+private:
+
+	void RequestStateTransition(EQuickTweenState newState;
+
+	/** Current state of the tween. */
+	EQuickTweenState TweenState;
+
 	/** Time elapsed since the tween started. */
 	float ElapsedTime = 0.0f;
 
-private:
 	/** Duration of the tween in seconds. */
 	float Duration = 0.0f;
+
 	/** Time scale multiplier. */
 	float TimeScale = 1.0f;
-
-	/** Whether the tween has started. */
-	bool bHasStarted = false;
-
-	/** Whether the tween is currently playing. */
-	bool bIsPlaying = false;
-
-	/** Whether the tween is completed. */
-	bool bIsCompleted = false;
-
-	/** Whether the tween is playing backwards. */
-	bool bIsBackwards = false;
 
 	/** Internal flag to track if the tween is reversed. */
 	bool bIsReversed = false;

@@ -151,19 +151,6 @@ void UQuickTweenSequence::Pause(UQuickTweenable* instigator)
 	}
 }
 
-void UQuickTweenSequence::Stop(UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-	if (CurrentTweenGroupIndex < TweenGroups.Num() && CurrentTweenGroupIndex >= 0)
-	{
-		for (UQuickTweenable* tween : TweenGroups[CurrentTweenGroupIndex].Tweens)
-		{
-			tween->Stop(this);
-		}
-	}
-}
-
 void UQuickTweenSequence::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 {
 	if (!InstigatorIsOwner(instigator)) return;
