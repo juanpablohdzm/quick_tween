@@ -114,8 +114,6 @@ public:
 
 	virtual void Pause(UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Stop(UQuickTweenable* instigator = nullptr) override;
-
 	virtual void Reverse(UQuickTweenable* instigator = nullptr) override;
 
 	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
@@ -125,8 +123,6 @@ public:
 	virtual void Kill(UQuickTweenable* instigator = nullptr) override;
 
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
-
-	virtual void SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator = nullptr) override;
 
 private:
 	/**
@@ -161,7 +157,7 @@ public:
 
 	[[nodiscard]] virtual float GetTimeScale() const override { return 1.0f; }
 
-	[[nodiscard]] virtual bool GetIsBackwards() const override { return bIsBackwards; }
+	[[nodiscard]] virtual bool GetIsBackwards() const { return bIsBackwards; }
 
 	[[nodiscard]] virtual bool GetIsReversed() const override { return bIsReversed; }
 

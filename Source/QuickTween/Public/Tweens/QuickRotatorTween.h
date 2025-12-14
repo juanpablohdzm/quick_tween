@@ -126,10 +126,6 @@ public:
 		return tween;
 	}
 
-	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
-
-	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
-
 	/** Get the current interpolated FRotator value. */
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] FRotator GetCurrentValue() const { return CurrentValue; }
@@ -137,6 +133,14 @@ public:
 	/** Get the starting FRotator value. Set after the first tick */
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] FRotator GetStartValue() const { return StartValue.Get(FRotator::ZeroRotator); }
+
+protected:
+	virtual void ApplyAlphaValue(float alpha) override;
+
+	virtual void HandleOnStartTransition() override;
+
+	virtual void HandleOnCompleteTransition(bool bSnapToEnd = true) override;
+
 private:
 	/** Starting value or function returning FRotator. */
 	FNativeRotatorGetter From;

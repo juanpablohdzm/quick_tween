@@ -6,70 +6,46 @@
 #include "Utils/EaseFunctions.h"
 
 
-void UQuickVectorTween::Update(float deltaTime, UQuickTweenable* instigator)
+void UQuickVectorTween::ApplyAlphaValue(float alpha)
 {
-	if (!InstigatorIsOwner(instigator)) return;
-
-	if (!StartValue.IsSet())
-	{
-		if (!From.IsBound())
-		{
-			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::Update: 'From' delegate is not bound."));
-			return;
-		}
-		StartValue = From.Execute(this);
-	}
-
-	UQuickTweenBase::Update(deltaTime, instigator);
-
-	if (GetIsCompleted() || !GetIsPlaying()) return;
-
-	float currentLoopElapsedTime;
-
-	const float mod = FMath::Fmod(ElapsedTime, GetDuration());
-	if (FMath::IsNearlyZero(mod))
-	{
-		currentLoopElapsedTime = FMath::IsNearlyZero(ElapsedTime) ? 0.0f : GetDuration();
-	}
-	else
-	{
-		currentLoopElapsedTime = mod;
-	}
-	float progress = FMath::Abs(currentLoopElapsedTime / GetDuration());
-	if (UCurveFloat* curve = GetEaseCurve())
-	{
-		progress = curve->GetFloatValue(progress);
-	}
-
 	if (!To.IsBound())
 	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::Update: 'To' delegate is not bound, unable to interpolate."));
+		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::ApplyAlphaValue: 'To' delegate is not bound, unable to interpolate."));
 		return;
 	}
 
-	const FVector value = FEaseFunctions<FVector>::Ease(StartValue.GetValue(), To.Execute(this), progress, GetEaseType());
+	const FVector value = FEaseFunctions<FVector>::Ease(StartValue.Get(FVector::ZeroVector), To.Execute(this), alpha, GetEaseType());
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);
 	}
 	CurrentValue = value;
-	if (OnUpdate.IsBound())
-	{
-		OnUpdate.Broadcast(this);
-	}
 }
 
-void UQuickVectorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
+void UQuickVectorTween::HandleOnStartTransition()
 {
-	if (!InstigatorIsOwner(instigator)) return;
+	if (!From.IsBound())
+	{
+		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::HandleOnStartTransition: 'From' delegate is not bound."));
+		return;
+	}
+	StartValue = From.Execute(this);
+
+	Super::HandleOnStartTransition();
+}
+
+void UQuickVectorTween::HandleOnCompleteTransition(bool bSnapToEnd)
+{
+	Super::HandleOnCompleteTransition();
 
 	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
 	{
 		if (Setter.IsBound())
 		{
-			Setter.Execute(StartValue.GetValue(), this);
+			Setter.Execute(StartValue.Get(FVector::ZeroVector), this);
 		}
-		return Super::Complete(instigator, false);
+		CurrentValue = StartValue.Get(FVector::ZeroVector);
+		return;
 	}
 
 	if (GetIsReversed())
@@ -79,15 +55,14 @@ void UQuickVectorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 
 	if (!To.IsBound())
 	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::Complete: 'To' delegate is not bound, unable to interpolate."));
-		return Super::Complete(instigator, bSnapToEnd);
+		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::HandleOnCompleteTransition: 'To' delegate is not bound, unable to interpolate."));
+		return;
 	}
 
-	FVector value = bSnapToEnd ? To.Execute(this) : StartValue.GetValue();
+	const FVector value = bSnapToEnd ? To.Execute(this) : StartValue.Get(FVector::ZeroVector);
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);
 	}
 	CurrentValue = value;
-	return Super::Complete(instigator, bSnapToEnd);
 }

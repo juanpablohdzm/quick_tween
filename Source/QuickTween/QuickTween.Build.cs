@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright 2025 Juan Pablo Hernandez Mosti. All Rights Reserved.
 
 using System.IO;
 using UnrealBuildTool;

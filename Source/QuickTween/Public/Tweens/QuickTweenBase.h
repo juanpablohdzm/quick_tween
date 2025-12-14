@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CommonValues.h"
 #include "QuickTweenable.h"
 #include "../Utils/EaseType.h"
 #include "../Utils/LoopType.h"
@@ -65,8 +66,6 @@ public:
 
 	virtual void Pause(UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Stop(UQuickTweenable* instigator = nullptr) override;
-
 	virtual void Reverse(UQuickTweenable* instigator = nullptr) override;
 
 	virtual void Restart(UQuickTweenable* instigator = nullptr) override;
@@ -77,20 +76,12 @@ public:
 
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
 
-	virtual void SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator = nullptr) override;
-private:
-
-	void Update_Restart(float deltaTime, UQuickTweenable* instigator);
-
-
-	void Update_PingPong(float deltaTime, UQuickTweenable* instigator);
-
 #pragma endregion
 
 #pragma region Tween State Queries
 public:
 
-	virtual bool GetIsPendingKill() const override { return bIsPendingKill; }
+	[[nodiscard]] virtual bool GetIsPendingKill() const override { return TweenState == EQuickTweenState::Kill; }
 
 	[[nodiscard]] virtual float GetDuration() const override { return Duration;}
 
@@ -98,11 +89,9 @@ public:
 
 	[[nodiscard]] virtual float GetTimeScale() const override { return TimeScale; }
 
-	[[nodiscard]] virtual bool GetIsPlaying() const override { return bIsPlaying; }
+	[[nodiscard]] virtual bool GetIsPlaying() const override { return TweenState == EQuickTweenState::Play; }
 
-	[[nodiscard]] virtual bool GetIsCompleted() const override { return bIsCompleted; }
-
-	[[nodiscard]] virtual bool GetIsBackwards() const override { return bIsBackwards; }
+	[[nodiscard]] virtual bool GetIsCompleted() const override { return TweenState == EQuickTweenState::Complete; }
 
 	[[nodiscard]] virtual bool GetIsReversed() const override { return bIsReversed; }
 
@@ -219,26 +208,38 @@ public:
 	/** Event triggered when the tween loops. */
 	FNativeDelegateTween OnLoop;
 
+protected:
+
+	/** Apply the current alpha value to the tweened property. */
+	virtual void ApplyAlphaValue(float alpha);
+
+	virtual void HandleOnIdleTransition();
+
+	virtual void HandleOnStartTransition();
+
+	virtual void HandleOnPlayTransition();
+
+	virtual void HandleOnPauseTransition();
+
+	virtual void HandleOnCompleteTransition(bool bSnapToEnd = true);
+
+	virtual void HandleOnKillTransition();
+private:
+
+	template <typename ...Args>
+	void RequestStateTransition(EQuickTweenState newState, Args&&... args);
+
+	/** Current state of the tween. */
+	EQuickTweenState TweenState = EQuickTweenState::Idle;
+
 	/** Time elapsed since the tween started. */
 	float ElapsedTime = 0.0f;
 
-private:
 	/** Duration of the tween in seconds. */
 	float Duration = 0.0f;
+
 	/** Time scale multiplier. */
 	float TimeScale = 1.0f;
-
-	/** Whether the tween has started. */
-	bool bHasStarted = false;
-
-	/** Whether the tween is currently playing. */
-	bool bIsPlaying = false;
-
-	/** Whether the tween is completed. */
-	bool bIsCompleted = false;
-
-	/** Whether the tween is playing backwards. */
-	bool bIsBackwards = false;
 
 	/** Internal flag to track if the tween is reversed. */
 	bool bIsReversed = false;
@@ -250,8 +251,8 @@ private:
 	UPROPERTY(Transient)
 	UCurveFloat* EaseCurve = nullptr;
 
-	/** Current loop index (1-based). */
-	int32 CurrentLoop = 1;
+	/** Current loop index (0-based). */
+	int32 CurrentLoop = 0;
 
 	/** Number of loops (-1 = infinite). */
 	int32 Loops = -1;
@@ -260,14 +261,11 @@ private:
 	ELoopType LoopType = ELoopType::Restart;
 
 	/** Optional tag for identifying the tween. */
-	FString TweenTag;
+	FString TweenTag = FString();
 
 	/** If this tween has an owner */
 	UPROPERTY()
 	UQuickTweenable* Owner = nullptr;
-
-	/** If this tween should be eliminated from the manager. */
-	bool bIsPendingKill = false;
 
 	/** If the tween should auto-kill upon completion. */
 	bool bAutoKill = true;
@@ -278,3 +276,49 @@ private:
 	UPROPERTY()
 	const UObject* WorldContextObject = nullptr;
 };
+
+template <typename ... Args>
+void UQuickTweenBase::RequestStateTransition(EQuickTweenState newState, Args&&... args)
+{
+	if (newState == TweenState) return;
+
+	static TMap<EQuickTweenState, TArray<EQuickTweenState>> validTransitions =
+	{
+		{EQuickTweenState::Idle, {EQuickTweenState::Start, EQuickTweenState::Kill}},
+		{EQuickTweenState::Start,   {EQuickTweenState::Play, EQuickTweenState::Kill}},
+		{EQuickTweenState::Play,    {EQuickTweenState::Pause, EQuickTweenState::Complete, EQuickTweenState::Kill, EQuickTweenState::Idle}},
+		{EQuickTweenState::Pause,     {EQuickTweenState::Play, EQuickTweenState::Complete, EQuickTweenState::Kill, EQuickTweenState::Idle}},
+		{EQuickTweenState::Complete,  {EQuickTweenState::Idle, EQuickTweenState::Kill}},
+		{EQuickTweenState::Kill,     {}},
+	};
+
+	if (validTransitions[TweenState].Contains(newState))
+	{
+		TweenState = newState;
+		switch (newState)
+		{
+		case EQuickTweenState::Idle:
+			HandleOnIdleTransition();
+			break;
+		case EQuickTweenState::Start:
+			HandleOnStartTransition();
+			break;
+		case EQuickTweenState::Play:
+			HandleOnPlayTransition();
+			break;
+		case EQuickTweenState::Pause:
+			HandleOnPauseTransition();
+			break;
+		case EQuickTweenState::Complete:
+			HandleOnCompleteTransition(Forward<Args>(args)...);
+			break;
+		case EQuickTweenState::Kill:
+			HandleOnKillTransition();
+			break;
+		}
+	}
+	else
+	{
+		UE_LOG(LogQuickTweenBase, Warning, TEXT("Invalid state transition from %s to %s"),  *UEnum::GetValueAsString(TweenState), *UEnum::GetValueAsString(newState));
+	}
+}

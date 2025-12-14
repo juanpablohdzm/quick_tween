@@ -119,10 +119,6 @@ public:
 		return tween;
 	}
 
-	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
-
-	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
-
 	/** Get the current interpolated float value. */
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category= "Tween|Info")
 	[[nodiscard]] float GetCurrentValue() const { return CurrentValue; }
@@ -130,6 +126,14 @@ public:
 	/** Get the starting float value. Set after the first tick */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category= "Tween|Info")
 	[[nodiscard]] float GetStartValue() const { return StartValue.Get(CurrentValue); }
+
+protected:
+	virtual void ApplyAlphaValue(float alpha) override;
+
+	virtual void HandleOnStartTransition() override;
+
+	virtual void HandleOnCompleteTransition(bool bSnapToEnd = true) override;
+
 private:
 	/** Starting function returning float. */
 	FNativeFloatGetter From;

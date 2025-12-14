@@ -57,113 +57,9 @@ void UQuickTweenBase::SetUp(
 	}
 }
 
-void UQuickTweenBase::Update_Restart(float deltaTime, UQuickTweenable* instigator)
-{
-	ElapsedTime = !bIsReversed ?  ElapsedTime + deltaTime * GetTimeScale() : ElapsedTime - deltaTime * GetTimeScale();
-
-
-	bool shouldComplete = false;
-	if (!bIsReversed)
-	{
-		int32 loop = (ElapsedTime / GetDuration()) + 1;
-		if (CurrentLoop != loop)
-		{
-			CurrentLoop = loop;
-			if (OnLoop.IsBound())
-			{
-				OnLoop.Broadcast(this);
-			}
-		}
-		shouldComplete = CurrentLoop > Loops;
-	}
-	else
-	{
-		if (ElapsedTime < 0.0f)
-		{
-			shouldComplete = true;
-		}
-		else
-		{
-			const float mod = FMath::Fmod(ElapsedTime, GetDuration());
-			const int32 loop = ElapsedTime / GetDuration();
-			if (CurrentLoop != loop + 1)
-			{
-				CurrentLoop = loop + 1;
-				if (OnLoop.IsBound())
-				{
-					OnLoop.Broadcast(this);
-				}
-			}
-			shouldComplete = loop <= 0 && FMath::IsNearlyZero(mod);
-		}
-	}
-
-	if (Loops != INFINITE_LOOPS && shouldComplete)
-	{
-		Complete(instigator);
-	}
-}
-
-void UQuickTweenBase::Update_PingPong(float deltaTime, UQuickTweenable* instigator)
-{
-	/*
-	 * !backwards & !reversed = to end
-	 *  backwards & reversed = to end
-	 * !backwards & reversed = to beginning
-	 * !backwards & reversed = to beginning
-	 *
-	 * */
-	const bool isGoingForward = bIsBackwards == bIsReversed;
-
-	bool shouldCompleteLoop = false;
-	if (isGoingForward)
-	{
-		ElapsedTime += deltaTime * GetTimeScale();
-		if (ElapsedTime >= GetDuration())
-		{
-			shouldCompleteLoop = true;
-			ElapsedTime = GetDuration() - (ElapsedTime - GetDuration());
-		}
-	}
-	else
-	{
-		ElapsedTime -= deltaTime * GetTimeScale();
-		if (ElapsedTime <= 0.0f)
-		{
-			shouldCompleteLoop = true;
-			ElapsedTime = -ElapsedTime;
-		}
-	}
-
-	if (shouldCompleteLoop)
-	{
-		if (Loops != INFINITE_LOOPS && (!bIsReversed && CurrentLoop >= Loops || bIsReversed && (CurrentLoop - 1) <= 0))
-		{
-			Complete(instigator);
-			return;
-		}
-
-		bIsBackwards = !bIsBackwards;
-		CurrentLoop = !bIsReversed ? CurrentLoop + 1 : CurrentLoop - 1;
-		if (OnLoop.IsBound())
-		{
-			OnLoop.Broadcast(this);
-		}
-	}
-}
-
 void UQuickTweenBase::Update(float deltaTime, UQuickTweenable* instigator)
 {
-	if (!InstigatorIsOwner(instigator) || GetIsCompleted() || !GetIsPlaying()) return;
-
-	if (!bHasStarted)
-	{
-		bHasStarted = true;
-		if (OnStart.IsBound())
-		{
-			OnStart.Broadcast(this);
-		}
-	}
+	if (!InstigatorIsOwner(instigator) || !GetIsPlaying()) return;
 
 	if (FMath::IsNearlyZero(GetDuration()))
 	{
@@ -171,16 +67,64 @@ void UQuickTweenBase::Update(float deltaTime, UQuickTweenable* instigator)
 		return;
 	}
 
-	switch (LoopType)
+	ElapsedTime += (bIsReversed ? -1.f : 1.f) * deltaTime * GetTimeScale();
+
+	const int32 loop  = FMath::FloorToInt(ElapsedTime / Duration);
+
+	// ... in case deltaTime is large enough to cross multiple loops in a single update
+	const int32 numLoopsCrossed = FMath::Abs(loop - CurrentLoop);
+	if (numLoopsCrossed > 0)
 	{
-	case ELoopType::Restart:
-		Update_Restart(deltaTime, instigator);
-		break;
-	case ELoopType::PingPong:
-		Update_PingPong(deltaTime, instigator);
-		break;
-	default:
-		ensureAlwaysMsgf(false, TEXT("LoopType %s is not implemented in UQuickTweenBase::Update"), *UEnum::GetValueAsString(LoopType));
+		CurrentLoop = loop;
+
+		if (OnLoop.IsBound())
+		{
+			for (int32 i = 0; i < numLoopsCrossed; ++i)
+			{
+				OnLoop.Broadcast(this);
+			}
+		}
+	}
+
+	// ... check for completion
+	if (Loops != INFINITE_LOOPS)
+	{
+		if (!bIsReversed)
+		{
+			if (CurrentLoop >= Loops)
+			{
+				Complete(instigator);
+				return;
+			}
+		}
+		else
+		{
+			if (ElapsedTime < 0.0f)
+			{
+				Complete(instigator);
+				return;
+			}
+		}
+	}
+
+	// ... value [0 .. Duration)
+	float localTime = FMath::Fmod(ElapsedTime, Duration);
+	if (localTime < 0.f)
+	{
+		localTime += Duration;
+	}
+
+	float alphaValue = localTime / Duration;
+	if (LoopType == ELoopType::PingPong && (CurrentLoop & 1) != 0) // ... odd loop, backward traversal
+	{
+		alphaValue = 1.f - alphaValue;
+	}
+
+	ApplyAlphaValue(alphaValue);
+
+	if (OnUpdate.IsBound())
+	{
+		OnUpdate.Broadcast(this);
 	}
 }
 
@@ -234,83 +178,38 @@ void UQuickTweenBase::RemoveAllOnLoopEvent(const UObject* object)
 	OnLoop.RemoveAll(object);
 }
 
-void UQuickTweenBase::SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator)
+void UQuickTweenBase::ApplyAlphaValue(float alpha)
 {
-	if (!InstigatorIsOwner(instigator)) return;
+	ensureAlwaysMsgf(false, TEXT("UQuickTweenBase::ApplyAlphaValue: This method should be overridden in derived classes."));
+}
 
-	bAutoKill = bShouldAutoKill;
-	if (GetIsCompleted())
+void UQuickTweenBase::HandleOnIdleTransition()
+{
+
+}
+
+void UQuickTweenBase::HandleOnStartTransition()
+{
+	ElapsedTime = bIsReversed ? GetDuration() * GetLoops() : 0.0f;
+	CurrentLoop = bIsReversed ? GetLoops() - 1 : 0;
+	if (OnStart.IsBound())
 	{
-		bIsPendingKill = bAutoKill;
+		OnStart.Broadcast(this);
 	}
+	RequestStateTransition(EQuickTweenState::Play);
 }
 
-void UQuickTweenBase::Play(UQuickTweenable* instigator)
+void UQuickTweenBase::HandleOnPlayTransition()
 {
-	if (!InstigatorIsOwner(instigator)) return;
-
-	bIsPlaying = true;
-	return;
 }
 
-void UQuickTweenBase::Pause(UQuickTweenable* instigator)
+void UQuickTweenBase::HandleOnPauseTransition()
 {
-	if (!InstigatorIsOwner(instigator)) return;
-
-	bIsPlaying = false;
-	return;
 }
 
-void UQuickTweenBase::Stop(UQuickTweenable* instigator)
+void UQuickTweenBase::HandleOnCompleteTransition(bool bSnapToEnd)
 {
-
-	if (!InstigatorIsOwner(instigator)) return;
-
-	if (!bIsPlaying && !bIsCompleted)
-	{
-		return;
-	}
-
-	bIsPlaying   = false;
-	bIsCompleted = true;
-	CurrentLoop  = 1;
-	Restart(instigator);
-
-	return;
-}
-
-void UQuickTweenBase::Reverse(UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-	bIsReversed = !bIsReversed;
-
-	return;
-}
-
-void UQuickTweenBase::Restart(UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-	bIsCompleted = false;
-	bIsPlaying   = true;
-	bHasStarted = false;
-
-	float duration = GetLoopType() == ELoopType::PingPong ? GetDuration() : GetDuration() * GetLoops();
-	ElapsedTime = bIsReversed ? duration : 0.0f;
-	CurrentLoop = bIsReversed ? GetLoops() : 1;
-	return;
-}
-
-void UQuickTweenBase::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-	if (bIsCompleted) return;
-
-	bIsPlaying   = false;
-	bIsCompleted = true;
-
-	ElapsedTime = Duration;
+	ElapsedTime = bIsReversed ? 0.0f : GetDuration() * GetLoops();
 
 	if (OnComplete.IsBound())
 	{
@@ -319,22 +218,63 @@ void UQuickTweenBase::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 
 	if (bAutoKill)
 	{
-		Kill(nullptr);
+		RequestStateTransition(EQuickTweenState::Kill);
 	}
+}
 
-	return;
+void UQuickTweenBase::HandleOnKillTransition()
+{
+	if (OnKilled.IsBound())
+	{
+		OnKilled.Broadcast(this);
+	}
+}
+
+void UQuickTweenBase::Play(UQuickTweenable* instigator)
+{
+	if (!InstigatorIsOwner(instigator)) return;
+
+	if (TweenState == EQuickTweenState::Idle)
+	{
+		RequestStateTransition(EQuickTweenState::Start);
+	}
+	else
+	{
+		RequestStateTransition(EQuickTweenState::Play);
+	}
+}
+
+void UQuickTweenBase::Pause(UQuickTweenable* instigator)
+{
+	if (!InstigatorIsOwner(instigator)) return;
+
+	RequestStateTransition(EQuickTweenState::Pause);
+}
+
+void UQuickTweenBase::Reverse(UQuickTweenable* instigator)
+{
+	if (!InstigatorIsOwner(instigator)) return;
+
+	bIsReversed = !bIsReversed;
+}
+
+void UQuickTweenBase::Restart(UQuickTweenable* instigator)
+{
+	if (!InstigatorIsOwner(instigator)) return;
+
+	RequestStateTransition(EQuickTweenState::Idle);
+}
+
+void UQuickTweenBase::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
+{
+	if (!InstigatorIsOwner(instigator)) return;
+
+	RequestStateTransition(EQuickTweenState::Complete);
 }
 
 void UQuickTweenBase::Kill(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
-	if (bIsPendingKill) return;
 
-	bIsPendingKill = true;
-	bIsPlaying     = false;
-
-	if (OnKilled.IsBound())
-	{
-		OnKilled.Broadcast(this);
-	}
+	RequestStateTransition(EQuickTweenState::Kill);
 }
