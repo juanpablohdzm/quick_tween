@@ -285,6 +285,7 @@ void UQuickTweenBase::RequestStateTransition(EQuickTweenState newState, Args&&..
 	static TMap<EQuickTweenState, TArray<EQuickTweenState>> validTransitions =
 	{
 		{EQuickTweenState::Idle, {EQuickTweenState::Start, EQuickTweenState::Kill}},
+		{EQuickTweenState::Start,   {EQuickTweenState::Play, EQuickTweenState::Kill}},
 		{EQuickTweenState::Play,    {EQuickTweenState::Pause, EQuickTweenState::Complete, EQuickTweenState::Kill, EQuickTweenState::Idle}},
 		{EQuickTweenState::Pause,     {EQuickTweenState::Play, EQuickTweenState::Complete, EQuickTweenState::Kill, EQuickTweenState::Idle}},
 		{EQuickTweenState::Complete,  {EQuickTweenState::Idle, EQuickTweenState::Kill}},
