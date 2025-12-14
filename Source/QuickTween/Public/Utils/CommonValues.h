@@ -30,12 +30,12 @@ enum class EQuickTweenSpace : uint8
 UENUM(BlueprintType)
 enum class EQuickTweenState : uint8
 {
-	Idle = 1 << 0,
-	Start = 1 << 1,
-	Play = 1 << 2,
-	Pause = 1 << 3,
-	Complete = 1 << 4,
-	Kill = 1 << 5,
+	Idle = 0,
+	Start = 1 << 0,
+	Play = 1 << 1,
+	Pause = 1 << 2,
+	Complete = 1 << 3,
+	Kill = 1 << 4,
 };
 
 

@@ -264,7 +264,6 @@ void UQuickTweenSequence::Kill(UQuickTweenable* instigator)
 	bIsPlaying = false;
 	bIsCompleted = true;
 
-	Stop(instigator);
 	CurrentTweenGroupIndex = 0;
 
 	for (FQuickTweenSequenceGroup& group : TweenGroups)
@@ -490,17 +489,6 @@ void UQuickTweenSequence::Update_PingPong(float deltaTime, UQuickTweenable* inst
 			bIsBackwards = !bIsBackwards;
 			CurrentTweenGroupIndex = bIsBackwards ? TweenGroups.Num() - 1 : 0;
 		}
-	}
-}
-
-void UQuickTweenSequence::SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-	bAutoKill = bShouldAutoKill;
-	if (GetIsCompleted())
-	{
-		bIsPendingKill = bAutoKill;
 	}
 }
 

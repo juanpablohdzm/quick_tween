@@ -1381,18 +1381,6 @@ public:
 	static void QuickTweenCompleteAllTweens(const UObject* worldContextObject);
 
 	/**
-	 * Stop all active QuickTweens within the specified world context.
-	 *
-	 * This function finds the tween manager associated with \p worldContextObject
-	 * and stops all currently active tweens. Stopped tweens are paused and reset
-	 * to their initial state (as if they were never played).
-	 *
-	 * @param worldContextObject Context object used to locate the world that contains the tweens.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Stop | All", WorldContext = "worldContextObject"), Category = "QuickTween")
-	static void QuickTweenStopAllTweens(const UObject* worldContextObject);
-
-	/**
 	 * Execute a specified action on all active QuickTweens within the given world context.
 	 *
 	 * This function locates the tween manager for the provided \p worldContextObject

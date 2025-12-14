@@ -37,11 +37,6 @@ void UQuickTweenable::Pause(UQuickTweenable* instigator)
 	ensureAlwaysMsgf(false, TEXT("Pause not implemented in IQuickTweenable"));
 }
 
-void UQuickTweenable::Stop(UQuickTweenable* instigator)
-{
-	ensureAlwaysMsgf(false, TEXT("Stop not implemented in IQuickTweenable"));
-}
-
 void UQuickTweenable::Reverse(UQuickTweenable* instigator)
 {
 	ensureAlwaysMsgf(false, TEXT("Reverse not implemented in IQuickTweenable"));
@@ -61,12 +56,6 @@ void UQuickTweenable::Kill(UQuickTweenable* instigator)
 {
 	ensureAlwaysMsgf(false, TEXT("Kill not implemented in IQuickTweenable"));
 }
-
-void UQuickTweenable::SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator)
-{
-	ensureAlwaysMsgf(false, TEXT("SetAutoKill not implemented in IQuickTweenable"));
-}
-
 float UQuickTweenable::GetDuration() const
 {
 	ensureAlwaysMsgf(false, TEXT("GetDuration not implemented in IQuickTweenable"));
@@ -83,12 +72,6 @@ float UQuickTweenable::GetTimeScale() const
 {
 	ensureAlwaysMsgf(false, TEXT("GetTimeScale not implemented in IQuickTweenable"));
 	return 0.0f;
-}
-
-bool UQuickTweenable::GetIsBackwards() const
-{
-	ensureAlwaysMsgf(false, TEXT("GetIsBackwards not implemented in IQuickTweenable"));
-	return false;
 }
 
 bool UQuickTweenable::GetIsReversed() const

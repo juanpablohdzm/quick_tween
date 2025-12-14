@@ -157,7 +157,7 @@ public:
 
 	[[nodiscard]] virtual float GetTimeScale() const override { return 1.0f; }
 
-	[[nodiscard]] virtual bool GetIsBackwards() const override { return bIsBackwards; }
+	[[nodiscard]] virtual bool GetIsBackwards() const { return bIsBackwards; }
 
 	[[nodiscard]] virtual bool GetIsReversed() const override { return bIsReversed; }
 
