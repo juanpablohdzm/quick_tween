@@ -5,78 +5,53 @@
 #include "Curves/CurveFloat.h"
 #include "Utils/EaseFunctions.h"
 
-
-void UQuickColorTween::Update(float deltaTime, UQuickTweenable* instigator)
+void UQuickColorTween::ApplyAlphaValue(float alpha)
 {
-	if (!InstigatorIsOwner(instigator)) return;
-
-	if (!StartValue.IsSet())
-	{
-		if (!From.IsBound())
-		{
-			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickColorTween::Update: 'From' delegate is not bound."));
-			return;
-		}
-		StartValue = From.Execute(this);
-	}
-
-	UQuickTweenBase::Update(deltaTime, instigator);
-
-	if (GetIsCompleted() || !GetIsPlaying()) return;
-
-	float currentLoopElapsedTime;
-
-	const float mod = FMath::Fmod(ElapsedTime, GetDuration());
-	if (FMath::IsNearlyZero(mod))
-	{
-		currentLoopElapsedTime = FMath::IsNearlyZero(ElapsedTime) ? 0.0f : GetDuration();
-	}
-	else
-	{
-		currentLoopElapsedTime = mod;
-	}
-	float progress = FMath::Abs(currentLoopElapsedTime / GetDuration());
-	if (UCurveFloat* curve = GetEaseCurve())
-	{
-		progress = curve->GetFloatValue(progress);
-	}
-
 	if (!To.IsBound())
 	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickColorTween::Update: 'To' delegate is not bound, unable to interpolate."));
+		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickColorTween::ApplyAlphaValue: 'To' delegate is not bound, unable to interpolate."));
 		return;
 	}
 
-	const FColor startValue = StartValue.GetValue();
+	const FColor startValue = StartValue.Get(FColor::White);
 	const FColor endValue = To.Execute(this);
 	FColor value;
-	value.R = FEaseFunctions<uint8>::Ease(startValue.R, endValue.R, progress, GetEaseType());
-	value.G = FEaseFunctions<uint8>::Ease(startValue.G, endValue.G, progress, GetEaseType());
-	value.B = FEaseFunctions<uint8>::Ease(startValue.B, endValue.B, progress, GetEaseType());
-	value.A = FEaseFunctions<uint8>::Ease(startValue.A, endValue.A, progress, GetEaseType());
+	value.R = FEaseFunctions<uint8>::Ease(startValue.R, endValue.R, alpha, GetEaseType());
+	value.G = FEaseFunctions<uint8>::Ease(startValue.G, endValue.G, alpha, GetEaseType());
+	value.B = FEaseFunctions<uint8>::Ease(startValue.B, endValue.B, alpha, GetEaseType());
+	value.A = FEaseFunctions<uint8>::Ease(startValue.A, endValue.A, alpha, GetEaseType());
 
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);
 	}
 	CurrentValue = value;
-	if (OnUpdate.IsBound())
-	{
-		OnUpdate.Broadcast(this);
-	}
 }
 
-void UQuickColorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
+void UQuickColorTween::HandleOnStartTransition()
 {
-	if (!InstigatorIsOwner(instigator)) return;
+	if (!From.IsBound())
+	{
+		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickColorTween::HandleOnStartTransition: 'From' delegate is not bound."));
+		return;
+	}
+	StartValue = From.Execute(this);
+
+	Super::HandleOnStartTransition();
+}
+
+void UQuickColorTween::HandleOnCompleteTransition(bool bSnapToEnd)
+{
+	Super::HandleOnCompleteTransition(bSnapToEnd);
 
 	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
 	{
 		if (Setter.IsBound())
 		{
-			Setter.Execute(StartValue.GetValue(), this);
+			Setter.Execute(StartValue.Get(FColor::White), this);
 		}
-		return Super::Complete(instigator, false);
+		CurrentValue = StartValue.Get(FColor::White);
+		return;
 	}
 
 	if (GetIsReversed())
@@ -86,15 +61,14 @@ void UQuickColorTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 
 	if (!To.IsBound())
 	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickColorTween::Complete: 'To' delegate is not bound, unable to complete tween."));
-		return Super::Complete(instigator, bSnapToEnd);
+		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickColorTween::HandleOnCompleteTransition: 'To' delegate is not bound, unable to complete tween."));
+		return;
 	}
 
-	FColor value = bSnapToEnd ? To.Execute(this) : StartValue.GetValue();
+	const FColor value = bSnapToEnd ? To.Execute(this) : StartValue.Get(FColor::White);
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);
 	}
 	CurrentValue = value;
-	return Super::Complete(instigator, bSnapToEnd);
 }

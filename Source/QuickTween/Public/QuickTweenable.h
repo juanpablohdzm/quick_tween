@@ -46,6 +46,7 @@ public:
 	virtual void Reverse(UQuickTweenable* instigator = nullptr);
 
 	/** Restart the tween from its beginning (in case it is reversed, it will restart at the end).
+	 *  Must be played again after restarting.
 	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
@@ -126,8 +127,8 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual FString GetTweenTag() const;
 
-	/** Get the current loop index (1-based) the tween is on.
-	 * @return 1 for the first loop, 2 for the second, etc.
+	/** Get the current loop index (0-based) the tween is on.
+	 * @return 0 for the first loop, 1 for the second, etc.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Info")
 	[[nodiscard]] virtual int32 GetCurrentLoop() const;

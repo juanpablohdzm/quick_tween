@@ -120,12 +120,6 @@ public:
 		return tween;
 	}
 
-
-public:
-	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
-
-	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
-
 	/** Get the current interpolated FColor value. */
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] FColor GetCurrentValue() const { return CurrentValue; }
@@ -133,6 +127,14 @@ public:
 	/** Get the starting FColor value. Set after the first tick */
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] FColor GetStartValue() const { return StartValue.Get(FColor::Black); }
+
+protected:
+	virtual void ApplyAlphaValue(float alpha) override;
+
+	virtual void HandleOnStartTransition() override;
+
+	virtual void HandleOnCompleteTransition(bool bSnapToEnd = true) override;
+
 private:
 	/** Starting function returning FColor. */
 	FNativeColorGetter From;

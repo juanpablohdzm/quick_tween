@@ -81,7 +81,7 @@ public:
 #pragma region Tween State Queries
 public:
 
-	virtual bool GetIsPendingKill() const override { return bIsPendingKill; }
+	[[nodiscard]] virtual bool GetIsPendingKill() const override { return TweenState == EQuickTweenState::Kill; }
 
 	[[nodiscard]] virtual float GetDuration() const override { return Duration;}
 
@@ -212,12 +212,25 @@ protected:
 
 	/** Apply the current alpha value to the tweened property. */
 	virtual void ApplyAlphaValue(float alpha);
+
+	virtual void HandleOnIdleTransition();
+
+	virtual void HandleOnStartTransition();
+
+	virtual void HandleOnPlayTransition();
+
+	virtual void HandleOnPauseTransition();
+
+	virtual void HandleOnCompleteTransition(bool bSnapToEnd = true);
+
+	virtual void HandleOnKillTransition();
 private:
 
-	void RequestStateTransition(EQuickTweenState newState;
+	template <typename ...Args>
+	void RequestStateTransition(EQuickTweenState newState, Args&&... args);
 
 	/** Current state of the tween. */
-	EQuickTweenState TweenState;
+	EQuickTweenState TweenState = EQuickTweenState::Idle;
 
 	/** Time elapsed since the tween started. */
 	float ElapsedTime = 0.0f;
@@ -238,8 +251,8 @@ private:
 	UPROPERTY(Transient)
 	UCurveFloat* EaseCurve = nullptr;
 
-	/** Current loop index (1-based). */
-	int32 CurrentLoop = 1;
+	/** Current loop index (0-based). */
+	int32 CurrentLoop = 0;
 
 	/** Number of loops (-1 = infinite). */
 	int32 Loops = -1;
@@ -248,14 +261,11 @@ private:
 	ELoopType LoopType = ELoopType::Restart;
 
 	/** Optional tag for identifying the tween. */
-	FString TweenTag;
+	FString TweenTag = FString();
 
 	/** If this tween has an owner */
 	UPROPERTY()
 	UQuickTweenable* Owner = nullptr;
-
-	/** If this tween should be eliminated from the manager. */
-	bool bIsPendingKill = false;
 
 	/** If the tween should auto-kill upon completion. */
 	bool bAutoKill = true;
@@ -266,3 +276,48 @@ private:
 	UPROPERTY()
 	const UObject* WorldContextObject = nullptr;
 };
+
+template <typename ... Args>
+void UQuickTweenBase::RequestStateTransition(EQuickTweenState newState, Args&&... args)
+{
+	if (newState == TweenState) return;
+
+	static TMap<EQuickTweenState, TArray<EQuickTweenState>> validTransitions =
+	{
+		{EQuickTweenState::Idle, {EQuickTweenState::Start, EQuickTweenState::Kill}},
+		{EQuickTweenState::Play,    {EQuickTweenState::Pause, EQuickTweenState::Complete, EQuickTweenState::Kill, EQuickTweenState::Idle}},
+		{EQuickTweenState::Pause,     {EQuickTweenState::Play, EQuickTweenState::Complete, EQuickTweenState::Kill, EQuickTweenState::Idle}},
+		{EQuickTweenState::Complete,  {EQuickTweenState::Idle, EQuickTweenState::Kill}},
+		{EQuickTweenState::Kill,     {}},
+	};
+
+	if (validTransitions[TweenState].Contains(newState))
+	{
+		TweenState = newState;
+		switch (newState)
+		{
+		case EQuickTweenState::Idle:
+			HandleOnIdleTransition();
+			break;
+		case EQuickTweenState::Start:
+			HandleOnStartTransition();
+			break;
+		case EQuickTweenState::Play:
+			HandleOnPlayTransition();
+			break;
+		case EQuickTweenState::Pause:
+			HandleOnPauseTransition();
+			break;
+		case EQuickTweenState::Complete:
+			HandleOnCompleteTransition(Forward<Args>(args)...);
+			break;
+		case EQuickTweenState::Kill:
+			HandleOnKillTransition();
+			break;
+		}
+	}
+	else
+	{
+		UE_LOG(LogQuickTweenBase, Warning, TEXT("Invalid state transition from %s to %s"),  *UEnum::GetValueAsString(TweenState), *UEnum::GetValueAsString(newState));
+	}
+}
