@@ -38,5 +38,16 @@ enum class EQuickTweenState : uint8
 	Kill = 1 << 4,
 };
 
+// Valid state transitions for QuickTweenState
+static TMap<EQuickTweenState, TArray<EQuickTweenState>> ValidTransitions =
+{
+	{EQuickTweenState::Idle, {EQuickTweenState::Start, EQuickTweenState::Kill}},
+	{EQuickTweenState::Start,   {EQuickTweenState::Play, EQuickTweenState::Kill}},
+	{EQuickTweenState::Play,    {EQuickTweenState::Pause, EQuickTweenState::Complete, EQuickTweenState::Kill, EQuickTweenState::Idle}},
+	{EQuickTweenState::Pause,     {EQuickTweenState::Play, EQuickTweenState::Complete, EQuickTweenState::Kill, EQuickTweenState::Idle}},
+	{EQuickTweenState::Complete,  {EQuickTweenState::Idle, EQuickTweenState::Kill}},
+	{EQuickTweenState::Kill,     {}},
+};
+
 
 #define INFINITE_LOOPS -1

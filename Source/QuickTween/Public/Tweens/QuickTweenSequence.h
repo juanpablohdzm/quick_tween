@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CommonValues.h"
 #include "QuickTweenable.h"
 #include "UObject/Object.h"
 #include "../Utils/LoopType.h"
@@ -10,6 +11,8 @@
 
 class UQuickTweenBase;
 class UQuickTweenSequence;
+
+DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenSequence, Log, All);
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FNativeDelegateTweenSequence, UQuickTweenSequence*);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDynamicDelegateTweenSequence, UQuickTweenSequence*, TweenSequence);
@@ -124,40 +127,16 @@ public:
 
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
 
-private:
-	/**
-	 * Reverses all tweens in the sequence.
-	 * @return Reference to this sequence.
-	 */
-	void Reverse_Tweens();
-
-	/**
-	 * Updates the sequence in Restart loop mode.
-	 * @param deltaTime Time since last update.
-	 * @param instigator
-	 */
-	void Update_Restart(float deltaTime, UQuickTweenable* instigator);
-
-	/**
-	 * Updates the sequence in PingPong loop mode.
-	 * @param deltaTime Time since last update.
-	 * @param instigator
-	 */
-	void Update_PingPong(float deltaTime, UQuickTweenable* instigator);
-public:
-
-	[[nodiscard]] virtual bool GetIsPendingKill() const override { return bIsPendingKill; }
+	[[nodiscard]] virtual bool GetIsPendingKill() const override { return SequenceState == EQuickTweenState::Kill; }
 #pragma endregion
 
 
 #pragma region Sequence State Queries
 public:
 
-	[[nodiscard]] virtual bool GetIsPlaying() const override { return bIsPlaying;}
+	[[nodiscard]] virtual bool GetIsPlaying() const override { return SequenceState == EQuickTweenState::Play;}
 
 	[[nodiscard]] virtual float GetTimeScale() const override { return 1.0f; }
-
-	[[nodiscard]] virtual bool GetIsBackwards() const { return bIsBackwards; }
 
 	[[nodiscard]] virtual bool GetIsReversed() const override { return bIsReversed; }
 
@@ -167,7 +146,7 @@ public:
 
 	[[nodiscard]] virtual bool GetAutoKill() const override { return bAutoKill; }
 
-	[[nodiscard]] virtual bool GetIsCompleted() const override { return bIsCompleted; }
+	[[nodiscard]] virtual bool GetIsCompleted() const override { return SequenceState == EQuickTweenState::Complete; }
 
 	[[nodiscard]] virtual float GetDuration() const override;
 
@@ -293,15 +272,67 @@ public:
 	/** Called when the sequence loops. */
 	FNativeDelegateTweenSequence OnLoop;
 #pragma endregion
-protected:
+
+private:
 	bool InstigatorIsOwner(UQuickTweenable* instigator) const
 	{
 		if (!Owner) return true; // No owner means it's not in a sequence
 		return instigator == Owner;
 	};
-private:
 
+	/**
+	 * Handle operations required when the sequence transitions to the Idle state.
+	 * Typical responsibilities: reset runtime counters, ensure child tweens are stopped,
+	 * and prepare the sequence for a fresh start.
+	 */
+	void HandleOnIdleTransition();
 
+	/**
+	 * Handle operations required when the sequence transitions to the Start state.
+	 * Typical responsibilities: initialize timing, mark sequence as running, and
+	 * invoke start delegates/events.
+	 */
+	void HandleOnStartTransition();
+
+	/**
+	 * Handle operations required when the sequence transitions to the Play state.
+	 * Typical responsibilities: resume tween playback, update playing flags, and
+	 * ensure child tweens continue from their current time.
+	 */
+	void HandleOnPlayTransition();
+
+	/**
+	 * Handle operations required when the sequence transitions to the Pause state.
+	 * Typical responsibilities: pause child tweens, preserve elapsed time, and set
+	 * appropriate flags so playback can be resumed later.
+	 */
+	void HandleOnPauseTransition();
+
+	/**
+	 * Handle operations required when the sequence transitions to the Complete state.
+	 * Typical responsibilities: finalize tween values (optionally snap to end),
+	 * trigger completion delegates/events, and handle looping or auto-kill behavior.
+	 */
+	void HandleOnCompleteTransition();
+
+	/**
+	 * Handle operations required when the sequence transitions to the Kill state.
+	 * Typical responsibilities: stop and cleanup child tweens, release resources,
+	 * and invoke killed delegates/events.
+	 */
+	void HandleOnKillTransition();
+
+	/**
+	 * Request a state transition for the sequence.
+	 * This should perform validation and scheduling of the transition from the current
+	 * SequenceState to the specified newState.
+	 *
+	 * @param newState The desired state to transition into.
+	 */
+	void RequestStateTransition(EQuickTweenState newState);
+
+	/** Current state of the sequence. */
+	EQuickTweenState SequenceState = EQuickTweenState::Idle;
 
 	/** Array of tween groups in the sequence. */
 	UPROPERTY(Transient)
@@ -310,23 +341,8 @@ private:
 	/** Elapsed time since the sequence started. */
 	float ElapsedTime = 0.0f;
 
-	/** Progress of the sequence (0.0 to 1.0). */
-	float Progress = 0.0f;
-
-	/** Whether the sequence is currently playing. */
-	bool bIsPlaying = false;
-
-	/** Whether the sequence has completed. */
-	bool bIsCompleted = false;
-
 	/** Whether the sequence is playing backwards. */
 	bool bIsReversed = false;
-
-	/** Whether the sequence is playing backwards internally. */
-	bool bIsBackwards = false;
-
-	/** Whether the sequence has started. */
-	bool bHasStarted = false;
 
 	/** Current loop index. */
 	int32 CurrentLoop = 1;
@@ -342,9 +358,6 @@ private:
 
 	/** Index of the current tween group. */
 	int32 CurrentTweenGroupIndex = 0;
-
-	/** If the sequence is waiting for remove. */
-	bool bIsPendingKill = false;
 
 	/** If the sequence should be eliminated from the manager when completed. */
 	bool bAutoKill = true;

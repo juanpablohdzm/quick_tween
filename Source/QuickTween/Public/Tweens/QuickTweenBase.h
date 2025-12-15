@@ -210,19 +210,60 @@ public:
 
 protected:
 
-	/** Apply the current alpha value to the tweened property. */
+	/**
+	 * Apply the interpolated alpha value to the tweened property.
+	 * @param alpha Interpolated alpha value (0.0 to 1.0).
+	 */
 	virtual void ApplyAlphaValue(float alpha);
 
+	/**
+	 * Called when the tween transitions to the Idle state.
+	 *
+	 * Implementations should reset transient state and ensure the tween is ready
+	 * to be started again (e.g. reset elapsed time, clear transient flags).
+	 */
 	virtual void HandleOnIdleTransition();
 
+	/**
+	 * Called when the tween transitions to the Start state.
+	 *
+	 * This is invoked once when the tween begins. Implementations should perform
+	 * any initialization required before the first update tick (e.g. set initial
+	 * values, invoke start events).
+	 */
 	virtual void HandleOnStartTransition();
 
+	/**
+	 * Called when the tween transitions to the Play state.
+	 *
+	 * Invoked when the tween moves into the playing state (can be after Start or
+	 * after Resume). Implementations should ensure the tween continues updating.
+	 */
 	virtual void HandleOnPlayTransition();
 
+	/**
+	 * Called when the tween transitions to the Pause state.
+	 *
+	 * Invoked when playback is paused. Implementations should suspend updates and
+	 * preserve state necessary to resume playback later.
+	 */
 	virtual void HandleOnPauseTransition();
 
+	/**
+	 * Called when the tween transitions to the Complete state.
+	 *
+	 * @param bSnapToEnd If true, the tween should immediately apply the final
+	 *                   value/state (snap to end) before running completion logic.
+	 *                   If false, complete without forcing the final value.
+	 */
 	virtual void HandleOnCompleteTransition(bool bSnapToEnd = true);
 
+	/**
+	 * Called when the tween transitions to the Kill state.
+	 *
+	 * Implementations should perform any final cleanup, release resources, and
+	 * ensure no further updates or events are dispatched for this tween.
+	 */
 	virtual void HandleOnKillTransition();
 private:
 
@@ -282,17 +323,7 @@ void UQuickTweenBase::RequestStateTransition(EQuickTweenState newState, Args&&..
 {
 	if (newState == TweenState) return;
 
-	static TMap<EQuickTweenState, TArray<EQuickTweenState>> validTransitions =
-	{
-		{EQuickTweenState::Idle, {EQuickTweenState::Start, EQuickTweenState::Kill}},
-		{EQuickTweenState::Start,   {EQuickTweenState::Play, EQuickTweenState::Kill}},
-		{EQuickTweenState::Play,    {EQuickTweenState::Pause, EQuickTweenState::Complete, EQuickTweenState::Kill, EQuickTweenState::Idle}},
-		{EQuickTweenState::Pause,     {EQuickTweenState::Play, EQuickTweenState::Complete, EQuickTweenState::Kill, EQuickTweenState::Idle}},
-		{EQuickTweenState::Complete,  {EQuickTweenState::Idle, EQuickTweenState::Kill}},
-		{EQuickTweenState::Kill,     {}},
-	};
-
-	if (validTransitions[TweenState].Contains(newState))
+	if (ValidTransitions[TweenState].Contains(newState))
 	{
 		TweenState = newState;
 		switch (newState)
