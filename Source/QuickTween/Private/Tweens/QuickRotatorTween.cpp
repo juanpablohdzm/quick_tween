@@ -14,7 +14,9 @@ void UQuickRotatorTween::ApplyAlphaValue(float alpha)
 	}
 
 	EEasePath path = bShortestPath ? EEasePath::Shortest : EEasePath::Longest;
-	const FRotator value = FEaseFunctions<FRotator>::Ease(StartValue.Get(FRotator::ZeroRotator), To.Execute(this), alpha, GetEaseType(), path);
+	const FRotator value = GetEaseCurve() ?
+	FEaseFunctions<FRotator>::Ease(StartValue.Get(FRotator::ZeroRotator), To.Execute(this), alpha, GetEaseCurve(), path) :
+	FEaseFunctions<FRotator>::Ease(StartValue.Get(FRotator::ZeroRotator), To.Execute(this), alpha, GetEaseType(), path);
 
 	if (Setter.IsBound())
 	{

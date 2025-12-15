@@ -76,6 +76,8 @@ public:
 
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
 
+	virtual void Evaluate(float value, bool bIsReversed, UQuickTweenable* instigator = nullptr) override;
+
 #pragma endregion
 
 #pragma region Tween State Queries

@@ -72,6 +72,11 @@ public:
 	 */
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr);
 
+	/** Evaluate the tween with value.
+	 * @param value .
+	 */
+	virtual void Evaluate(float value, bool bIsReversed, UQuickTweenable* instigator = nullptr);
+
 	/**
 	 * Query whether this tween is pending removal from the manager.
 	 * @return True if the tween is pending kill, false otherwise.

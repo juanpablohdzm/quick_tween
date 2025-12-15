@@ -13,7 +13,9 @@ void UQuickVector2DTween::ApplyAlphaValue(float alpha)
 		return;
 	}
 
-	const FVector2D value = FEaseFunctions<FVector2D>::Ease(StartValue.Get(FVector2D::ZeroVector), To.Execute(this), alpha, GetEaseType());
+	const FVector2D value = GetEaseCurve() ?
+	FEaseFunctions<FVector2D>::Ease(StartValue.Get(FVector2D::ZeroVector), To.Execute(this), alpha, GetEaseCurve()) :
+	FEaseFunctions<FVector2D>::Ease(StartValue.Get(FVector2D::ZeroVector), To.Execute(this), alpha, GetEaseType());
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);

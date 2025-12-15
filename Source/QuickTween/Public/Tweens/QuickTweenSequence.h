@@ -361,6 +361,9 @@ private:
 	/** Whether the sequence is playing backwards. */
 	bool bIsReversed = false;
 
+	/** Current group index. */
+	int32 CurrentGroupIndex = 0;
+
 	/** Current loop index. */
 	int32 CurrentLoop = 1;
 

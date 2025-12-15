@@ -4,6 +4,7 @@
 #include "Tweens/QuickTweenSequence.h"
 
 #include "QuickTweenManager.h"
+#include "Algo/IndexOf.h"
 #include "Tweens/QuickTweenBase.h"
 #include "Utils/CommonValues.h"
 
@@ -235,18 +236,32 @@ void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
 
 	const float sequenceTime = alpha * loopDuration;
 
-	for (const FQuickTweenSequenceGroup& group : TweenGroups)
+	const int32 groupIndex = Algo::IndexOfByPredicate(TweenGroups, [sequenceTime](const FQuickTweenSequenceGroup& group)
 	{
-		if (sequenceTime >= group.StartTime && sequenceTime < group.StartTime + group.Duration)
-		{
-			for (UQuickTweenable* tween : group.Tweens)
-			{
-				const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration(); // ... allow overflow to let the tween handle it
+		return sequenceTime >= group.StartTime && sequenceTime < (group.StartTime + group.Duration);
+	});
 
-				tween->Evaluate(childTime);
-			}
-			break;
+	if (groupIndex == INDEX_NONE)
+	{
+		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Failed to find active tween group in sequence at time %f"), sequenceTime);
+		return;
+	}
+
+	if (CurrentGroupIndex != groupIndex)
+	{
+		CurrentGroupIndex = groupIndex;
+		for (UQuickTweenable* tween : TweenGroups[CurrentGroupIndex].Tweens)
+		{
+			tween->Restart(this);
+			tween->Play(this);
 		}
+	}
+
+	const FQuickTweenSequenceGroup& group = TweenGroups[CurrentGroupIndex];
+	for (UQuickTweenable* tween : group.Tweens)
+	{
+		const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration(); // ... allow overflow to let the tween handle it
+		tween->Evaluate(childTime, bIsReversed, this);
 	}
 
 	OnUpdate.Broadcast(this);

@@ -13,7 +13,9 @@ void UQuickFloatTween::ApplyAlphaValue(float alpha)
 		return;
 	}
 
-	const float value = FEaseFunctions<float>::Ease(StartValue.Get(0.0f), To.Execute(this), alpha, GetEaseType());
+	const float value = GetEaseCurve() ?
+	FEaseFunctions<float>::Ease(StartValue.Get(0.0f), To.Execute(this), alpha, GetEaseCurve()) :
+	FEaseFunctions<float>::Ease(StartValue.Get(0.0f), To.Execute(this), alpha, GetEaseType());
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);

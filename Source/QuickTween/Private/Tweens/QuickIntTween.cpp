@@ -13,7 +13,9 @@ void UQuickIntTween::ApplyAlphaValue(float alpha)
 		return;
 	}
 
-	const int32 value = FEaseFunctions<int32>::Ease(StartValue.Get(0), To.Execute(this), alpha, GetEaseType());
+	const int32 value = GetEaseCurve() ?
+	FEaseFunctions<int32>::Ease(StartValue.Get(0), To.Execute(this), alpha, GetEaseCurve()) :
+	FEaseFunctions<int32>::Ease(StartValue.Get(0), To.Execute(this), alpha, GetEaseType());
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);
