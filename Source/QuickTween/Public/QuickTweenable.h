@@ -79,9 +79,13 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual bool GetIsPendingKill() const;
 
-	/** Get the configured duration of the tween in seconds. */
+	/** Get the configured duration of the loop in seconds. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] virtual float GetDuration() const;
+	[[nodiscard]] virtual float GetLoopDuration() const;
+
+	/** Get the total duration of the whole tween (max value for infinite) */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] virtual float GetTotalDuration() const;
 
 	/** Get the total elapsed time since the tween started (in seconds). */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")

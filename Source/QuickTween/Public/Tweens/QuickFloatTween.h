@@ -67,7 +67,7 @@ public:
 	 * @param from Function to get the FROM value.
 	 * @param to Function to get the TO value.
 	 * @param setter Function to apply the interpolated value.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Multiplier for the tween's speed.
 	 * @param easeType Type of easing to apply.
 	 * @param easeCurve Optional custom curve for easing.

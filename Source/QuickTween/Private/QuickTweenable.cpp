@@ -56,9 +56,15 @@ void UQuickTweenable::Kill(UQuickTweenable* instigator)
 {
 	ensureAlwaysMsgf(false, TEXT("Kill not implemented in IQuickTweenable"));
 }
-float UQuickTweenable::GetDuration() const
+float UQuickTweenable::GetLoopDuration() const
 {
 	ensureAlwaysMsgf(false, TEXT("GetDuration not implemented in IQuickTweenable"));
+	return 0.0f;
+}
+
+float UQuickTweenable::GetTotalDuration() const
+{
+	ensureAlwaysMsgf(false, TEXT("GetTotalDuration not implemented in IQuickTweenable"));
 	return 0.0f;
 }
 

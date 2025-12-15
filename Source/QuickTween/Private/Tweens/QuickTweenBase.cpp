@@ -61,7 +61,7 @@ void UQuickTweenBase::Update(float deltaTime, UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator) || !GetIsPlaying()) return;
 
-	if (FMath::IsNearlyZero(GetDuration()))
+	if (FMath::IsNearlyZero(GetLoopDuration()))
 	{
 		Complete(instigator);
 		return;
@@ -190,7 +190,7 @@ void UQuickTweenBase::HandleOnIdleTransition()
 
 void UQuickTweenBase::HandleOnStartTransition()
 {
-	ElapsedTime = bIsReversed ? GetDuration() * GetLoops() : 0.0f;
+	ElapsedTime = bIsReversed ? GetTotalDuration() : 0.0f;
 	CurrentLoop = bIsReversed ? GetLoops() - 1 : 0;
 	if (OnStart.IsBound())
 	{
@@ -209,7 +209,7 @@ void UQuickTweenBase::HandleOnPauseTransition()
 
 void UQuickTweenBase::HandleOnCompleteTransition(bool bSnapToEnd)
 {
-	ElapsedTime = bIsReversed ? 0.0f : GetDuration() * GetLoops();
+	ElapsedTime = bIsReversed ? 0.0f : GetTotalDuration();
 
 	if (OnComplete.IsBound())
 	{

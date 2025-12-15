@@ -31,7 +31,7 @@ public:
 	/**
 	 * Set up the tween with the specified parameters.
 	 * @param worldContextObject Context object for world access.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Time scale multiplier.
 	 * @param easeType Type of easing to use.
 	 * @param easeCurve Optional custom curve for easing.
@@ -83,7 +83,16 @@ public:
 
 	[[nodiscard]] virtual bool GetIsPendingKill() const override { return TweenState == EQuickTweenState::Kill; }
 
-	[[nodiscard]] virtual float GetDuration() const override { return Duration;}
+	[[nodiscard]] virtual float GetLoopDuration() const override { return Duration;}
+
+	[[nodiscard]] virtual float GetTotalDuration() const override
+	{
+		if (Loops == INFINITE_LOOPS)
+		{
+			return TNumericLimits<float>::Max();
+		}
+		return GetLoopDuration() * GetLoops() / GetTimeScale();
+	}
 
 	[[nodiscard]] virtual float GetElapsedTime() const override { return ElapsedTime; }
 

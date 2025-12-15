@@ -77,6 +77,7 @@ UQuickTweenSequence* UQuickTweenSequence::Join(UQuickTweenable* tween)
 
 	FQuickTweenSequenceGroup& lastGroup = TweenGroups.Last();
 	lastGroup.Tweens.Add(tween);
+	lastGroup.Duration = FMath::Max(lastGroup.Duration, tween->GetTotalDuration());
 	return this;
 }
 
@@ -106,6 +107,17 @@ UQuickTweenSequence* UQuickTweenSequence::Append(UQuickTweenable* tween)
 
 	FQuickTweenSequenceGroup group;
 	group.Tweens.Add(tween);
+	group.Duration = tween->GetTotalDuration();
+	if (TweenGroups.Num() == 0)
+	{
+		group.StartTime = 0.f;
+	}
+	else
+	{
+		const FQuickTweenSequenceGroup& lastGroup = TweenGroups.Last();
+		group.StartTime = lastGroup.StartTime + lastGroup.Duration;
+	}
+
 	TweenGroups.Add(group);
 	return this;
 }
@@ -114,18 +126,13 @@ void UQuickTweenSequence::Play(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 	
-	if (bIsCompleted || bIsPendingKill)
+	if (SequenceState == EQuickTweenState::Idle)
 	{
-		return;
+		RequestStateTransition(EQuickTweenState::Start);
 	}
-
-	bIsPlaying = true;
-	for (auto [tweens] : TweenGroups)
+	else
 	{
-		for (UQuickTweenable* weakTween : tweens)
-		{
-			weakTween->Play(this);
-		}
+		RequestStateTransition(EQuickTweenState::Play);
 	}
 }
 
@@ -133,149 +140,28 @@ void UQuickTweenSequence::Pause(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
-	if (bIsCompleted || bIsPendingKill)
-	{
-		return;
-	}
-
-	bIsPlaying = false;
-	for (auto [tweens] : TweenGroups)
-	{
-		for (UQuickTweenable* weakTween : tweens)
-		{
-			weakTween->Pause(this);
-		}
-	}
+	RequestStateTransition(EQuickTweenState::Pause);
 }
 
 void UQuickTweenSequence::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
-	if (bIsCompleted || bIsPendingKill)
-	{
-		return;
-	}
-
-	bIsPlaying   = false;
-	bIsCompleted = true;
-
-	ElapsedTime = GetDuration() * GetLoops();
-	Progress    = 1.0f;
-	CurrentLoop = Loops;
-
-	if (CurrentTweenGroupIndex >= 0 && CurrentTweenGroupIndex < TweenGroups.Num())
-	{
-		auto completeGroup = [&](TArray<UQuickTweenable*>& tweens, bool toEnd, bool forceUpdate = false)
-		{
-			for (UQuickTweenable* tween : tweens)
-			{
-				if (forceUpdate)
-				{
-					tween->Update(0.0f, this); // force an update to ensure the tween is fully initialized
-				}
-				tween->Complete(this, toEnd);
-			}
-		};
-
-		if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
-		{
-			if (!bIsReversed)
-			{
-				Reverse(instigator);
-			}
-
-			for (int32 groupIdx = CurrentTweenGroupIndex; groupIdx>= 0; --groupIdx)
-			{
-				completeGroup(TweenGroups[groupIdx].Tweens, true);
-			}
-			return;
-		}
-
-		if (!bIsReversed)
-		{
-			for (int32 groupIdx = CurrentTweenGroupIndex; groupIdx < TweenGroups.Num(); ++groupIdx)
-			{
-				completeGroup(TweenGroups[groupIdx].Tweens, bSnapToEnd, true);
-			}
-		}
-		else
-		{
-			for (int32 groupIdx = CurrentTweenGroupIndex; groupIdx>= 0; --groupIdx)
-			{
-				completeGroup(TweenGroups[groupIdx].Tweens, bSnapToEnd);
-			}
-		}
-	}
-
-	CurrentTweenGroupIndex = !bIsReversed ? FMath::Max(TweenGroups.Num() -1, 0) : 0;
-
-	OnComplete.Broadcast(this);
-
-	if (bAutoKill)
-	{
-		Kill(nullptr);
-	}
-
+	RequestStateTransition(EQuickTweenState::Complete, bSnapToEnd);
 }
 
 void UQuickTweenSequence::Restart(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
-	if (bIsPendingKill)
-	{
-		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Cannot restart a sequence that is pending kill."));
-		return;
-	}
-	bIsPlaying   = true;
-	bIsCompleted = false;
-	bIsBackwards = false;
-	bHasStarted = false;
-
-	ElapsedTime = bIsReversed ? GetDuration() * GetLoops() : 0.0f;
-	Progress    = bIsReversed ? 1.0f     : 0.0f;
-
-	CurrentLoop = bIsReversed ? Loops : 1;
-	CurrentTweenGroupIndex = bIsReversed ? TweenGroups.Num() - 1 : 0;
-
-	for (FQuickTweenSequenceGroup& group : TweenGroups)
-	{
-		for (UQuickTweenable* tween : group.Tweens)
-		{
-			if (tween->GetIsReversed() != bIsReversed)
-			{
-				tween->Reverse(this);
-			}
-			tween->Restart(this);
-		}
-	}
+	RequestStateTransition(EQuickTweenState::Idle);
 }
 
 void UQuickTweenSequence::Kill(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
-	if (bIsPendingKill) return;
-
-	bIsPlaying = false;
-	bIsCompleted = true;
-
-	CurrentTweenGroupIndex = 0;
-
-	for (FQuickTweenSequenceGroup& group : TweenGroups)
-	{
-		for (UQuickTweenable* tween : group.Tweens)
-		{
-			tween->Kill(this);
-		}
-	}
-
-	bIsPendingKill = true;
-	if (OnKilled.IsBound())
-	{
-		OnKilled.Broadcast(this);
-	}
+	RequestStateTransition(EQuickTweenState::Kill);
 }
 
 void UQuickTweenSequence::Reverse(UQuickTweenable* instigator)
@@ -283,30 +169,6 @@ void UQuickTweenSequence::Reverse(UQuickTweenable* instigator)
 	if (!InstigatorIsOwner(instigator)) return;
 
 	bIsReversed = !bIsReversed;
-	Reverse_Tweens();
-
-	const auto restartGroup = [&](TArray<UQuickTweenable*>& tweens)
-	{
-		for (UQuickTweenable* weakTween : tweens)
-		{
-			weakTween->Restart(this);
-		}
-	};
-
-	if (bIsReversed)
-	{
-		for (int32 i = 0; i < CurrentTweenGroupIndex; ++i)
-		{
-			restartGroup(TweenGroups[i].Tweens);
-		}
-	}
-	else
-	{
-		for (int32 i = CurrentTweenGroupIndex + 1; i < TweenGroups.Num(); ++i)
-		{
-			restartGroup(TweenGroups[i].Tweens);
-		}
-	}
 }
 
 void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
@@ -314,7 +176,7 @@ void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
 
 	if (!InstigatorIsOwner(instigator) || !GetIsPlaying()) return;
 
-	if (FMath::IsNearlyZero(GetDuration()))
+	if (FMath::IsNearlyZero(GetLoopDuration()))
 	{
 		Complete(instigator);
 		return;
@@ -322,9 +184,9 @@ void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
 
 	ElapsedTime += (bIsReversed ? -1.f : 1.f) * deltaTime;
 
-	const float sequenceDuration = GetDuration();
+	const float loopDuration = GetLoopDuration();
 
-	const int32 loop = FMath::FloorToInt(ElapsedTime / sequenceDuration);
+	const int32 loop = FMath::FloorToInt(ElapsedTime / loopDuration);
 
 	// ... in case deltaTime is large enough to cross multiple loops in a single update
 	if (loop != CurrentLoop)
@@ -359,36 +221,38 @@ void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
 		}
 	}
 
-	float localTime = FMath::Fmod(ElapsedTime, sequenceDuration);
+	float localTime = FMath::Fmod(ElapsedTime, loopDuration);
 	if (localTime < 0.f)
 	{
-		localTime += sequenceDuration;
+		localTime += loopDuration;
 	}
 
-	float alpha = localTime / sequenceDuration;
-
+	float alpha = localTime / loopDuration;
 	if (LoopType == ELoopType::PingPong && (CurrentLoop & 1))
 	{
 		alpha = 1.f - alpha;
 	}
 
-	// Evaluate children
-	const float SequenceTime = alpha * sequenceDuration;
+	const float sequenceTime = alpha * loopDuration;
 
-	for (const FSequenceSpan& Span : Timeline)
+	for (const FQuickTweenSequenceGroup& group : TweenGroups)
 	{
-		if (!Span.Tween) continue;
+		if (sequenceTime >= group.StartTime && sequenceTime < group.StartTime + group.Duration)
+		{
+			for (UQuickTweenable* tween : group.Tweens)
+			{
+				const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration(); // ... allow overflow to let the tween handle it
 
-		const float ChildTime =
-			FMath::Clamp((SequenceTime - Span.StartTime) / Span.Duration(), 0.f, 1.f);
-
-		Span.Tween->Evaluate(ChildTime);
+				tween->Evaluate(childTime);
+			}
+			break;
+		}
 	}
 
 	OnUpdate.Broadcast(this);
 }
 
-float UQuickTweenSequence::GetDuration() const
+float UQuickTweenSequence::GetLoopDuration() const
 {
 	float totalDuration = 0.0f;
 	for (const FQuickTweenSequenceGroup& group : TweenGroups)
@@ -396,7 +260,7 @@ float UQuickTweenSequence::GetDuration() const
 		float groupMaxDuration = 0.0f;
 		for (const UQuickTweenable* tween : group.Tweens)
 		{
-			groupMaxDuration  = FMath::Max(groupMaxDuration, tween->GetDuration() * tween->GetLoops() / tween->GetTimeScale());
+			groupMaxDuration  = FMath::Max(groupMaxDuration, tween->GetTotalDuration());
 		}
 		totalDuration += groupMaxDuration;
 	}
@@ -483,7 +347,7 @@ void UQuickTweenSequence::HandleOnIdleTransition()
 
 void UQuickTweenSequence::HandleOnStartTransition()
 {
-	ElapsedTime = bIsReversed ? GetDuration() * GetLoops() : 0.0f;
+	ElapsedTime = bIsReversed ? GetTotalDuration() : 0.0f;
 	CurrentLoop = bIsReversed ? GetLoops() - 1 : 0;
 	if (OnStart.IsBound())
 	{
@@ -500,9 +364,9 @@ void UQuickTweenSequence::HandleOnPauseTransition()
 {
 }
 
-void UQuickTweenSequence::HandleOnCompleteTransition()
+void UQuickTweenSequence::HandleOnCompleteTransition(bool bSnapToEnd)
 {
-	ElapsedTime = bIsReversed ? 0.0f : GetDuration() * GetLoops();
+	ElapsedTime = bIsReversed ? 0.0f : GetTotalDuration();
 
 	if (OnComplete.IsBound())
 	{
@@ -520,40 +384,5 @@ void UQuickTweenSequence::HandleOnKillTransition()
 	if (OnKilled.IsBound())
 	{
 		OnKilled.Broadcast(this);
-	}
-}
-
-void UQuickTweenSequence::RequestStateTransition(EQuickTweenState newState)
-{
-	if (newState == SequenceState) return;
-
-	if (ValidTransitions[SequenceState].Contains(newState))
-	{
-		SequenceState = newState;
-		switch (newState)
-		{
-		case EQuickTweenState::Idle:
-			HandleOnIdleTransition();
-			break;
-		case EQuickTweenState::Start:
-			HandleOnStartTransition();
-			break;
-		case EQuickTweenState::Play:
-			HandleOnPlayTransition();
-			break;
-		case EQuickTweenState::Pause:
-			HandleOnPauseTransition();
-			break;
-		case EQuickTweenState::Complete:
-			HandleOnCompleteTransition();
-			break;
-		case EQuickTweenState::Kill:
-			HandleOnKillTransition();
-			break;
-		}
-	}
-	else
-	{
-		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid state transition from %s to %s"),  *UEnum::GetValueAsString(SequenceState), *UEnum::GetValueAsString(newState));
 	}
 }

@@ -72,7 +72,7 @@ public:
 	 * @param to Function to get the TO value.
 	 * @param bUseShortestPath Whether to use the shortest path for interpolation.
 	 * @param setter Function to apply the interpolated value.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Multiplier for the tween's speed.
 	 * @param easeType Type of easing to apply.
 	 * @param easeCurve Optional custom curve for easing.

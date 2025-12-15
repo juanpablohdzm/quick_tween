@@ -26,8 +26,15 @@ struct FQuickTweenSequenceGroup
 {
 	GENERATED_BODY()
 
+	/** Tweens that are part of this group. */
 	UPROPERTY()
 	TArray<UQuickTweenable*> Tweens;
+
+	/** Start time of the group within the sequence. */
+	float StartTime = 0.0f;
+
+	/** Max duration of this group. */
+	float Duration = 0.0f;
 };
 
 /**
@@ -148,7 +155,16 @@ public:
 
 	[[nodiscard]] virtual bool GetIsCompleted() const override { return SequenceState == EQuickTweenState::Complete; }
 
-	[[nodiscard]] virtual float GetDuration() const override;
+	[[nodiscard]] virtual float GetLoopDuration() const override;
+
+	[[nodiscard]] virtual float GetTotalDuration() const override
+	{
+		if (Loops == INFINITE_LOOPS)
+		{
+			return TNumericLimits<float>::Max();
+		}
+		return GetLoopDuration() * GetLoops() / GetTimeScale();
+	};
 
 	[[nodiscard]] virtual float GetElapsedTime() const override { return ElapsedTime; }
 
@@ -313,7 +329,7 @@ private:
 	 * Typical responsibilities: finalize tween values (optionally snap to end),
 	 * trigger completion delegates/events, and handle looping or auto-kill behavior.
 	 */
-	void HandleOnCompleteTransition();
+	void HandleOnCompleteTransition(bool bSnapToEnd = true);
 
 	/**
 	 * Handle operations required when the sequence transitions to the Kill state.
@@ -329,7 +345,8 @@ private:
 	 *
 	 * @param newState The desired state to transition into.
 	 */
-	void RequestStateTransition(EQuickTweenState newState);
+	template <typename ...Args>
+	void RequestStateTransition(EQuickTweenState newState, Args&&... args);
 
 	/** Current state of the sequence. */
 	EQuickTweenState SequenceState = EQuickTweenState::Idle;
@@ -373,3 +390,40 @@ private:
 	UQuickTweenable* Owner = nullptr;
 
 };
+
+
+template <typename ... Args>
+void UQuickTweenSequence::RequestStateTransition(EQuickTweenState newState, Args&&... args)
+{
+	if (newState == SequenceState) return;
+
+	if (ValidTransitions[SequenceState].Contains(newState))
+	{
+		SequenceState = newState;
+		switch (newState)
+		{
+		case EQuickTweenState::Idle:
+			HandleOnIdleTransition();
+			break;
+		case EQuickTweenState::Start:
+			HandleOnStartTransition();
+			break;
+		case EQuickTweenState::Play:
+			HandleOnPlayTransition();
+			break;
+		case EQuickTweenState::Pause:
+			HandleOnPauseTransition();
+			break;
+		case EQuickTweenState::Complete:
+			HandleOnCompleteTransition(Forward<Args>(args)...);
+			break;
+		case EQuickTweenState::Kill:
+			HandleOnKillTransition();
+			break;
+		}
+	}
+	else
+	{
+		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid state transition from %s to %s"),  *UEnum::GetValueAsString(SequenceState), *UEnum::GetValueAsString(newState));
+	}
+}
