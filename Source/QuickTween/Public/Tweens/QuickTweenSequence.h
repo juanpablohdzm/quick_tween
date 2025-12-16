@@ -191,7 +191,7 @@ public:
 	 * @return Pointer to the tween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Sequence"), Category = "Sequence|State")
-	[[nodiscard]] UObject* GetTween(int32 index) const;
+	[[nodiscard]] UQuickTweenable* GetTween(int32 index) const;
 
 #pragma endregion
 
@@ -299,46 +299,25 @@ private:
 	bool HasOwner() const { return Owner != nullptr; }
 
 	/**
-	 * Handle operations required when the sequence transitions to the Idle state.
-	 * Typical responsibilities: reset runtime counters, ensure child tweens are stopped,
-	 * and prepare the sequence for a fresh start.
-	 */
-	void HandleOnIdleTransition();
-
-	/**
 	 * Handle operations required when the sequence transitions to the Start state.
 	 * Typical responsibilities: initialize timing, mark sequence as running, and
 	 * invoke start delegates/events.
 	 */
-	void HandleOnStartTransition();
-
-	/**
-	 * Handle operations required when the sequence transitions to the Play state.
-	 * Typical responsibilities: resume tween playback, update playing flags, and
-	 * ensure child tweens continue from their current time.
-	 */
-	void HandleOnPlayTransition();
-
-	/**
-	 * Handle operations required when the sequence transitions to the Pause state.
-	 * Typical responsibilities: pause child tweens, preserve elapsed time, and set
-	 * appropriate flags so playback can be resumed later.
-	 */
-	void HandleOnPauseTransition();
+	void HandleOnStart();
 
 	/**
 	 * Handle operations required when the sequence transitions to the Complete state.
 	 * Typical responsibilities: finalize tween values (optionally snap to end),
 	 * trigger completion delegates/events, and handle looping or auto-kill behavior.
 	 */
-	void HandleOnCompleteTransition(bool bSnapToEnd = true);
+	void HandleOnComplete();
 
 	/**
 	 * Handle operations required when the sequence transitions to the Kill state.
 	 * Typical responsibilities: stop and cleanup child tweens, release resources,
 	 * and invoke killed delegates/events.
 	 */
-	void HandleOnKillTransition();
+	void HandleOnKill();
 
 	/**
 	 * Request a state transition for the sequence.
@@ -347,8 +326,7 @@ private:
 	 *
 	 * @param newState The desired state to transition into.
 	 */
-	template <typename ...Args>
-	void RequestStateTransition(EQuickTweenState newState, Args&&... args);
+	bool RequestStateTransition(EQuickTweenState newState);
 
 	/** Current state of the sequence. */
 	EQuickTweenState SequenceState = EQuickTweenState::Idle;
@@ -392,40 +370,3 @@ private:
 	UQuickTweenable* Owner = nullptr;
 
 };
-
-
-template <typename ... Args>
-void UQuickTweenSequence::RequestStateTransition(EQuickTweenState newState, Args&&... args)
-{
-	if (newState == SequenceState) return;
-
-	if (ValidTransitions[SequenceState].Contains(newState))
-	{
-		SequenceState = newState;
-		switch (newState)
-		{
-		case EQuickTweenState::Idle:
-			HandleOnIdleTransition();
-			break;
-		case EQuickTweenState::Start:
-			HandleOnStartTransition();
-			break;
-		case EQuickTweenState::Play:
-			HandleOnPlayTransition();
-			break;
-		case EQuickTweenState::Pause:
-			HandleOnPauseTransition();
-			break;
-		case EQuickTweenState::Complete:
-			HandleOnCompleteTransition(Forward<Args>(args)...);
-			break;
-		case EQuickTweenState::Kill:
-			HandleOnKillTransition();
-			break;
-		}
-	}
-	else
-	{
-		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid state transition from %s to %s"),  *UEnum::GetValueAsString(SequenceState), *UEnum::GetValueAsString(newState));
-	}
-}

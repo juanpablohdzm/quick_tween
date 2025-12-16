@@ -66,10 +66,11 @@ public:
 	virtual void Update(float deltaTime);
 
 	/** Evaluate the tween with value.
+	 * @param bIsActive if true, this tween is active.
 	 * @param value .
 	 * @param instigator
 	 */
-	virtual void Evaluate(float value, const UQuickTweenable* instigator);
+	virtual void Evaluate(bool bIsActive, float value, const UQuickTweenable* instigator);
 
 	/**
 	 * Query whether this tween is pending removal from the manager.

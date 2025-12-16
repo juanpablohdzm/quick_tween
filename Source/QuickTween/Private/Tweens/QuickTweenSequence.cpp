@@ -4,8 +4,6 @@
 #include "Tweens/QuickTweenSequence.h"
 
 #include "QuickTweenManager.h"
-#include "Algo/IndexOf.h"
-#include "Tweens/QuickTweenBase.h"
 #include "Utils/CommonValues.h"
 
 UQuickTweenSequence::~UQuickTweenSequence()
@@ -123,48 +121,6 @@ UQuickTweenSequence* UQuickTweenSequence::Append(UQuickTweenable* tween)
 	return this;
 }
 
-void UQuickTweenSequence::Play()
-{
-	if (HasOwner()) return;
-
-	RequestStateTransition(EQuickTweenState::Play);
-}
-
-void UQuickTweenSequence::Pause()
-{
-	if (HasOwner()) return;
-
-	RequestStateTransition(EQuickTweenState::Pause);
-}
-
-void UQuickTweenSequence::Complete(bool bSnapToEnd)
-{
-	if (HasOwner()) return;
-
-	RequestStateTransition(EQuickTweenState::Complete, bSnapToEnd);
-}
-
-void UQuickTweenSequence::Restart()
-{
-	if (HasOwner()) return;
-
-	RequestStateTransition(EQuickTweenState::Idle);
-}
-
-void UQuickTweenSequence::Kill()
-{
-	if (HasOwner()) return;
-
-	RequestStateTransition(EQuickTweenState::Kill);
-}
-
-void UQuickTweenSequence::Reverse()
-{
-	if (HasOwner()) return;
-
-	bIsReversed = !bIsReversed;
-}
-
 void UQuickTweenSequence::Update(float deltaTime)
 {
 	if (HasOwner()) return;
@@ -228,28 +184,14 @@ void UQuickTweenSequence::Update(float deltaTime)
 
 	const float sequenceTime = alpha * loopDuration;
 
-	const int32 groupIndex = Algo::IndexOfByPredicate(TweenGroups, [sequenceTime](const FQuickTweenSequenceGroup& group)
+	for (FQuickTweenSequenceGroup& group : TweenGroups)
 	{
-		return sequenceTime >= group.StartTime && sequenceTime < (group.StartTime + group.Duration);
-	});
-
-	if (CurrentTweenGroupIndex != groupIndex)
-	{
-		CurrentTweenGroupIndex = groupIndex;
-	}
-
-	if (CurrentTweenGroupIndex == INDEX_NONE)
-	{
-		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Sequence time %f is out of bounds of the tween groups."), sequenceTime);
-		return;
-	}
-
-	const FQuickTweenSequenceGroup& group = TweenGroups[CurrentTweenGroupIndex];
-
-	for (UQuickTweenable* tween : group.Tweens)
-	{
-		const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration(); // ... allow overflow to let the tween handle it
-		tween->Evaluate(childTime, this);
+		const bool bIsGroupActive = sequenceTime >= group.StartTime && sequenceTime < (group.StartTime + group.Duration);
+		for (UQuickTweenable* tween : group.Tweens)
+		{
+			const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration();
+			tween->Evaluate(bIsGroupActive, childTime, this);
+		}
 	}
 
 
@@ -274,18 +216,122 @@ int32 UQuickTweenSequence::GetNumTweens() const
 	return count;
 }
 
-UObject* UQuickTweenSequence::GetTween(int32 index) const
+UQuickTweenable* UQuickTweenSequence::GetTween(int32 index) const
 {
 	int32 currentTweenIndex = 0;
 	for (const FQuickTweenSequenceGroup& group : TweenGroups)
 	{
 		if (index < currentTweenIndex + group.Tweens.Num())
 		{
-			return Cast<UObject>(group.Tweens[index - currentTweenIndex]);
+			return group.Tweens[index - currentTweenIndex];
 		}
 		currentTweenIndex += group.Tweens.Num();
 	}
 	return nullptr;
+}
+
+void UQuickTweenSequence::Play()
+{
+	if (HasOwner()) return;
+
+	const EQuickTweenState prevState = SequenceState;
+	if (RequestStateTransition(EQuickTweenState::Play))
+	{
+		if (prevState == EQuickTweenState::Idle)
+		{
+			ElapsedTime = bIsReversed ? GetTotalDuration() : 0.0f;
+			CurrentLoop = bIsReversed ? GetLoops() - 1 : 0;
+			HandleOnStart();
+		}
+	}
+}
+
+void UQuickTweenSequence::Pause()
+{
+	if (HasOwner()) return;
+
+	RequestStateTransition(EQuickTweenState::Pause);
+}
+
+void UQuickTweenSequence::Reverse()
+{
+	if (HasOwner()) return;
+
+	bIsReversed = !bIsReversed;
+}
+
+void UQuickTweenSequence::Restart()
+{
+	if (HasOwner()) return;
+
+	RequestStateTransition(EQuickTweenState::Idle);
+}
+
+void UQuickTweenSequence::Complete(bool bSnapToEnd)
+{
+	if (HasOwner()) return;
+
+	if (RequestStateTransition(EQuickTweenState::Complete))
+	{
+		HandleOnComplete();
+		if (bAutoKill)
+		{
+			if (RequestStateTransition(EQuickTweenState::Kill))
+			{
+				HandleOnKill();
+			}
+		}
+	}
+}
+
+void UQuickTweenSequence::Kill()
+{
+	if (HasOwner()) return;
+
+	if (RequestStateTransition(EQuickTweenState::Kill))
+	{
+		HandleOnKill();
+	}
+}
+
+bool UQuickTweenSequence::RequestStateTransition(EQuickTweenState newState)
+{
+	if (newState == SequenceState) return false;
+
+	if (ValidTransitions[SequenceState].Contains(newState))
+	{
+		SequenceState = newState;
+		return true;
+	}
+
+	UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid state transition from %s to %s"),  *UEnum::GetValueAsString(SequenceState), *UEnum::GetValueAsString(newState));
+	return false;
+}
+
+void UQuickTweenSequence::HandleOnStart()
+{
+	if (OnStart.IsBound())
+	{
+		OnStart.Broadcast(this);
+	}
+}
+
+void UQuickTweenSequence::HandleOnComplete()
+{
+	ElapsedTime = bIsReversed ? 0.0f : GetTotalDuration();
+
+	if (OnComplete.IsBound())
+	{
+		OnComplete.Broadcast(this);
+	}
+}
+
+void UQuickTweenSequence::HandleOnKill()
+{
+	if (OnKilled.IsBound())
+	{
+		OnKilled.Broadcast(this);
+	}
 }
 
 void UQuickTweenSequence::AssignOnStartEvent(FDynamicDelegateTweenSequence callback)
@@ -336,50 +382,4 @@ void UQuickTweenSequence::RemoveAllOnKilledEvent(const UObject* object)
 void UQuickTweenSequence::RemoveAllOnLoopEvent(const UObject* object)
 {
 	OnLoop.RemoveAll(object);
-}
-
-void UQuickTweenSequence::HandleOnIdleTransition()
-{
-}
-
-void UQuickTweenSequence::HandleOnStartTransition()
-{
-	ElapsedTime = bIsReversed ? GetTotalDuration() : 0.0f;
-	CurrentLoop = bIsReversed ? GetLoops() - 1 : 0;
-	if (OnStart.IsBound())
-	{
-		OnStart.Broadcast(this);
-	}
-	RequestStateTransition(EQuickTweenState::Play);
-}
-
-void UQuickTweenSequence::HandleOnPlayTransition()
-{
-}
-
-void UQuickTweenSequence::HandleOnPauseTransition()
-{
-}
-
-void UQuickTweenSequence::HandleOnCompleteTransition(bool bSnapToEnd)
-{
-	ElapsedTime = bIsReversed ? 0.0f : GetTotalDuration();
-
-	if (OnComplete.IsBound())
-	{
-		OnComplete.Broadcast(this);
-	}
-
-	if (bAutoKill)
-	{
-		RequestStateTransition(EQuickTweenState::Kill);
-	}
-}
-
-void UQuickTweenSequence::HandleOnKillTransition()
-{
-	if (OnKilled.IsBound())
-	{
-		OnKilled.Broadcast(this);
-	}
 }

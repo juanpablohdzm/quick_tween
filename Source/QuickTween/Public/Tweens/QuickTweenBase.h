@@ -76,7 +76,7 @@ public:
 
 	virtual void Update(float deltaTime) override;
 
-	virtual void Evaluate(float value, const UQuickTweenable* instigator) override;
+	virtual void Evaluate(bool bIsActive, float value, const UQuickTweenable* instigator) override;
 
 #pragma endregion
 
@@ -305,6 +305,9 @@ private:
 
 	/** Internal flag to track if the tween is reversed. */
 	bool bIsReversed = false;
+
+	/** Internal flag to track if the tween was previously active within a sequence. */
+	bool bWasActive = false;
 
 	/** Whether to snap to the end value upon completion. */
 	bool bSnapToEndOnComplete = true;

@@ -72,10 +72,25 @@ void UQuickTweenBase::Update(float deltaTime)
 	ApplyTweenState(state, true);
 }
 
-void UQuickTweenBase::Evaluate(float value, const UQuickTweenable* instigator)
+void UQuickTweenBase::Evaluate(bool bIsActive, float value, const UQuickTweenable* instigator)
 {
 	if (!HasOwner() || !InstigatorIsOwner(instigator)) return;
 
+	if (bWasActive != bIsActive)
+	{
+		if (bIsActive)
+		{
+			HandleOnStart();
+		}
+		bWasActive = bIsActive;
+	}
+
+	if (!bIsActive)
+	{
+		return;
+	}
+
+	bIsReversed = instigator->GetIsReversed();
 	ElapsedTime = value * GetTotalDuration();
 
 	FQuickTweenStateResult state = ComputeTweenState(ElapsedTime);
@@ -168,7 +183,16 @@ void UQuickTweenBase::Play()
 {
 	if (HasOwner()) return;
 
-	RequestStateTransition(EQuickTweenState::Play);
+	const EQuickTweenState prevState = TweenState;
+	if (RequestStateTransition(EQuickTweenState::Play))
+	{
+		if (prevState == EQuickTweenState::Idle)
+		{
+			ElapsedTime = bIsReversed ? GetTotalDuration() : 0.0f;
+			CurrentLoop = bIsReversed ? GetLoops() - 1 : 0;
+			HandleOnStart();
+		}
+	}
 }
 
 void UQuickTweenBase::Pause()
@@ -236,8 +260,6 @@ bool UQuickTweenBase::RequestStateTransition(EQuickTweenState newState)
 
 void UQuickTweenBase::HandleOnStart()
 {
-	ElapsedTime = bIsReversed ? GetTotalDuration() : 0.0f;
-	CurrentLoop = bIsReversed ? GetLoops() - 1 : 0;
 	if (OnStart.IsBound())
 	{
 		OnStart.Broadcast(this);
