@@ -24,7 +24,7 @@ void UQuickVectorTween::ApplyAlphaValue(float alpha)
 	CurrentValue = value;
 }
 
-void UQuickVectorTween::HandleOnStartTransition()
+void UQuickVectorTween::HandleOnStart()
 {
 	if (!StartValue.IsSet())
 	{
@@ -36,13 +36,11 @@ void UQuickVectorTween::HandleOnStartTransition()
 		StartValue = From.Execute(this);
 	}
 
-	Super::HandleOnStartTransition();
+	Super::HandleOnStart();
 }
 
-void UQuickVectorTween::HandleOnCompleteTransition(bool bSnapToEnd)
+void UQuickVectorTween::HandleOnComplete()
 {
-	Super::HandleOnCompleteTransition();
-
 	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
 	{
 		if (Setter.IsBound())
@@ -50,9 +48,11 @@ void UQuickVectorTween::HandleOnCompleteTransition(bool bSnapToEnd)
 			Setter.Execute(StartValue.Get(FVector::ZeroVector), this);
 		}
 		CurrentValue = StartValue.Get(FVector::ZeroVector);
+		Super::HandleOnComplete();
 		return;
 	}
 
+	bool bSnapToEnd = GetSnapToEndOnComplete();
 	if (GetIsReversed())
 	{
 		bSnapToEnd = !bSnapToEnd;
@@ -70,4 +70,6 @@ void UQuickVectorTween::HandleOnCompleteTransition(bool bSnapToEnd)
 		Setter.Execute(value, this);
 	}
 	CurrentValue = value;
+
+	Super::HandleOnComplete();
 }

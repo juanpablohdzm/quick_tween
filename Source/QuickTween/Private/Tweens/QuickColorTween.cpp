@@ -37,7 +37,7 @@ void UQuickColorTween::ApplyAlphaValue(float alpha)
 	CurrentValue = value;
 }
 
-void UQuickColorTween::HandleOnStartTransition()
+void UQuickColorTween::HandleOnStart()
 {
 	if (!StartValue.IsSet())
 	{
@@ -49,13 +49,11 @@ void UQuickColorTween::HandleOnStartTransition()
 		StartValue = From.Execute(this);
 	}
 
-	Super::HandleOnStartTransition();
+	Super::HandleOnStart();
 }
 
-void UQuickColorTween::HandleOnCompleteTransition(bool bSnapToEnd)
+void UQuickColorTween::HandleOnComplete()
 {
-	Super::HandleOnCompleteTransition(bSnapToEnd);
-
 	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
 	{
 		if (Setter.IsBound())
@@ -63,9 +61,11 @@ void UQuickColorTween::HandleOnCompleteTransition(bool bSnapToEnd)
 			Setter.Execute(StartValue.Get(FColor::White), this);
 		}
 		CurrentValue = StartValue.Get(FColor::White);
+		Super::HandleOnComplete();
 		return;
 	}
 
+	bool bSnapToEnd  = GetSnapToEndOnComplete();
 	if (GetIsReversed())
 	{
 		bSnapToEnd = !bSnapToEnd;
@@ -83,4 +83,6 @@ void UQuickColorTween::HandleOnCompleteTransition(bool bSnapToEnd)
 		Setter.Execute(value, this);
 	}
 	CurrentValue = value;
+
+	Super::HandleOnComplete();
 }

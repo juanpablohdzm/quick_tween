@@ -62,21 +62,21 @@ public:
 #pragma region Tween Control
 public:
 
-	virtual void Play(UQuickTweenable* instigator = nullptr) override;
+	virtual void Play(const UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Pause(UQuickTweenable* instigator = nullptr) override;
+	virtual void Pause(const UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Reverse(UQuickTweenable* instigator = nullptr) override;
+	virtual void Reverse(const UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Restart(UQuickTweenable* instigator = nullptr) override;
+	virtual void Restart(const UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
+	virtual void Complete(const UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
 
-	virtual void Kill(UQuickTweenable* instigator = nullptr) override;
+	virtual void Kill(const UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
+	virtual void Update(float deltaTime, const UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Evaluate(float value, UQuickTweenable* instigator = nullptr) override;
+	virtual void Evaluate(float value, const UQuickTweenable* instigator = nullptr) override;
 
 #pragma endregion
 
@@ -121,9 +121,11 @@ public:
 	[[nodiscard]] virtual bool GetAutoKill() const override { return bAutoKill; }
 
 	[[nodiscard]] virtual bool GetShouldPlayWhilePaused() const override {return bPlayWhilePaused;}
+
+	[[nodiscard]] bool GetSnapToEndOnComplete() const { return bSnapToEndOnComplete; }
 #pragma endregion
 
-	bool InstigatorIsOwner(UQuickTweenable* instigator) const
+	bool InstigatorIsOwner(const UQuickTweenable* instigator) const
 	{
 		if (!Owner) return true; // No owner means it's not in a sequence
 		return instigator == Owner;
@@ -228,54 +230,27 @@ protected:
 	virtual void ApplyAlphaValue(float alpha);
 
 	/**
-	 * Called when the tween transitions to the Idle state.
-	 *
-	 * Implementations should reset transient state and ensure the tween is ready
-	 * to be started again (e.g. reset elapsed time, clear transient flags).
-	 */
-	virtual void HandleOnIdleTransition();
-
-	/**
 	 * Called when the tween transitions to the Start state.
 	 *
 	 * This is invoked once when the tween begins. Implementations should perform
 	 * any initialization required before the first update tick (e.g. set initial
 	 * values, invoke start events).
 	 */
-	virtual void HandleOnStartTransition();
-
-	/**
-	 * Called when the tween transitions to the Play state.
-	 *
-	 * Invoked when the tween moves into the playing state (can be after Start or
-	 * after Resume). Implementations should ensure the tween continues updating.
-	 */
-	virtual void HandleOnPlayTransition();
-
-	/**
-	 * Called when the tween transitions to the Pause state.
-	 *
-	 * Invoked when playback is paused. Implementations should suspend updates and
-	 * preserve state necessary to resume playback later.
-	 */
-	virtual void HandleOnPauseTransition();
+	virtual void HandleOnStart();
 
 	/**
 	 * Called when the tween transitions to the Complete state.
 	 *
-	 * @param bSnapToEnd If true, the tween should immediately apply the final
-	 *                   value/state (snap to end) before running completion logic.
-	 *                   If false, complete without forcing the final value.
 	 */
-	virtual void HandleOnCompleteTransition(bool bSnapToEnd = true);
+	virtual void HandleOnComplete();
 
 	/**
 	 * Called when the tween transitions to the Kill state.
 	 *
-	 * Implementations should perform any final cleanup, release resources, and
-	 * ensure no further updates or events are dispatched for this tween.
+	 * This is invoked once when the tween is being removed. Implementations should
+	 * perform any necessary cleanup and invoke killed events.
 	 */
-	virtual void HandleOnKillTransition();
+	virtual void HandleOnKill();
 private:
 
 	struct FQuickTweenStateResult
@@ -296,7 +271,7 @@ private:
 	 * @param time Local time in seconds to sample the tween.
 	 * @return FQuickTweenStateResult Struct containing `ElapsedTime`, `Loop` and `Alpha`.
 	 */
-	static FQuickTweenStateResult TickTween(UQuickTweenable* tween, float time);
+	static FQuickTweenStateResult TickTween(const UQuickTweenable* tween, float time);
 
 	/**
 	 * Apply a previously computed tween state to this tween instance.
@@ -308,22 +283,17 @@ private:
 	 * @param state Computed state result to apply.
 	 * @param instigator Optional instigator `UQuickTweenable` that triggered the state application (may be nullptr).
 	 */
-	void ApplyTweenState(const FQuickTweenStateResult& state, UQuickTweenable* instigator = nullptr);
+	void ApplyTweenState(const FQuickTweenStateResult& state, const const UQuickTweenable* instigator = nullptr);
 
 	/**
 	 * Request a state transition for this tween.
 	 *
 	 * Validates the requested transition against allowed transitions and, if valid,
 	 * performs the transition and invokes the corresponding transition handler.
-	 * Any additional arguments are perfectly-forwarded to the handler (for example,
-	 * `HandleOnCompleteTransition` accepts a `bSnapToEnd` boolean).
 	 *
-	 * @tparam Args Parameter pack forwarded to the transition handler.
 	 * @param newState Target `EQuickTweenState` to transition into.
-	 * @param args Additional arguments forwarded to the target state's handler.
 	 */
-	template <typename ...Args>
-	void RequestStateTransition(EQuickTweenState newState, Args&&... args);
+	bool RequestStateTransition(EQuickTweenState newState);
 
 	/** Current state of the tween. */
 	EQuickTweenState TweenState = EQuickTweenState::Idle;
@@ -339,6 +309,9 @@ private:
 
 	/** Internal flag to track if the tween is reversed. */
 	bool bIsReversed = false;
+
+	/** Whether to snap to the end value upon completion. */
+	bool bSnapToEndOnComplete = true;
 
 	/** Easing type for the tween. */
 	EEaseType EaseType = EEaseType::Linear;
@@ -372,39 +345,3 @@ private:
 	UPROPERTY()
 	const UObject* WorldContextObject = nullptr;
 };
-
-template <typename ... Args>
-void UQuickTweenBase::RequestStateTransition(EQuickTweenState newState, Args&&... args)
-{
-	if (newState == TweenState) return;
-
-	if (ValidTransitions[TweenState].Contains(newState))
-	{
-		TweenState = newState;
-		switch (newState)
-		{
-		case EQuickTweenState::Idle:
-			HandleOnIdleTransition();
-			break;
-		case EQuickTweenState::Start:
-			HandleOnStartTransition();
-			break;
-		case EQuickTweenState::Play:
-			HandleOnPlayTransition();
-			break;
-		case EQuickTweenState::Pause:
-			HandleOnPauseTransition();
-			break;
-		case EQuickTweenState::Complete:
-			HandleOnCompleteTransition(Forward<Args>(args)...);
-			break;
-		case EQuickTweenState::Kill:
-			HandleOnKillTransition();
-			break;
-		}
-	}
-	else
-	{
-		UE_LOG(LogQuickTweenBase, Warning, TEXT("Invalid state transition from %s to %s"),  *UEnum::GetValueAsString(TweenState), *UEnum::GetValueAsString(newState));
-	}
-}

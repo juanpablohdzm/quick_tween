@@ -120,19 +120,19 @@ public:
 #pragma region Sequence Control
 public:
 
-	virtual void Play(UQuickTweenable* instigator = nullptr) override;
+	virtual void Play(const UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Pause(UQuickTweenable* instigator = nullptr) override;
+	virtual void Pause(const UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Reverse(UQuickTweenable* instigator = nullptr) override;
+	virtual void Reverse(const UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
+	virtual void Complete(const UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
 
-	virtual void Restart(UQuickTweenable* instigator = nullptr) override;
+	virtual void Restart(const UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Kill(UQuickTweenable* instigator = nullptr) override;
+	virtual void Kill(const UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
+	virtual void Update(float deltaTime, const UQuickTweenable* instigator = nullptr) override;
 
 	[[nodiscard]] virtual bool GetIsPendingKill() const override { return SequenceState == EQuickTweenState::Kill; }
 #pragma endregion
@@ -290,7 +290,7 @@ public:
 #pragma endregion
 
 private:
-	bool InstigatorIsOwner(UQuickTweenable* instigator) const
+	bool InstigatorIsOwner(const UQuickTweenable* instigator) const
 	{
 		if (!Owner) return true; // No owner means it's not in a sequence
 		return instigator == Owner;
@@ -361,9 +361,6 @@ private:
 	/** Whether the sequence is playing backwards. */
 	bool bIsReversed = false;
 
-	/** Current group index. */
-	int32 CurrentGroupIndex = 0;
-
 	/** Current loop index. */
 	int32 CurrentLoop = 1;
 
@@ -377,7 +374,7 @@ private:
 	FString SequenceTweenId;
 
 	/** Index of the current tween group. */
-	int32 CurrentTweenGroupIndex = 0;
+	int32 CurrentTweenGroupIndex = INDEX_NONE;
 
 	/** If the sequence should be eliminated from the manager when completed. */
 	bool bAutoKill = true;

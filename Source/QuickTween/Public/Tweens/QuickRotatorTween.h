@@ -137,9 +137,9 @@ public:
 protected:
 	virtual void ApplyAlphaValue(float alpha) override;
 
-	virtual void HandleOnStartTransition() override;
+	virtual void HandleOnStart() override;
 
-	virtual void HandleOnCompleteTransition(bool bSnapToEnd = true) override;
+	virtual void HandleOnComplete() override;
 
 private:
 	/** Starting value or function returning FRotator. */

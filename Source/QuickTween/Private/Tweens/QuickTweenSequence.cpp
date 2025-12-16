@@ -123,56 +123,49 @@ UQuickTweenSequence* UQuickTweenSequence::Append(UQuickTweenable* tween)
 	return this;
 }
 
-void UQuickTweenSequence::Play(UQuickTweenable* instigator)
+void UQuickTweenSequence::Play(const UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
-	
-	if (SequenceState == EQuickTweenState::Idle)
-	{
-		RequestStateTransition(EQuickTweenState::Start);
-	}
-	else
-	{
-		RequestStateTransition(EQuickTweenState::Play);
-	}
+
+	RequestStateTransition(EQuickTweenState::Play);
 }
 
-void UQuickTweenSequence::Pause(UQuickTweenable* instigator)
+void UQuickTweenSequence::Pause(const UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
 	RequestStateTransition(EQuickTweenState::Pause);
 }
 
-void UQuickTweenSequence::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
+void UQuickTweenSequence::Complete(const UQuickTweenable* instigator, bool bSnapToEnd)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
 	RequestStateTransition(EQuickTweenState::Complete, bSnapToEnd);
 }
 
-void UQuickTweenSequence::Restart(UQuickTweenable* instigator)
+void UQuickTweenSequence::Restart(const UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
 	RequestStateTransition(EQuickTweenState::Idle);
 }
 
-void UQuickTweenSequence::Kill(UQuickTweenable* instigator)
+void UQuickTweenSequence::Kill(const UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
 	RequestStateTransition(EQuickTweenState::Kill);
 }
 
-void UQuickTweenSequence::Reverse(UQuickTweenable* instigator)
+void UQuickTweenSequence::Reverse(const UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
 	bIsReversed = !bIsReversed;
 }
 
-void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
+void UQuickTweenSequence::Update(float deltaTime, const UQuickTweenable* instigator)
 {
 
 	if (!InstigatorIsOwner(instigator) || !GetIsPlaying()) return;
@@ -236,14 +229,30 @@ void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
 
 	const float sequenceTime = alpha * loopDuration;
 
-	for (FQuickTweenSequenceGroup& group : TweenGroups)
+	const int32 groupIndex = Algo::IndexOfByPredicate(TweenGroups, [sequenceTime](const FQuickTweenSequenceGroup& group)
 	{
-		for (UQuickTweenable* tween : group.Tweens)
-		{
-			const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration(); // ... allow overflow to let the tween handle it
-			tween->Evaluate(childTime, this);
-		}
+		return sequenceTime >= group.StartTime && sequenceTime < (group.StartTime + group.Duration);
+	});
+
+	if (CurrentTweenGroupIndex != groupIndex)
+	{
+		CurrentTweenGroupIndex = groupIndex;
 	}
+
+	if (CurrentTweenGroupIndex == INDEX_NONE)
+	{
+		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Sequence time %f is out of bounds of the tween groups."), sequenceTime);
+		return;
+	}
+
+	const FQuickTweenSequenceGroup& group = TweenGroups[CurrentTweenGroupIndex];
+
+	for (UQuickTweenable* tween : group.Tweens)
+	{
+		const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration(); // ... allow overflow to let the tween handle it
+		tween->Evaluate(childTime, this);
+	}
+
 
 	OnUpdate.Broadcast(this);
 }
