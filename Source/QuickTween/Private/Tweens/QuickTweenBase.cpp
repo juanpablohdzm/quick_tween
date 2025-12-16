@@ -41,6 +41,11 @@ void UQuickTweenBase::SetUp(
 	bAutoKill = bShouldAutoKill;
 	bPlayWhilePaused = bShouldPlayWhilePaused;
 
+	if (!ensureAlwaysMsgf(Duration > 0.f, TEXT("UQuickTweenBase::SetUp: Duration must be greater than zero, default to one.")))
+	{
+		Duration = 1.f;
+	}
+
 	UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject);
 	if (!manager)
 	{
@@ -61,142 +66,46 @@ void UQuickTweenBase::Update(float deltaTime, UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator) || !GetIsPlaying()) return;
 
-	if (FMath::IsNearlyZero(GetLoopDuration()))
-	{
-		Complete(instigator);
-		return;
-	}
-
 	ElapsedTime += (bIsReversed ? -1.f : 1.f) * deltaTime * GetTimeScale();
 
-	const int32 loop  = FMath::FloorToInt(ElapsedTime / Duration);
-
-	// ... in case deltaTime is large enough to cross multiple loops in a single update
-	const int32 numLoopsCrossed = FMath::Abs(loop - CurrentLoop);
-	if (numLoopsCrossed > 0)
-	{
-		CurrentLoop = loop;
-
-		if (OnLoop.IsBound())
-		{
-			for (int32 i = 0; i < numLoopsCrossed; ++i)
-			{
-				OnLoop.Broadcast(this);
-			}
-		}
-	}
-
-	// ... check for completion
-	if (Loops != INFINITE_LOOPS)
-	{
-		if (!bIsReversed)
-		{
-			if (CurrentLoop >= Loops)
-			{
-				Complete(instigator);
-				return;
-			}
-		}
-		else
-		{
-			if (ElapsedTime < 0.0f)
-			{
-				Complete(instigator);
-				return;
-			}
-		}
-	}
-
-	// ... value [0 .. Duration)
-	float localTime = FMath::Fmod(ElapsedTime, Duration);
-	if (localTime < 0.f)
-	{
-		localTime += Duration;
-	}
-
-	float alphaValue = localTime / Duration;
-	if (LoopType == ELoopType::PingPong && (CurrentLoop & 1) != 0) // ... odd loop, backward traversal
-	{
-		alphaValue = 1.f - alphaValue;
-	}
-
-	ApplyAlphaValue(alphaValue);
-
-	if (OnUpdate.IsBound())
-	{
-		OnUpdate.Broadcast(this);
-	}
+	FQuickTweenStateResult state = TickTween(this, ElapsedTime);
+	ApplyTweenState(state, instigator);
 }
 
-void UQuickTweenBase::Evaluate(float value, bool bIsReversed,  UQuickTweenable* instigator)
+void UQuickTweenBase::Evaluate(float value,  UQuickTweenable* instigator)
 {
-	if (!InstigatorIsOwner(instigator) || !GetIsPlaying()) return;
+	if (!InstigatorIsOwner(instigator)) return;
 
-	if (FMath::IsNearlyZero(GetLoopDuration()))
+	const float previousElapsedTime = ElapsedTime;
+	ElapsedTime = value * GetTotalDuration();
+
+	bIsReversed = ElapsedTime < previousElapsedTime;
+
+	if (!bIsReversed)
 	{
-		Complete(instigator);
+		if (previousElapsedTime < 0.0f && ElapsedTime >= 0.0f)
+		{
+			Restart(instigator);
+			Play(instigator);
+		}
+	}
+	else
+	{
+		if (previousElapsedTime > GetTotalDuration() && ElapsedTime <= GetTotalDuration())
+		{
+			Restart(instigator);
+			Play(instigator);
+		}
+	}
+
+	if (!GetIsPlaying())
+	{
 		return;
 	}
 
-	ElapsedTime = value * GetTotalDuration();
+	FQuickTweenStateResult state = TickTween(this, ElapsedTime);
+	ApplyTweenState(state, instigator);
 
-	const int32 loop  = FMath::FloorToInt(ElapsedTime / Duration);
-
-	// ... in case deltaTime is large enough to cross multiple loops in a single update
-	const int32 numLoopsCrossed = FMath::Abs(loop - CurrentLoop);
-	if (numLoopsCrossed > 0)
-	{
-		CurrentLoop = loop;
-
-		if (OnLoop.IsBound())
-		{
-			for (int32 i = 0; i < numLoopsCrossed; ++i)
-			{
-				OnLoop.Broadcast(this);
-			}
-		}
-	}
-
-	// ... check for completion
-	if (Loops != INFINITE_LOOPS)
-	{
-		if (!bIsReversed)
-		{
-			if (CurrentLoop >= Loops)
-			{
-				Complete(instigator);
-				return;
-			}
-		}
-		else
-		{
-			if (ElapsedTime < 0.0f)
-			{
-				Complete(instigator);
-				return;
-			}
-		}
-	}
-
-	// ... value [0 .. Duration)
-	float localTime = FMath::Fmod(ElapsedTime, Duration);
-	if (localTime < 0.f)
-	{
-		localTime += Duration;
-	}
-
-	float alphaValue = localTime / Duration;
-	if (LoopType == ELoopType::PingPong && (CurrentLoop & 1) != 0) // ... odd loop, backward traversal
-	{
-		alphaValue = 1.f - alphaValue;
-	}
-
-	ApplyAlphaValue(alphaValue);
-
-	if (OnUpdate.IsBound())
-	{
-		OnUpdate.Broadcast(this);
-	}
 }
 
 void UQuickTweenBase::AssignOnStartEvent(FDynamicDelegateTween callback)
@@ -301,6 +210,70 @@ void UQuickTweenBase::HandleOnKillTransition()
 	}
 }
 
+UQuickTweenBase::FQuickTweenStateResult UQuickTweenBase::TickTween(UQuickTweenable* tween, float time)
+{
+	FQuickTweenStateResult result;
+
+	result.ElapsedTime = time;
+	result.Loop  = FMath::FloorToInt(result.ElapsedTime / tween->GetLoopDuration());
+
+
+	float localTime = FMath::Fmod(result.ElapsedTime, tween->GetLoopDuration());
+	if (localTime < 0.f)
+	{
+		localTime += tween->GetLoopDuration();
+	}
+
+	result.Alpha = localTime / tween->GetLoopDuration();
+	if (tween->GetLoopType() == ELoopType::PingPong && (result.Loop & 1) != 0) // ... odd loop, backward traversal
+	{
+		result.Alpha = 1.f - result.Alpha;
+	}
+
+	return result;
+}
+
+void UQuickTweenBase::ApplyTweenState(const FQuickTweenStateResult& state, UQuickTweenable* instigator)
+{
+	const int32 numLoopsCrossed = FMath::Abs(state.Loop - CurrentLoop);
+	if (OnLoop.IsBound())
+	{
+		for (int32 i = 0; i < numLoopsCrossed; ++i)
+		{
+			OnLoop.Broadcast(this);
+		}
+	}
+	CurrentLoop = state.Loop;
+
+	// ... check for completion
+	if (Loops != INFINITE_LOOPS)
+	{
+		if (!bIsReversed)
+		{
+			if (CurrentLoop >= Loops)
+			{
+				Complete(instigator);
+				return;
+			}
+		}
+		else
+		{
+			if (ElapsedTime < 0.0f)
+			{
+				Complete(instigator);
+				return;
+			}
+		}
+	}
+
+	ApplyAlphaValue(state.Alpha);
+
+	if (OnUpdate.IsBound())
+	{
+		OnUpdate.Broadcast(this);
+	}
+}
+
 void UQuickTweenBase::Play(UQuickTweenable* instigator)
 {
 	if (!InstigatorIsOwner(instigator)) return;
@@ -340,7 +313,7 @@ void UQuickTweenBase::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
 {
 	if (!InstigatorIsOwner(instigator)) return;
 
-	RequestStateTransition(EQuickTweenState::Complete);
+	RequestStateTransition(EQuickTweenState::Complete, bSnapToEnd);
 }
 
 void UQuickTweenBase::Kill(UQuickTweenable* instigator)

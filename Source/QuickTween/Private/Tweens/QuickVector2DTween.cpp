@@ -27,13 +27,16 @@ void UQuickVector2DTween::ApplyAlphaValue(float alpha)
 void UQuickVector2DTween::HandleOnStartTransition()
 {
 
-	if (!From.IsBound())
+	if (!StartValue.IsSet())
 	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVector2DTween::HandleOnStartTransition: 'From' delegate is not bound."));
-		return;
-	}
+		if (!From.IsBound())
+		{
+			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVector2DTween::HandleOnStartTransition: 'From' delegate is not bound."));
+			return;
+		}
 
-	StartValue = From.Execute(this);
+		StartValue = From.Execute(this);
+	}
 
 	Super::HandleOnStartTransition();
 }

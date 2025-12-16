@@ -10,7 +10,7 @@ void UQuickTweenable::Update(float deltaTime, UQuickTweenable* instigator)
 	ensureAlwaysMsgf(false, TEXT("Update not implemented in IQuickTweenable"));
 }
 
-void UQuickTweenable::Evaluate(float value, bool bIsReversed, UQuickTweenable* instigator)
+void UQuickTweenable::Evaluate(float value, UQuickTweenable* instigator)
 {
 	ensureAlwaysMsgf(false, TEXT("Evaluate not implemented in IQuickTweenable"));
 }

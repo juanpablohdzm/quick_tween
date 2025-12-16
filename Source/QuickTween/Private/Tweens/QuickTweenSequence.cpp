@@ -236,32 +236,13 @@ void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
 
 	const float sequenceTime = alpha * loopDuration;
 
-	const int32 groupIndex = Algo::IndexOfByPredicate(TweenGroups, [sequenceTime](const FQuickTweenSequenceGroup& group)
+	for (FQuickTweenSequenceGroup& group : TweenGroups)
 	{
-		return sequenceTime >= group.StartTime && sequenceTime < (group.StartTime + group.Duration);
-	});
-
-	if (groupIndex == INDEX_NONE)
-	{
-		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Failed to find active tween group in sequence at time %f"), sequenceTime);
-		return;
-	}
-
-	if (CurrentGroupIndex != groupIndex)
-	{
-		CurrentGroupIndex = groupIndex;
-		for (UQuickTweenable* tween : TweenGroups[CurrentGroupIndex].Tweens)
+		for (UQuickTweenable* tween : group.Tweens)
 		{
-			tween->Restart(this);
-			tween->Play(this);
+			const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration(); // ... allow overflow to let the tween handle it
+			tween->Evaluate(childTime, this);
 		}
-	}
-
-	const FQuickTweenSequenceGroup& group = TweenGroups[CurrentGroupIndex];
-	for (UQuickTweenable* tween : group.Tweens)
-	{
-		const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration(); // ... allow overflow to let the tween handle it
-		tween->Evaluate(childTime, bIsReversed, this);
 	}
 
 	OnUpdate.Broadcast(this);
@@ -269,22 +250,15 @@ void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
 
 float UQuickTweenSequence::GetLoopDuration() const
 {
-	float totalDuration = 0.0f;
-	for (const FQuickTweenSequenceGroup& group : TweenGroups)
+	return Algo::Accumulate(TweenGroups, 0.0f, [](float sum, const FQuickTweenSequenceGroup& group)
 	{
-		float groupMaxDuration = 0.0f;
-		for (const UQuickTweenable* tween : group.Tweens)
-		{
-			groupMaxDuration  = FMath::Max(groupMaxDuration, tween->GetTotalDuration());
-		}
-		totalDuration += groupMaxDuration;
-	}
-	return totalDuration;
+		return sum + group.Duration;
+	});
 }
 
 int32 UQuickTweenSequence::GetNumTweens() const
 {
-	uint32 count = 0;
+	int32 count = 0;
 	for (const FQuickTweenSequenceGroup& group : TweenGroups)
 	{
 		count += group.Tweens.Num();

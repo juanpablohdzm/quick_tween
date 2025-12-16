@@ -76,7 +76,7 @@ public:
 
 	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
 
-	virtual void Evaluate(float value, bool bIsReversed, UQuickTweenable* instigator = nullptr) override;
+	virtual void Evaluate(float value, UQuickTweenable* instigator = nullptr) override;
 
 #pragma endregion
 
@@ -278,6 +278,50 @@ protected:
 	virtual void HandleOnKillTransition();
 private:
 
+	struct FQuickTweenStateResult
+	{
+		float ElapsedTime = 0.0f;
+		int32 Loop = 0;
+		float Alpha = 0.0f;
+	};
+
+	/**
+	 * Compute the tween state for a given local time.
+	 *
+	 * This static helper evaluates a tween's timeline and produces a compact
+	 * result containing the elapsed time, current loop index and the interpolated
+	 * alpha value \([0.0 .. 1.0]\) for the supplied time.
+	 *
+	 * @param tween Pointer to the `UQuickTweenable` instance to evaluate.
+	 * @param time Local time in seconds to sample the tween.
+	 * @return FQuickTweenStateResult Struct containing `ElapsedTime`, `Loop` and `Alpha`.
+	 */
+	static FQuickTweenStateResult TickTween(UQuickTweenable* tween, float time);
+
+	/**
+	 * Apply a previously computed tween state to this tween instance.
+	 *
+	 * This will update internal tracking values (elapsed time, current loop, etc.)
+	 * and drive any evaluation / apply logic so the tween reflects the provided
+	 * state. The optional `instigator` indicates which object caused the change.
+	 *
+	 * @param state Computed state result to apply.
+	 * @param instigator Optional instigator `UQuickTweenable` that triggered the state application (may be nullptr).
+	 */
+	void ApplyTweenState(const FQuickTweenStateResult& state, UQuickTweenable* instigator = nullptr);
+
+	/**
+	 * Request a state transition for this tween.
+	 *
+	 * Validates the requested transition against allowed transitions and, if valid,
+	 * performs the transition and invokes the corresponding transition handler.
+	 * Any additional arguments are perfectly-forwarded to the handler (for example,
+	 * `HandleOnCompleteTransition` accepts a `bSnapToEnd` boolean).
+	 *
+	 * @tparam Args Parameter pack forwarded to the transition handler.
+	 * @param newState Target `EQuickTweenState` to transition into.
+	 * @param args Additional arguments forwarded to the target state's handler.
+	 */
 	template <typename ...Args>
 	void RequestStateTransition(EQuickTweenState newState, Args&&... args);
 
@@ -287,7 +331,7 @@ private:
 	/** Time elapsed since the tween started. */
 	float ElapsedTime = 0.0f;
 
-	/** Duration of the tween in seconds. */
+	/** Duration of the loop in seconds. */
 	float Duration = 0.0f;
 
 	/** Time scale multiplier. */

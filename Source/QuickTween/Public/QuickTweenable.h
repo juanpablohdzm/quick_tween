@@ -75,7 +75,7 @@ public:
 	/** Evaluate the tween with value.
 	 * @param value .
 	 */
-	virtual void Evaluate(float value, bool bIsReversed, UQuickTweenable* instigator = nullptr);
+	virtual void Evaluate(float value, UQuickTweenable* instigator = nullptr);
 
 	/**
 	 * Query whether this tween is pending removal from the manager.
