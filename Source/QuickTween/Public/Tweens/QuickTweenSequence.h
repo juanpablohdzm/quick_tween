@@ -120,19 +120,19 @@ public:
 #pragma region Sequence Control
 public:
 
-	virtual void Play(const UQuickTweenable* instigator = nullptr) override;
+	virtual void Play() override;
 
-	virtual void Pause(const UQuickTweenable* instigator = nullptr) override;
+	virtual void Pause() override;
 
-	virtual void Reverse(const UQuickTweenable* instigator = nullptr) override;
+	virtual void Reverse() override;
 
-	virtual void Complete(const UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
+	virtual void Complete(bool bSnapToEnd = true) override;
 
-	virtual void Restart(const UQuickTweenable* instigator = nullptr) override;
+	virtual void Restart() override;
 
-	virtual void Kill(const UQuickTweenable* instigator = nullptr) override;
+	virtual void Kill() override;
 
-	virtual void Update(float deltaTime, const UQuickTweenable* instigator = nullptr) override;
+	virtual void Update(float deltaTime) override;
 
 	[[nodiscard]] virtual bool GetIsPendingKill() const override { return SequenceState == EQuickTweenState::Kill; }
 #pragma endregion
@@ -294,7 +294,9 @@ private:
 	{
 		if (!Owner) return true; // No owner means it's not in a sequence
 		return instigator == Owner;
-	};
+	}
+
+	bool HasOwner() const { return Owner != nullptr; }
 
 	/**
 	 * Handle operations required when the sequence transitions to the Idle state.

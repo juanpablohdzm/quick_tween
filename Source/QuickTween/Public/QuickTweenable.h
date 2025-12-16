@@ -28,54 +28,48 @@ public:
 	virtual void SetOwner(UQuickTweenable* owner);
 
 	/** Start or resume playback of the tween.
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Play(const UQuickTweenable* instigator = nullptr);
+	virtual void Play();
 
 	/** Pause playback of the tween.
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Pause(const UQuickTweenable* instigator = nullptr);
+	virtual void Pause();
 
 	/** Play the tween in reverse (playback direction is inverted).
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Reverse(const UQuickTweenable* instigator = nullptr);
+	virtual void Reverse();
 
 	/** Restart the tween from its beginning (in case it is reversed, it will restart at the end).
 	 *  Must be played again after restarting.
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Restart(const UQuickTweenable* instigator = nullptr);
+	virtual void Restart();
 
 	/** Immediately complete the tween.
 	 *  If the tween is reversed bSnapToEnd is inverted.
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
 	 * @param bSnapToEnd If true, snap properties to final state when completing.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Complete(const UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true);
+	virtual void Complete(bool bSnapToEnd = true);
 
 	/** Forcefully kill the tween and mark it for removal.
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Kill(const UQuickTweenable* instigator = nullptr);
+	virtual void Kill();
 
 	/** Update the tween state by a time delta.
 	 * @param deltaTime Time in seconds to advance the tween.
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
 	 */
-	virtual void Update(float deltaTime, const UQuickTweenable* instigator = nullptr);
+	virtual void Update(float deltaTime);
 
 	/** Evaluate the tween with value.
 	 * @param value .
+	 * @param instigator
 	 */
-	virtual void Evaluate(float value, const UQuickTweenable* instigator = nullptr);
+	virtual void Evaluate(float value, const UQuickTweenable* instigator);
 
 	/**
 	 * Query whether this tween is pending removal from the manager.

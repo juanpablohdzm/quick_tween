@@ -62,21 +62,21 @@ public:
 #pragma region Tween Control
 public:
 
-	virtual void Play(const UQuickTweenable* instigator = nullptr) override;
+	virtual void Play() override;
 
-	virtual void Pause(const UQuickTweenable* instigator = nullptr) override;
+	virtual void Pause() override;
 
-	virtual void Reverse(const UQuickTweenable* instigator = nullptr) override;
+	virtual void Reverse() override;
 
-	virtual void Restart(const UQuickTweenable* instigator = nullptr) override;
+	virtual void Restart() override;
 
-	virtual void Complete(const UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
+	virtual void Complete(bool bSnapToEnd = true) override;
 
-	virtual void Kill(const UQuickTweenable* instigator = nullptr) override;
+	virtual void Kill() override;
 
-	virtual void Update(float deltaTime, const UQuickTweenable* instigator = nullptr) override;
+	virtual void Update(float deltaTime) override;
 
-	virtual void Evaluate(float value, const UQuickTweenable* instigator = nullptr) override;
+	virtual void Evaluate(float value, const UQuickTweenable* instigator) override;
 
 #pragma endregion
 
@@ -125,11 +125,9 @@ public:
 	[[nodiscard]] bool GetSnapToEndOnComplete() const { return bSnapToEndOnComplete; }
 #pragma endregion
 
-	bool InstigatorIsOwner(const UQuickTweenable* instigator) const
-	{
-		if (!Owner) return true; // No owner means it's not in a sequence
-		return instigator == Owner;
-	};
+	bool InstigatorIsOwner(const UQuickTweenable* instigator) const { return instigator == Owner; }
+	
+	bool HasOwner() const { return Owner != nullptr; }
 
 	/**
 	 * Assign a Blueprint dynamic delegate to be invoked when the tween starts.
@@ -260,18 +258,16 @@ private:
 		float Alpha = 0.0f;
 	};
 
+
 	/**
-	 * Compute the tween state for a given local time.
+	 * Compute the internal tween state for a given time.
 	 *
-	 * This static helper evaluates a tween's timeline and produces a compact
-	 * result containing the elapsed time, current loop index and the interpolated
-	 * alpha value \([0.0 .. 1.0]\) for the supplied time.
-	 *
-	 * @param tween Pointer to the `UQuickTweenable` instance to evaluate.
-	 * @param time Local time in seconds to sample the tween.
-	 * @return FQuickTweenStateResult Struct containing `ElapsedTime`, `Loop` and `Alpha`.
+	 * @param time Global time (seconds) used to compute the tween state. This value
+	 *             is interpreted in the context of the tween's Duration and TimeScale.
+	 * @return FQuickTweenStateResult Struct containing the calculated ElapsedTime,
+	 *         Loop index, and Alpha for use when applying the tween.
 	 */
-	static FQuickTweenStateResult TickTween(const UQuickTweenable* tween, float time);
+	FQuickTweenStateResult ComputeTweenState(float time) const;
 
 	/**
 	 * Apply a previously computed tween state to this tween instance.
@@ -281,9 +277,9 @@ private:
 	 * state. The optional `instigator` indicates which object caused the change.
 	 *
 	 * @param state Computed state result to apply.
-	 * @param instigator Optional instigator `UQuickTweenable` that triggered the state application (may be nullptr).
+	 * @param bShouldUpdateTweenState
 	 */
-	void ApplyTweenState(const FQuickTweenStateResult& state, const const UQuickTweenable* instigator = nullptr);
+	void ApplyTweenState(const FQuickTweenStateResult& state, bool bShouldUpdateTweenState);
 
 	/**
 	 * Request a state transition for this tween.

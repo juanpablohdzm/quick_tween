@@ -123,56 +123,55 @@ UQuickTweenSequence* UQuickTweenSequence::Append(UQuickTweenable* tween)
 	return this;
 }
 
-void UQuickTweenSequence::Play(const UQuickTweenable* instigator)
+void UQuickTweenSequence::Play()
 {
-	if (!InstigatorIsOwner(instigator)) return;
+	if (HasOwner()) return;
 
 	RequestStateTransition(EQuickTweenState::Play);
 }
 
-void UQuickTweenSequence::Pause(const UQuickTweenable* instigator)
+void UQuickTweenSequence::Pause()
 {
-	if (!InstigatorIsOwner(instigator)) return;
+	if (HasOwner()) return;
 
 	RequestStateTransition(EQuickTweenState::Pause);
 }
 
-void UQuickTweenSequence::Complete(const UQuickTweenable* instigator, bool bSnapToEnd)
+void UQuickTweenSequence::Complete(bool bSnapToEnd)
 {
-	if (!InstigatorIsOwner(instigator)) return;
+	if (HasOwner()) return;
 
 	RequestStateTransition(EQuickTweenState::Complete, bSnapToEnd);
 }
 
-void UQuickTweenSequence::Restart(const UQuickTweenable* instigator)
+void UQuickTweenSequence::Restart()
 {
-	if (!InstigatorIsOwner(instigator)) return;
+	if (HasOwner()) return;
 
 	RequestStateTransition(EQuickTweenState::Idle);
 }
 
-void UQuickTweenSequence::Kill(const UQuickTweenable* instigator)
+void UQuickTweenSequence::Kill()
 {
-	if (!InstigatorIsOwner(instigator)) return;
+	if (HasOwner()) return;
 
 	RequestStateTransition(EQuickTweenState::Kill);
 }
 
-void UQuickTweenSequence::Reverse(const UQuickTweenable* instigator)
+void UQuickTweenSequence::Reverse()
 {
-	if (!InstigatorIsOwner(instigator)) return;
+	if (HasOwner()) return;
 
 	bIsReversed = !bIsReversed;
 }
 
-void UQuickTweenSequence::Update(float deltaTime, const UQuickTweenable* instigator)
+void UQuickTweenSequence::Update(float deltaTime)
 {
-
-	if (!InstigatorIsOwner(instigator) || !GetIsPlaying()) return;
+	if (HasOwner()) return;
 
 	if (FMath::IsNearlyZero(GetLoopDuration()))
 	{
-		Complete(instigator);
+		Complete();
 		return;
 	}
 
@@ -201,7 +200,7 @@ void UQuickTweenSequence::Update(float deltaTime, const UQuickTweenable* instiga
 		{
 			if (ElapsedTime < 0.f)
 			{
-				Complete(instigator);
+				Complete();
 				return;
 			}
 		}
@@ -209,7 +208,7 @@ void UQuickTweenSequence::Update(float deltaTime, const UQuickTweenable* instiga
 		{
 			if (CurrentLoop >= Loops)
 			{
-				Complete(instigator);
+				Complete();
 				return;
 			}
 		}
