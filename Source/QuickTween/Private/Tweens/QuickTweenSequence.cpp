@@ -137,9 +137,14 @@ void UQuickTweenSequence::Evaluate(bool bIsActive, float value, const UQuickTwee
 
 	if (bWasActive != bIsActive)
 	{
+		auto simulateOnStart = [&]()
+		{
+			CurrentLoop = instigator->GetIsReversed() ? GetLoops() - 1 : 0;
+			HandleOnStart();
+		};
 		if (bIsActive)
 		{
-			HandleOnStart();
+			simulateOnStart();
 		}
 		bWasActive = bIsActive;
 	}
@@ -183,7 +188,6 @@ UQuickTweenSequence::FQuickTweenSequenceStateResult UQuickTweenSequence::Compute
 
 void UQuickTweenSequence::ApplySequenceState(const FQuickTweenSequenceStateResult& state, bool bShouldUpdateTweenState)
 {
-
 	// ... in case deltaTime is large enough to cross multiple loops in a single update
 	if (state.Loop != CurrentLoop)
 	{
@@ -232,7 +236,7 @@ void UQuickTweenSequence::ApplySequenceState(const FQuickTweenSequenceStateResul
 			return;
 		}
 	}
-
+	
 	ApplyAlphaValue(state.Alpha);
 
 	if (OnUpdate.IsBound())

@@ -78,9 +78,15 @@ void UQuickTweenBase::Evaluate(bool bIsActive, float value, const UQuickTweenabl
 
 	if (bWasActive != bIsActive)
 	{
+		auto simulateOnStart = [&]()
+		{
+			CurrentLoop = instigator->GetIsReversed() ? GetLoops() - 1 : 0;
+			HandleOnStart();
+		};
+
 		if (bIsActive)
 		{
-			HandleOnStart();
+			simulateOnStart();
 		}
 		bWasActive = bIsActive;
 	}
