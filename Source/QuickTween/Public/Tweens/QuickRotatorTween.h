@@ -65,7 +65,7 @@ public:
 	/**
 	 * Creates a new rotator tween with the specified parameters.
 	 *
-	 * Note: The start value will be cached from the component's current location at the first update.
+	 * Note: The start and end value will be cached at the first update.
 	 *
 	 * @param worldContextObject Context object for world access.
 	 * @param from Function to get the FROM value.
@@ -134,6 +134,9 @@ public:
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] FRotator GetStartValue() const { return StartValue.Get(FRotator::ZeroRotator); }
 
+	/** Get the ending FRotator value. Set after the first tick */
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] FRotator GetEndValue() const { return EndValue.Get(FRotator::ZeroRotator); }
 protected:
 	virtual void ApplyAlphaValue(float alpha) override;
 
@@ -150,6 +153,9 @@ private:
 
 	/** Starting value. */
 	TOptional<FRotator> StartValue;
+
+	/** Ending value. */
+	TOptional<FRotator> EndValue;
 
 	/** Function to set the interpolated FRotator value. */
 	FNativeRotatorSetter Setter;

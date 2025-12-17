@@ -7,15 +7,9 @@
 
 void UQuickVector2DTween::ApplyAlphaValue(float alpha)
 {
-	if (!To.IsBound())
-	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVector2DTween::ApplyAlphaValue: 'To' delegate  is not bound, unable to interpolate."));
-		return;
-	}
-
 	const FVector2D value = GetEaseCurve() ?
-	FEaseFunctions<FVector2D>::Ease(StartValue.Get(FVector2D::ZeroVector), To.Execute(this), alpha, GetEaseCurve()) :
-	FEaseFunctions<FVector2D>::Ease(StartValue.Get(FVector2D::ZeroVector), To.Execute(this), alpha, GetEaseType());
+	FEaseFunctions<FVector2D>::Ease(StartValue.Get(FVector2D::ZeroVector), EndValue.Get(FVector2D::ZeroVector), alpha, GetEaseCurve()) :
+	FEaseFunctions<FVector2D>::Ease(StartValue.Get(FVector2D::ZeroVector), EndValue.Get(FVector2D::ZeroVector), alpha, GetEaseType());
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);
@@ -36,6 +30,17 @@ void UQuickVector2DTween::HandleOnStart()
 		}
 
 		StartValue = From.Execute(this);
+	}
+
+	if (!EndValue.IsSet())
+	{
+		if (!To.IsBound())
+		{
+			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVector2DTween::HandleOnStartTransition: 'To' delegate is not bound."));
+			return;
+		}
+
+		EndValue = To.Execute(this);
 	}
 
 	Super::HandleOnStart();
@@ -60,13 +65,7 @@ void UQuickVector2DTween::HandleOnComplete()
 		bSnapToEnd = !bSnapToEnd;
 	}
 
-	if (!To.IsBound())
-	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVector2DTween::HandleOnCompleteTransition: 'To' delegate is not bound, unable to interpolate."));
-		return;
-	}
-
-	const FVector2D value = bSnapToEnd ? To.Execute(this) : StartValue.Get(FVector2D::ZeroVector);
+	const FVector2D value = bSnapToEnd ? EndValue.Get(FVector2D::ZeroVector) : StartValue.Get(FVector2D::ZeroVector);
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);

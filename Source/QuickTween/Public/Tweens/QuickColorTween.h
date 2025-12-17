@@ -62,7 +62,7 @@ public:
 	/**
 	 * Create a new UQuickColorTween instance and initialize it.
 	 *
-	 * Note: The start value will be cached from the component's current location at the first update.
+	 * Note: The start and end value will be cached at the first update.
 	 *
 	 * @param worldContextObject Context object for world access.
 	 * @param from Function to get the FROM value.
@@ -126,8 +126,11 @@ public:
 
 	/** Get the starting FColor value. Set after the first tick */
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] FColor GetStartValue() const { return StartValue.Get(FColor::Black); }
+	[[nodiscard]] FColor GetStartValue() const { return StartValue.Get(FColor::White); }
 
+	/** Get the ending FColor value. Set after the first tick */
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] FColor GetEndValue() const { return EndValue.Get(FColor::White); }
 protected:
 	virtual void ApplyAlphaValue(float alpha) override;
 
@@ -144,6 +147,9 @@ private:
 
 	/** Starting value. */
 	TOptional<FColor> StartValue;
+
+	/** Target value. */
+	TOptional<FColor> EndValue;
 
 	/** Function to set the interpolated FColor value. */
 	FNativeColorSetter Setter;

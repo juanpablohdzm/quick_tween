@@ -61,7 +61,7 @@ public:
 	/**
 	 * Create and set up a UQuickFloatTween with the specified parameters.
 	 *
-	 * Note: The start value will be cached from the component's current location at the first update.
+	 * Note: The start and end value will be cached at the first update.
 	 *
 	 * @param worldContextObject Context object for world access.
 	 * @param from Function to get the FROM value.
@@ -125,8 +125,11 @@ public:
 
 	/** Get the starting float value. Set after the first tick */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category= "Tween|Info")
-	[[nodiscard]] float GetStartValue() const { return StartValue.Get(CurrentValue); }
+	[[nodiscard]] float GetStartValue() const { return StartValue.Get(0.0f); }
 
+  	/** Get the ending float value. Set after the first tick */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category= "Tween|Info")
+	[[nodiscard]] float GetEndValue() const { return EndValue.Get(0.0f); }
 protected:
 	virtual void ApplyAlphaValue(float alpha) override;
 
@@ -143,6 +146,9 @@ private:
 
 	/** Starting value. */
 	TOptional<float> StartValue;
+
+	/** Target value. */
+	TOptional<float> EndValue;
 
 	/** Function to set the interpolated FVector value. */
 	FNativeFloatSetter Setter;

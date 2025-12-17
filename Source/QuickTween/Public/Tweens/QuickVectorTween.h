@@ -62,7 +62,7 @@ public:
 	/**
 	 * Create a new UQuickVectorTween instance and initialize it.
 	 *
-	 * Note: The start value will be cached from the component's current location at the first update.
+	 * Note: The start value and end value will be cached at the first update.
 	 *
 	 * @param worldContextObject Context object for world access.
 	 * @param from Function to get the FROM value.
@@ -128,6 +128,10 @@ public:
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] FVector GetStartValue() const { return StartValue.Get(FVector::ZeroVector); }
 
+	/** Get the ending FVector value. Set after the first tick */
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] FVector GetEndValue() const { return EndValue.Get(FVector::ZeroVector); }
+
 protected:
 	virtual void ApplyAlphaValue(float alpha) override;
 
@@ -144,6 +148,9 @@ private:
 
 	/** Starting value. */
 	TOptional<FVector> StartValue;
+
+	/** Ending value. */
+	TOptional<FVector> EndValue;
 
 	/** Function to set the interpolated FVector value. */
 	FNativeVectorSetter Setter;

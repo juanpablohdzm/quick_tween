@@ -61,7 +61,7 @@ public:
 	/**
 	 * Create and set up a UQuickIntTween with the specified parameters.
 	 *
-	 * Note: The start value will be cached from the component's current location at the first update.
+	 * Note: The start and end value will be cached at the first update.
 	 *
 	 * @param worldContextObject Context object for world access.
 	 * @param from Function to get the FROM value.
@@ -125,8 +125,11 @@ public:
 
 	/** Get the starting int32 value. Set after the first tick */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category= "Tween|Info")
-	[[nodiscard]] int32 GetStartValue() const { return StartValue.Get(CurrentValue); }
+	[[nodiscard]] int32 GetStartValue() const { return StartValue.Get(0); }
 
+ 	/** Get the ending int32 value. Set after the first tick */
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category= "Tween|Info")
+	[[nodiscard]] int32 GetEndValue() const { return EndValue.Get(0); }
 protected:
 	virtual void ApplyAlphaValue(float alpha) override;
 
@@ -143,6 +146,9 @@ private:
 
 	/** Starting value. */
 	TOptional<int32> StartValue;
+
+	/** Target value. */
+	TOptional<int32> EndValue;
 
 	/** Function to set the interpolated FVector value. */
 	FNativeIntSetter Setter;

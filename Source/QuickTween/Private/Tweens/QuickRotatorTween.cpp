@@ -7,16 +7,10 @@
 
 void UQuickRotatorTween::ApplyAlphaValue(float alpha)
 {
-	if (!To.IsBound())
-	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickRotatorTween::Update: 'To' delegate is not bound, unable to interpolate."));
-		return;
-	}
-
 	EEasePath path = bShortestPath ? EEasePath::Shortest : EEasePath::Longest;
 	const FRotator value = GetEaseCurve() ?
-	FEaseFunctions<FRotator>::Ease(StartValue.Get(FRotator::ZeroRotator), To.Execute(this), alpha, GetEaseCurve(), path) :
-	FEaseFunctions<FRotator>::Ease(StartValue.Get(FRotator::ZeroRotator), To.Execute(this), alpha, GetEaseType(), path);
+	FEaseFunctions<FRotator>::Ease(StartValue.Get(FRotator::ZeroRotator), EndValue.Get(FRotator::ZeroRotator), alpha, GetEaseCurve(), path) :
+	FEaseFunctions<FRotator>::Ease(StartValue.Get(FRotator::ZeroRotator), EndValue.Get(FRotator::ZeroRotator), alpha, GetEaseType(), path);
 
 	if (Setter.IsBound())
 	{
@@ -37,6 +31,17 @@ void UQuickRotatorTween::HandleOnStart()
 		}
 
 		StartValue = From.Execute(this);
+	}
+
+	if (!EndValue.IsSet())
+	{
+		if (!To.IsBound())
+		{
+			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickRotatorTween::HandleOnStartTransition: 'To' delegate is not bound."));
+			return;
+		}
+
+		EndValue = To.Execute(this);
 	}
 
 	Super::HandleOnStart();
@@ -61,13 +66,7 @@ void UQuickRotatorTween::HandleOnComplete()
 		bSnapToEnd = !bSnapToEnd;
 	}
 
-	if (!To.IsBound())
-	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickRotatorTween::HandleOnCompleteTransition: 'To' delegate is not bound, unable to complete tween."));
-		return;
-	}
-
-	FRotator value = bSnapToEnd ? To.Execute(this) : StartValue.Get(FRotator::ZeroRotator);
+	FRotator value = bSnapToEnd ? EndValue.Get(FRotator::ZeroRotator) : StartValue.Get(FRotator::ZeroRotator);
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);

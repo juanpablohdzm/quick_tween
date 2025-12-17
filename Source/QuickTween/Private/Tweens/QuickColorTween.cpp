@@ -7,14 +7,8 @@
 
 void UQuickColorTween::ApplyAlphaValue(float alpha)
 {
-	if (!To.IsBound())
-	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickColorTween::ApplyAlphaValue: 'To' delegate is not bound, unable to interpolate."));
-		return;
-	}
-
 	const FColor startValue = StartValue.Get(FColor::White);
-	const FColor endValue = To.Execute(this);
+	const FColor endValue = EndValue.Get(FColor::White);
 	FColor value;
 	if (GetEaseCurve())
 	{
@@ -49,6 +43,16 @@ void UQuickColorTween::HandleOnStart()
 		StartValue = From.Execute(this);
 	}
 
+	if (!EndValue.IsSet())
+	{
+		if (!To.IsBound())
+		{
+			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickColorTween::HandleOnStartTransition: 'To' delegate is not bound."));
+			return;
+		}
+		EndValue = To.Execute(this);
+	}
+
 	Super::HandleOnStart();
 }
 
@@ -71,13 +75,7 @@ void UQuickColorTween::HandleOnComplete()
 		bSnapToEnd = !bSnapToEnd;
 	}
 
-	if (!To.IsBound())
-	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickColorTween::HandleOnCompleteTransition: 'To' delegate is not bound, unable to complete tween."));
-		return;
-	}
-
-	const FColor value = bSnapToEnd ? To.Execute(this) : StartValue.Get(FColor::White);
+	const FColor value = bSnapToEnd ? EndValue.Get(FColor::White) : StartValue.Get(FColor::White);
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);
