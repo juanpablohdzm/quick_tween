@@ -134,6 +134,8 @@ public:
 
 	virtual void Update(float deltaTime) override;
 
+	virtual void Evaluate(bool bIsActive, float value, const UQuickTweenable* instigator) override;
+
 	[[nodiscard]] virtual bool GetIsPendingKill() const override { return SequenceState == EQuickTweenState::Kill; }
 #pragma endregion
 
@@ -290,9 +292,53 @@ public:
 #pragma endregion
 
 private:
+
+	struct FQuickTweenSequenceStateResult
+	{
+		float ElapsedTime = 0.0f;
+		int32 Loop = 0;
+		float Alpha = 0.0f;
+	};
+
+	/**
+	 * Computes the sequence state for the provided absolute time.
+	 *
+	 * Calculates the elapsed time within the current loop, the current loop index,
+	 * and the normalized alpha (progress 0.0 - 1.0) according to the sequence's
+	 * configuration (loops, loop type, reversal state, durations, etc.).
+	 *
+	 * @param time Absolute time in seconds since the sequence start.
+	 * @return FQuickTweenSequenceStateResult Struct containing ElapsedTime, Loop and Alpha.
+	 */
+	FQuickTweenSequenceStateResult ComputeSequenceState(float time) const;
+
+	/**
+	 * Apply a previously computed sequence state to this sequence.
+	 *
+	 * Updates internal bookkeeping (ElapsedTime, CurrentLoop, current tween group index, ...)
+	 * based on the provided state. Optionally propagates the timing/alpha to child tweens
+	 * so they update to the corresponding positions.
+	 *
+	 * @param state The computed sequence state to apply.
+	 * @param bShouldUpdateTweenState If true, update contained tweens to reflect the applied state.
+	 */
+	void ApplySequenceState(const FQuickTweenSequenceStateResult& state, bool bShouldUpdateTweenState);
+
+	/**
+	 * Apply a normalized alpha value (0.0 - 1.0) to the sequence.
+	 *
+	 * Updates contained tweens/groups to reflect the provided progress.
+	 * Implementations should map this alpha to each tween's local progress and
+	 * set their evaluated values accordingly. If `alpha` is outside the
+	 * canonical range \[0.0, 1.0\], callers or implementations may clamp or
+	 * handle extrapolation as appropriate.
+	 *
+	 * @param alpha Normalized progress value where 0.0 = start and 1.0 = end.
+	 */
+	void ApplyAlphaValue(float alpha);
+
 	bool InstigatorIsOwner(const UQuickTweenable* instigator) const
 	{
-		if (!Owner) return true; // No owner means it's not in a sequence
 		return instigator == Owner;
 	}
 
@@ -340,6 +386,9 @@ private:
 
 	/** Whether the sequence is playing backwards. */
 	bool bIsReversed = false;
+
+	/** Whether the sequence was previously active within a parent sequence. */
+	bool bWasActive = false;
 
 	/** Current loop index. */
 	int32 CurrentLoop = 1;
