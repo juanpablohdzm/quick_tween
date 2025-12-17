@@ -173,7 +173,7 @@ UQuickTweenSequence::FQuickTweenSequenceStateResult UQuickTweenSequence::Compute
 	}
 
 	result.Alpha = localTime / loopDuration;
-	if (LoopType == ELoopType::PingPong && (CurrentLoop & 1))
+	if (GetLoopType() == ELoopType::PingPong && (result.Loop & 1) != 0) // ... odd loop, backward traversal
 	{
 		result.Alpha = 1.f - result.Alpha;
 	}
