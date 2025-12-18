@@ -244,6 +244,12 @@ UQuickTweenSequence::FQuickTweenSequenceStateResult UQuickTweenSequence::Compute
 	result.Loop = FMath::FloorToInt(time / loopDuration);
 
 	float localTime = FMath::Fmod(time, loopDuration);
+
+	if (result.Loop != 0 && FMath::IsNearlyZero(localTime))
+	{
+		localTime  = GetLoopDuration();
+	}
+
 	if (localTime < 0.f)
 	{
 		localTime += loopDuration;

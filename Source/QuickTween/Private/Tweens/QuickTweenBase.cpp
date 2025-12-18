@@ -174,6 +174,12 @@ UQuickTweenBase::FQuickTweenStateResult UQuickTweenBase::ComputeTweenState(float
 
 
 	float localTime = FMath::Fmod(time, GetLoopDuration());
+
+	if (result.Loop != 0 && FMath::IsNearlyZero(localTime))
+	{
+		localTime  = GetLoopDuration();
+	}
+
 	if (localTime < 0.f)
 	{
 		localTime += GetLoopDuration();
