@@ -403,6 +403,9 @@ void UQuickTweenSequence::HandleOnComplete()
 {
 	ElapsedTime = bIsReversed ? 0.0f : GetTotalDuration();
 
+	const bool bSnapToBeginning  = bIsReversed || (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0);
+	ApplyAlphaValue(bSnapToBeginning ? 0.0f : 1.f);
+
 	if (OnComplete.IsBound())
 	{
 		OnComplete.Broadcast(this);
