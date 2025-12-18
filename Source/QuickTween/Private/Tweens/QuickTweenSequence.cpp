@@ -358,7 +358,7 @@ void UQuickTweenSequence::Restart()
 
 void UQuickTweenSequence::Complete(bool bSnapToEnd)
 {
-	if (HasOwner()) return;
+	if (HasOwner() || GetLoops() == INFINITE_LOOPS) return;
 
 	if (RequestStateTransition(EQuickTweenState::Complete))
 	{

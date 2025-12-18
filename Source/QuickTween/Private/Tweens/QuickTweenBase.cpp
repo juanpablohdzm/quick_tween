@@ -238,7 +238,7 @@ void UQuickTweenBase::Restart()
 
 void UQuickTweenBase::Complete(bool bSnapToEnd)
 {
-	if (HasOwner()) return;
+	if (HasOwner() || GetLoops() == INFINITE_LOOPS ) return;
 
 	bSnapToEndOnComplete = bSnapToEnd;
 	if (RequestStateTransition(EQuickTweenState::Complete))
