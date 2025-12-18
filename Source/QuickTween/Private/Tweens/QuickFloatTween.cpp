@@ -47,24 +47,14 @@ void UQuickFloatTween::HandleOnStart()
 
 void UQuickFloatTween::HandleOnComplete()
 {
-	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
-	{
-		if (Setter.IsBound())
-		{
-			Setter.Execute(StartValue.Get(0.0f), this);
-		}
-		CurrentValue = StartValue.Get(0.0f);
-		Super::HandleOnComplete();
-		return;
-	}
-
 	bool bSnapToEnd = GetSnapToEndOnComplete();
 	if (GetIsReversed())
 	{
 		bSnapToEnd = !bSnapToEnd;
 	}
 
-	const float value = bSnapToEnd ? EndValue.Get(0.0f) : StartValue.Get(0.0f);
+	bool bSnapToBeginning = !bSnapToEnd || (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0);
+	const float value = bSnapToBeginning ? StartValue.Get(0.0f) : EndValue.Get(0.0f);
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);

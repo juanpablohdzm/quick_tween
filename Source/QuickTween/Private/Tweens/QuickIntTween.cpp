@@ -47,24 +47,14 @@ void UQuickIntTween::HandleOnStart()
 
 void UQuickIntTween::HandleOnComplete()
 {
-	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
-	{
-		if (Setter.IsBound())
-		{
-			Setter.Execute(StartValue.Get(0), this);
-		}
-		CurrentValue = StartValue.Get(0);
-		Super::HandleOnComplete();
-		return;
-	}
-
 	bool bSnapToEnd = GetSnapToEndOnComplete();
 	if (GetIsReversed())
 	{
 		bSnapToEnd = !bSnapToEnd;
 	}
 
-	const int32 value = bSnapToEnd ? EndValue.Get(0) : StartValue.Get(0);
+	bool bSnapToBeginning = !bSnapToEnd || (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0);
+	const int32 value = bSnapToBeginning ? StartValue.Get(0) : EndValue.Get(0);
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);

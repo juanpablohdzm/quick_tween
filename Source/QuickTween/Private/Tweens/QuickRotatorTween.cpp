@@ -49,24 +49,14 @@ void UQuickRotatorTween::HandleOnStart()
 
 void UQuickRotatorTween::HandleOnComplete()
 {
-	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
-	{
-		if (Setter.IsBound())
-		{
-			Setter.Execute(StartValue.Get(FRotator::ZeroRotator), this);
-		}
-		CurrentValue = StartValue.Get(FRotator::ZeroRotator);
-		Super::HandleOnComplete();
-		return;
-	}
-
 	bool bSnapToEnd = GetSnapToEndOnComplete();
 	if (GetIsReversed())
 	{
 		bSnapToEnd = !bSnapToEnd;
 	}
 
-	FRotator value = bSnapToEnd ? EndValue.Get(FRotator::ZeroRotator) : StartValue.Get(FRotator::ZeroRotator);
+	bool bSnapToBeginning = !bSnapToEnd || (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0);
+	FRotator value = bSnapToBeginning ? StartValue.Get(FRotator::ZeroRotator) : EndValue.Get(FRotator::ZeroRotator);
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);

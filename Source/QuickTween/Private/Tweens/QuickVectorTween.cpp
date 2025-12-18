@@ -45,24 +45,14 @@ void UQuickVectorTween::HandleOnStart()
 
 void UQuickVectorTween::HandleOnComplete()
 {
-	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
-	{
-		if (Setter.IsBound())
-		{
-			Setter.Execute(StartValue.Get(FVector::ZeroVector), this);
-		}
-		CurrentValue = StartValue.Get(FVector::ZeroVector);
-		Super::HandleOnComplete();
-		return;
-	}
-
 	bool bSnapToEnd = GetSnapToEndOnComplete();
 	if (GetIsReversed())
 	{
 		bSnapToEnd = !bSnapToEnd;
 	}
 
-	const FVector value = bSnapToEnd ? EndValue.Get(FVector::ZeroVector) : StartValue.Get(FVector::ZeroVector);
+	bool bSnapToBeginning = !bSnapToEnd || (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0);
+	const FVector value = bSnapToBeginning ? StartValue.Get(FVector::ZeroVector) : EndValue.Get(FVector::ZeroVector);
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);

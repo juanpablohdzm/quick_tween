@@ -47,24 +47,14 @@ void UQuickColorTween::HandleOnStart()
 
 void UQuickColorTween::HandleOnComplete()
 {
-	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
-	{
-		if (Setter.IsBound())
-		{
-			Setter.Execute(StartValue.Get(FColor::White), this);
-		}
-		CurrentValue = StartValue.Get(FColor::White);
-		Super::HandleOnComplete();
-		return;
-	}
-
 	bool bSnapToEnd  = GetSnapToEndOnComplete();
 	if (GetIsReversed())
 	{
 		bSnapToEnd = !bSnapToEnd;
 	}
 
-	const FColor value = bSnapToEnd ? EndValue.Get(FColor::White) : StartValue.Get(FColor::White);
+	bool bSnapToBeginning = !bSnapToEnd || (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0);
+	const FColor value = bSnapToBeginning ? StartValue.Get(FColor::White) : EndValue.Get(FColor::White);
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);
