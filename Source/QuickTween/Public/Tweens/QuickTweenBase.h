@@ -253,7 +253,6 @@ private:
 
 	struct FQuickTweenStateResult
 	{
-		float ElapsedTime = 0.0f;
 		int32 Loop = 0;
 		float Alpha = 0.0f;
 	};
@@ -268,18 +267,6 @@ private:
 	 *         Loop index, and Alpha for use when applying the tween.
 	 */
 	FQuickTweenStateResult ComputeTweenState(float time) const;
-
-	/**
-	 * Apply a previously computed tween state to this tween instance.
-	 *
-	 * This will update internal tracking values (elapsed time, current loop, etc.)
-	 * and drive any evaluation / apply logic so the tween reflects the provided
-	 * state. The optional `instigator` indicates which object caused the change.
-	 *
-	 * @param state Computed state result to apply.
-	 * @param bShouldUpdateTweenState
-	 */
-	void ApplyTweenState(const FQuickTweenStateResult& state, bool bShouldUpdateTweenState);
 
 	/**
 	 * Request a state transition for this tween.

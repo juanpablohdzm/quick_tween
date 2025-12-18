@@ -8,7 +8,7 @@
 
 UQuickTweenSequence::~UQuickTweenSequence()
 {
-	if (!WorldContextObject || Owner)
+	if (HasOwner() || !WorldContextObject)
 	{
 		return;
 	}
@@ -128,66 +128,7 @@ void UQuickTweenSequence::Update(float deltaTime)
 	ElapsedTime += (bIsReversed ? -1.f : 1.f) * deltaTime;
 
 	FQuickTweenSequenceStateResult state = ComputeSequenceState(ElapsedTime);
-	ApplySequenceState(state, true);
-}
 
-void UQuickTweenSequence::Evaluate(bool bIsActive, float value, const UQuickTweenable* instigator)
-{
-	if (!HasOwner() || !InstigatorIsOwner(instigator)) return;
-
-	if (bWasActive != bIsActive)
-	{
-		auto simulateOnStart = [&]()
-		{
-			CurrentLoop = instigator->GetIsReversed() ? GetLoops() - 1 : 0;
-			HandleOnStart();
-		};
-		if (bIsActive)
-		{
-			simulateOnStart();
-		}
-		bWasActive = bIsActive;
-	}
-
-	if (!bIsActive)
-	{
-		return;
-	}
-
-	bIsReversed = instigator->GetIsReversed();
-	ElapsedTime = value * GetTotalDuration();
-
-	FQuickTweenSequenceStateResult state = ComputeSequenceState(ElapsedTime);
-	ApplySequenceState(state, false);
-}
-
-UQuickTweenSequence::FQuickTweenSequenceStateResult UQuickTweenSequence::ComputeSequenceState(float time) const
-{
-	FQuickTweenSequenceStateResult result;
-
-	result.ElapsedTime = time;
-
-	const float loopDuration = GetLoopDuration();
-
-	result.Loop = FMath::FloorToInt(result.ElapsedTime / loopDuration);
-
-	float localTime = FMath::Fmod(result.ElapsedTime, loopDuration);
-	if (localTime < 0.f)
-	{
-		localTime += loopDuration;
-	}
-
-	result.Alpha = localTime / loopDuration;
-	if (GetLoopType() == ELoopType::PingPong && (result.Loop & 1) != 0) // ... odd loop, backward traversal
-	{
-		result.Alpha = 1.f - result.Alpha;
-	}
-
-	return result;
-}
-
-void UQuickTweenSequence::ApplySequenceState(const FQuickTweenSequenceStateResult& state, bool bShouldUpdateTweenState)
-{
 	// ... in case deltaTime is large enough to cross multiple loops in a single update
 	if (state.Loop != CurrentLoop)
 	{
@@ -206,37 +147,20 @@ void UQuickTweenSequence::ApplySequenceState(const FQuickTweenSequenceStateResul
 	//... check for completion
 	if (Loops != INFINITE_LOOPS)
 	{
-		auto HandleCompletion = [&](bool bUpdateState)
+		if ((!bIsReversed && CurrentLoop >= Loops) || (bIsReversed && ElapsedTime < 0.0f))
 		{
-			if (bUpdateState)
+			if (RequestStateTransition(EQuickTweenState::Complete))
 			{
-				if (RequestStateTransition(EQuickTweenState::Complete))
+				HandleOnComplete();
+				if (bAutoKill && RequestStateTransition(EQuickTweenState::Kill))
 				{
-					HandleOnComplete();
-					if (bAutoKill && RequestStateTransition(EQuickTweenState::Kill))
-					{
-						HandleOnKill();
-					}
+					HandleOnKill();
 				}
-				return;
 			}
-
-			HandleOnComplete();
-		};
-
-		if (!bIsReversed && CurrentLoop >= Loops)
-		{
-			HandleCompletion(bShouldUpdateTweenState);
-			return;
-		}
-
-		if (bIsReversed && ElapsedTime < 0.0f)
-		{
-			HandleCompletion(bShouldUpdateTweenState);
 			return;
 		}
 	}
-	
+
 	ApplyAlphaValue(state.Alpha);
 
 	if (OnUpdate.IsBound())
@@ -245,16 +169,116 @@ void UQuickTweenSequence::ApplySequenceState(const FQuickTweenSequenceStateResul
 	}
 }
 
+void UQuickTweenSequence::Evaluate(bool bIsActive, float value, const UQuickTweenable* instigator)
+{
+	if (!HasOwner() || !InstigatorIsOwner(instigator)) return;
+
+	bIsReversed = instigator->GetIsReversed();
+	ElapsedTime = FMath::Clamp(value * GetTotalDuration(), 0.f, GetTotalDuration());
+
+	if (bWasActive != bIsActive)
+	{
+		auto simulateOnStart = [&]()
+		{
+			CurrentLoop = bIsReversed ? GetLoops() - 1 : 0;
+			HandleOnStart();
+		};
+
+		auto shouldSimulateOnComplete = [&]()
+		{
+			if ((bIsReversed && FMath::IsNearlyZero(ElapsedTime)) ||
+				(!bIsReversed && FMath::IsNearlyEqual(ElapsedTime, GetTotalDuration())))
+			{
+				CurrentLoop = bIsReversed ? 0 : GetLoops() - 1;
+				HandleOnComplete();
+			}
+		};
+
+		if (bIsActive)
+		{
+			simulateOnStart();
+		}
+		else
+		{
+			shouldSimulateOnComplete();
+		}
+		bWasActive = bIsActive;
+	}
+
+	if (!bIsActive)
+	{
+		return;
+	}
+
+	FQuickTweenSequenceStateResult state = ComputeSequenceState(ElapsedTime);
+
+	// ... in case deltaTime is large enough to cross multiple loops in a single update
+	if (state.Loop != CurrentLoop)
+	{
+		const int32 crossed = FMath::Abs(state.Loop - CurrentLoop);
+		CurrentLoop = state.Loop;
+
+		if (OnLoop.IsBound())
+		{
+			for (int32 i = 0; i < crossed; ++i)
+			{
+				OnLoop.Broadcast(this);
+			}
+		}
+	}
+
+	ApplyAlphaValue(state.Alpha);
+
+	if (OnUpdate.IsBound())
+	{
+		OnUpdate.Broadcast(this);
+	}
+}
+
+UQuickTweenSequence::FQuickTweenSequenceStateResult UQuickTweenSequence::ComputeSequenceState(float time) const
+{
+	FQuickTweenSequenceStateResult result;
+
+	const float loopDuration = GetLoopDuration();
+
+	result.Loop = FMath::FloorToInt(time / loopDuration);
+
+	float localTime = FMath::Fmod(time, loopDuration);
+	if (localTime < 0.f)
+	{
+		localTime += loopDuration;
+	}
+
+	result.Alpha = localTime / loopDuration;
+	if (GetLoopType() == ELoopType::PingPong && (result.Loop & 1) != 0) // ... odd loop, backward traversal
+	{
+		result.Alpha = 1.f - result.Alpha;
+	}
+
+	return result;
+}
+
 void UQuickTweenSequence::ApplyAlphaValue(float alpha)
 {
 	float sequenceTime = alpha * GetLoopDuration();
 	for (FQuickTweenSequenceGroup& group : TweenGroups)
 	{
-		const bool bIsGroupActive = sequenceTime >= group.StartTime && sequenceTime < (group.StartTime + group.Duration);
+		const float startTime = group.StartTime;
+		const float endTime = (group.StartTime + group.Duration);
+		const bool bIsGroupActive = sequenceTime >= startTime && sequenceTime <= endTime;
+
 		for (UQuickTweenable* tween : group.Tweens)
 		{
-			const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration();
-			tween->Evaluate(bIsGroupActive, childTime, this);
+			const bool bIsActive = bIsGroupActive &&  /*isSpecificTweenActive*/ (sequenceTime >= startTime && sequenceTime <= (startTime + tween->GetTotalDuration()));
+			if (bIsActive)
+			{
+				const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration();
+				tween->Evaluate(/*bIsActive*/ true, childTime, this);
+			}
+			else
+			{
+				tween->Evaluate(/*bIsActive*/ false, bIsReversed ? 0.0f : 1.0f, this);
+			}
 		}
 	}
 }

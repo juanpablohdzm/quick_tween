@@ -295,7 +295,6 @@ private:
 
 	struct FQuickTweenSequenceStateResult
 	{
-		float ElapsedTime = 0.0f;
 		int32 Loop = 0;
 		float Alpha = 0.0f;
 	};
@@ -311,18 +310,6 @@ private:
 	 * @return FQuickTweenSequenceStateResult Struct containing ElapsedTime, Loop and Alpha.
 	 */
 	FQuickTweenSequenceStateResult ComputeSequenceState(float time) const;
-
-	/**
-	 * Apply a previously computed sequence state to this sequence.
-	 *
-	 * Updates internal bookkeeping (ElapsedTime, CurrentLoop, current tween group index, ...)
-	 * based on the provided state. Optionally propagates the timing/alpha to child tweens
-	 * so they update to the corresponding positions.
-	 *
-	 * @param state The computed sequence state to apply.
-	 * @param bShouldUpdateTweenState If true, update contained tweens to reflect the applied state.
-	 */
-	void ApplySequenceState(const FQuickTweenSequenceStateResult& state, bool bShouldUpdateTweenState);
 
 	/**
 	 * Apply a normalized alpha value (0.0 - 1.0) to the sequence.
