@@ -5,9 +5,14 @@
 
 
 // Add default functionality here for any IQuickTweenable functions that are not pure virtual.
-void UQuickTweenable::Update(float deltaTime, UQuickTweenable* instigator)
+void UQuickTweenable::Update(float deltaTime)
 {
 	ensureAlwaysMsgf(false, TEXT("Update not implemented in IQuickTweenable"));
+}
+
+void UQuickTweenable::Evaluate(bool bIsActive, float value, const UQuickTweenable* instigator)
+{
+	ensureAlwaysMsgf(false, TEXT("Evaluate not implemented in IQuickTweenable"));
 }
 
 bool UQuickTweenable::GetIsPlaying() const
@@ -27,38 +32,44 @@ void UQuickTweenable::SetOwner(UQuickTweenable* owner)
 	ensureAlwaysMsgf(false, TEXT("SetOwner not implemented in IQuickTweenable"));
 }
 
-void UQuickTweenable::Play(UQuickTweenable* instigator)
+void UQuickTweenable::Play()
 {
 	ensureAlwaysMsgf(false, TEXT("Play not implemented in IQuickTweenable"));
 }
 
-void UQuickTweenable::Pause(UQuickTweenable* instigator)
+void UQuickTweenable::Pause()
 {
 	ensureAlwaysMsgf(false, TEXT("Pause not implemented in IQuickTweenable"));
 }
 
-void UQuickTweenable::Reverse(UQuickTweenable* instigator)
+void UQuickTweenable::Reverse()
 {
 	ensureAlwaysMsgf(false, TEXT("Reverse not implemented in IQuickTweenable"));
 }
 
-void UQuickTweenable::Restart(UQuickTweenable* instigator)
+void UQuickTweenable::Restart()
 {
 	ensureAlwaysMsgf(false, TEXT("Restart not implemented in IQuickTweenable"));
 }
 
-void UQuickTweenable::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
+void UQuickTweenable::Complete(bool bSnapToEnd)
 {
 	ensureAlwaysMsgf(false, TEXT("Complete not implemented in IQuickTweenable"));
 }
 
-void UQuickTweenable::Kill(UQuickTweenable* instigator)
+void UQuickTweenable::Kill()
 {
 	ensureAlwaysMsgf(false, TEXT("Kill not implemented in IQuickTweenable"));
 }
-float UQuickTweenable::GetDuration() const
+float UQuickTweenable::GetLoopDuration() const
 {
 	ensureAlwaysMsgf(false, TEXT("GetDuration not implemented in IQuickTweenable"));
+	return 0.0f;
+}
+
+float UQuickTweenable::GetTotalDuration() const
+{
+	ensureAlwaysMsgf(false, TEXT("GetTotalDuration not implemented in IQuickTweenable"));
 	return 0.0f;
 }
 

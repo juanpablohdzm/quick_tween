@@ -31,11 +31,20 @@ UENUM(BlueprintType)
 enum class EQuickTweenState : uint8
 {
 	Idle = 0,
-	Start = 1 << 0,
-	Play = 1 << 1,
-	Pause = 1 << 2,
-	Complete = 1 << 3,
-	Kill = 1 << 4,
+	Play = 1 << 0,
+	Pause = 1 << 1,
+	Complete = 1 << 2,
+	Kill = 1 << 3,
+};
+
+// Valid state transitions for QuickTweenState
+static TMap<EQuickTweenState, TArray<EQuickTweenState>> ValidTransitions =
+{
+	{EQuickTweenState::Idle, {EQuickTweenState::Play, EQuickTweenState::Kill}},
+	{EQuickTweenState::Play,    {EQuickTweenState::Pause, EQuickTweenState::Complete, EQuickTweenState::Kill, EQuickTweenState::Idle}},
+	{EQuickTweenState::Pause,     {EQuickTweenState::Play, EQuickTweenState::Complete, EQuickTweenState::Kill, EQuickTweenState::Idle}},
+	{EQuickTweenState::Complete,  {EQuickTweenState::Idle, EQuickTweenState::Kill}},
+	{EQuickTweenState::Kill,     {}},
 };
 
 

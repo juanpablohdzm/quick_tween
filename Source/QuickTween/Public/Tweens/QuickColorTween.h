@@ -62,13 +62,13 @@ public:
 	/**
 	 * Create a new UQuickColorTween instance and initialize it.
 	 *
-	 * Note: The start value will be cached from the component's current location at the first update.
+	 * Note: The start and end value will be cached at the first update.
 	 *
 	 * @param worldContextObject Context object for world access.
 	 * @param from Function to get the FROM value.
 	 * @param to Function to get the TO value.
 	 * @param setter Function to apply the interpolated value.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Multiplier for the tween's speed.
 	 * @param easeType Type of easing to apply.
 	 * @param easeCurve Optional custom curve for easing.
@@ -126,14 +126,17 @@ public:
 
 	/** Get the starting FColor value. Set after the first tick */
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] FColor GetStartValue() const { return StartValue.Get(FColor::Black); }
+	[[nodiscard]] FColor GetStartValue() const { return StartValue.Get(FColor::White); }
 
+	/** Get the ending FColor value. Set after the first tick */
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] FColor GetEndValue() const { return EndValue.Get(FColor::White); }
 protected:
 	virtual void ApplyAlphaValue(float alpha) override;
 
-	virtual void HandleOnStartTransition() override;
+	virtual void HandleOnStart() override;
 
-	virtual void HandleOnCompleteTransition(bool bSnapToEnd = true) override;
+	virtual void HandleOnComplete() override;
 
 private:
 	/** Starting function returning FColor. */
@@ -144,6 +147,9 @@ private:
 
 	/** Starting value. */
 	TOptional<FColor> StartValue;
+
+	/** Target value. */
+	TOptional<FColor> EndValue;
 
 	/** Function to set the interpolated FColor value. */
 	FNativeColorSetter Setter;

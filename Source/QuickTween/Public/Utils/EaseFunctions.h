@@ -126,6 +126,12 @@ public:
                                    1.f - FMath::Sqrt(1.f - FMath::Pow(Alpha * 2.f - 1.f, 2.f)), Path);
         }
     }
+
+    static T Ease(T Start, T End, float Alpha, const UCurveFloat* EaseCurve, EEasePath Path = EEasePath::Default)
+    {
+        ensureAlways(EaseCurve);
+        return TEaseLerp<T>::Lerp(Start, End, EaseCurve->GetFloatValue(Alpha), Path);
+    }
     // ---------------------
     // Sine
     // ---------------------

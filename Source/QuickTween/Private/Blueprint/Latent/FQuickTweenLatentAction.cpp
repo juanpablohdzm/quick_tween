@@ -40,10 +40,6 @@ void FQuickTweenLatentAction::UpdateOperation(FLatentResponse& Response)
 			}
 		}
 	}
-	else if (*StepPtr == EQuickTweenLatentSteps::OnUpdate)
-	{
-		Response.TriggerLink(ExecutionFunction, OutputLink, CallbackTarget);
-	}
 
 	bIsFirstUpdate = false;
 }

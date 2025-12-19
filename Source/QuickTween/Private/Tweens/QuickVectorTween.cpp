@@ -8,13 +8,9 @@
 
 void UQuickVectorTween::ApplyAlphaValue(float alpha)
 {
-	if (!To.IsBound())
-	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::ApplyAlphaValue: 'To' delegate is not bound, unable to interpolate."));
-		return;
-	}
-
-	const FVector value = FEaseFunctions<FVector>::Ease(StartValue.Get(FVector::ZeroVector), To.Execute(this), alpha, GetEaseType());
+	const FVector value = GetEaseCurve() ?
+	FEaseFunctions<FVector>::Ease(StartValue.Get(FVector::ZeroVector), EndValue.Get(FVector::ZeroVector), alpha, GetEaseCurve()) :
+	FEaseFunctions<FVector>::Ease(StartValue.Get(FVector::ZeroVector), EndValue.Get(FVector::ZeroVector), alpha, GetEaseType());
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);
@@ -22,47 +18,46 @@ void UQuickVectorTween::ApplyAlphaValue(float alpha)
 	CurrentValue = value;
 }
 
-void UQuickVectorTween::HandleOnStartTransition()
+void UQuickVectorTween::HandleOnStart()
 {
-	if (!From.IsBound())
+	if (!StartValue.IsSet())
 	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::HandleOnStartTransition: 'From' delegate is not bound."));
-		return;
+		if (!From.IsBound())
+		{
+			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::HandleOnStartTransition: 'From' delegate is not bound."));
+			return;
+		}
+		StartValue = From.Execute(this);
 	}
-	StartValue = From.Execute(this);
 
-	Super::HandleOnStartTransition();
+	if (!EndValue.IsSet())
+	{
+		if (!To.IsBound())
+		{
+			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::HandleOnStartTransition: 'To' delegate is not bound."));
+			return;
+		}
+		EndValue = To.Execute(this);
+	}
+
+	Super::HandleOnStart();
 }
 
-void UQuickVectorTween::HandleOnCompleteTransition(bool bSnapToEnd)
+void UQuickVectorTween::HandleOnComplete()
 {
-	Super::HandleOnCompleteTransition();
-
-	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
-	{
-		if (Setter.IsBound())
-		{
-			Setter.Execute(StartValue.Get(FVector::ZeroVector), this);
-		}
-		CurrentValue = StartValue.Get(FVector::ZeroVector);
-		return;
-	}
-
+	bool bSnapToEnd = GetSnapToEndOnComplete();
 	if (GetIsReversed())
 	{
 		bSnapToEnd = !bSnapToEnd;
 	}
 
-	if (!To.IsBound())
-	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickVectorTween::HandleOnCompleteTransition: 'To' delegate is not bound, unable to interpolate."));
-		return;
-	}
-
-	const FVector value = bSnapToEnd ? To.Execute(this) : StartValue.Get(FVector::ZeroVector);
+	bool bSnapToBeginning = !bSnapToEnd || (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0);
+	const FVector value = bSnapToBeginning ? StartValue.Get(FVector::ZeroVector) : EndValue.Get(FVector::ZeroVector);
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);
 	}
 	CurrentValue = value;
+
+	Super::HandleOnComplete();
 }

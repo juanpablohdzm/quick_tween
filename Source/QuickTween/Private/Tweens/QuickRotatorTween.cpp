@@ -7,14 +7,10 @@
 
 void UQuickRotatorTween::ApplyAlphaValue(float alpha)
 {
-	if (!To.IsBound())
-	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickRotatorTween::Update: 'To' delegate is not bound, unable to interpolate."));
-		return;
-	}
-
 	EEasePath path = bShortestPath ? EEasePath::Shortest : EEasePath::Longest;
-	const FRotator value = FEaseFunctions<FRotator>::Ease(StartValue.Get(FRotator::ZeroRotator), To.Execute(this), alpha, GetEaseType(), path);
+	const FRotator value = GetEaseCurve() ?
+	FEaseFunctions<FRotator>::Ease(StartValue.Get(FRotator::ZeroRotator), EndValue.Get(FRotator::ZeroRotator), alpha, GetEaseCurve(), path) :
+	FEaseFunctions<FRotator>::Ease(StartValue.Get(FRotator::ZeroRotator), EndValue.Get(FRotator::ZeroRotator), alpha, GetEaseType(), path);
 
 	if (Setter.IsBound())
 	{
@@ -24,48 +20,48 @@ void UQuickRotatorTween::ApplyAlphaValue(float alpha)
 	CurrentValue = value;
 }
 
-void UQuickRotatorTween::HandleOnStartTransition()
+void UQuickRotatorTween::HandleOnStart()
 {
-	if (!From.IsBound())
+	if (!StartValue.IsSet())
 	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickRotatorTween::HandleOnStartTransition: 'From' delegate is not bound."));
-		return;
+		if (!From.IsBound())
+		{
+			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickRotatorTween::HandleOnStartTransition: 'From' delegate is not bound."));
+			return;
+		}
+
+		StartValue = From.Execute(this);
 	}
 
-	StartValue = From.Execute(this);
+	if (!EndValue.IsSet())
+	{
+		if (!To.IsBound())
+		{
+			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickRotatorTween::HandleOnStartTransition: 'To' delegate is not bound."));
+			return;
+		}
 
-	Super::HandleOnStartTransition();
+		EndValue = To.Execute(this);
+	}
+
+	Super::HandleOnStart();
 }
 
-void UQuickRotatorTween::HandleOnCompleteTransition(bool bSnapToEnd)
+void UQuickRotatorTween::HandleOnComplete()
 {
-	Super::HandleOnCompleteTransition(bSnapToEnd);
-
-	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
-	{
-		if (Setter.IsBound())
-		{
-			Setter.Execute(StartValue.Get(FRotator::ZeroRotator), this);
-		}
-		CurrentValue = StartValue.Get(FRotator::ZeroRotator);
-		return;
-	}
-
+	bool bSnapToEnd = GetSnapToEndOnComplete();
 	if (GetIsReversed())
 	{
 		bSnapToEnd = !bSnapToEnd;
 	}
 
-	if (!To.IsBound())
-	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickRotatorTween::HandleOnCompleteTransition: 'To' delegate is not bound, unable to complete tween."));
-		return;
-	}
-
-	FRotator value = bSnapToEnd ? To.Execute(this) : StartValue.Get(FRotator::ZeroRotator);
+	bool bSnapToBeginning = !bSnapToEnd || (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0);
+	FRotator value = bSnapToBeginning ? StartValue.Get(FRotator::ZeroRotator) : EndValue.Get(FRotator::ZeroRotator);
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);
 	}
 	CurrentValue = value;
+
+	Super::HandleOnComplete();
 }
