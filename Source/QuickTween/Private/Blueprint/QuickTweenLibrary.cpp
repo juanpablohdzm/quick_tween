@@ -30,7 +30,8 @@ UQuickTweenSequence* UQuickTweenLibrary::QuickTweenCreateSequence(
 	ELoopType loopType,
 	const FString& tweenTag,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused)
+	bool bShouldPlayWhilePaused,
+	bool bShouldSnapToEndOnComplete)
 {
 	return UQuickTweenSequence::CreateSequence(
 		worldContextObject,
@@ -55,7 +56,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenCreateTweenVector(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!setter.IsBound())
 	{
@@ -80,7 +82,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenCreateTweenVector(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -99,7 +102,8 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenCreateTweenRotator(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!setter.IsBound())
 	{
@@ -125,7 +129,8 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenCreateTweenRotator(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -143,7 +148,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenCreateTweenFloat(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!setter.IsBound())
 	{
@@ -168,7 +174,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenCreateTweenFloat(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -186,7 +193,8 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenCreateTweenVector2D(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!setter.IsBound())
 	{
@@ -211,7 +219,8 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenCreateTweenVector2D(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -229,7 +238,8 @@ UQuickColorTween* UQuickTweenLibrary::QuickTweenCreateTweenColor(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!setter.IsBound())
 	{
@@ -254,7 +264,8 @@ UQuickColorTween* UQuickTweenLibrary::QuickTweenCreateTweenColor(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -272,7 +283,8 @@ UQuickIntTween* UQuickTweenLibrary::QuickTweenCreateTweenInt(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!setter.IsBound())
 	{
@@ -297,7 +309,8 @@ UQuickIntTween* UQuickTweenLibrary::QuickTweenCreateTweenInt(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -315,7 +328,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!component)
 	{
@@ -359,7 +373,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveTo_SceneComponent(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -376,7 +391,8 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveTo_Widget(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!widget)
 	{
@@ -428,7 +444,8 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveTo_Widget(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -446,7 +463,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveBy_SceneComponent(
 	const FString& tweenTag, 
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!component)
 	{
@@ -490,7 +508,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenMoveBy_SceneComponent(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay);
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete);
 }
 
 UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveBy_Widget(
@@ -506,7 +525,8 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveBy_Widget(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!widget)
 	{
@@ -558,7 +578,8 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenMoveBy_Widget(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -576,7 +597,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!component)
 	{
@@ -620,7 +642,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleTo_SceneComponent(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -637,7 +660,8 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenScaleTo_Widget(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!widget)
 	{
@@ -677,7 +701,8 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenScaleTo_Widget(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -695,7 +720,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleBy_SceneComponent(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!component)
 	{
@@ -739,7 +765,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenScaleBy_SceneComponent(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -756,7 +783,8 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenScaleBy_Widget(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!widget)
 	{
@@ -796,7 +824,8 @@ UQuickVector2DTween* UQuickTweenLibrary::QuickTweenScaleBy_Widget(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -815,7 +844,8 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!component)
 	{
@@ -860,7 +890,8 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateTo_SceneComponent(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -877,7 +908,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateTo_Widget(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!widget)
 	{
@@ -917,7 +949,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateTo_Widget(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -936,7 +969,8 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!component)
 	{
@@ -994,7 +1028,8 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenRotateBy_SceneComponent(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -1011,7 +1046,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateBy_Widget(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!widget)
 	{
@@ -1051,7 +1087,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateBy_Widget(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -1069,7 +1106,8 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!component)
 	{
@@ -1121,7 +1159,8 @@ UQuickRotatorTween* UQuickTweenLibrary::QuickTweenLookAt_SceneComponent(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -1141,7 +1180,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!component)
 	{
@@ -1195,7 +1235,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenRotateAroundPoint_SceneComponent
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -1212,7 +1253,8 @@ UQuickColorTween* UQuickTweenLibrary::QuickTweenChangeColorTo_Image(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!widget)
 	{
@@ -1252,7 +1294,8 @@ UQuickColorTween* UQuickTweenLibrary::QuickTweenChangeColorTo_Image(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -1269,7 +1312,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenChangeOpacityTo_Widget(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!widget)
 	{
@@ -1309,7 +1353,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenChangeOpacityTo_Widget(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -1326,7 +1371,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenChangeFovTo_Camera(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!camera)
 	{
@@ -1366,7 +1412,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenChangeFovTo_Camera(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -1383,7 +1430,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenChangeDistanceTo_SpringArm(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!springArm)
 	{
@@ -1423,7 +1471,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenChangeDistanceTo_SpringArm(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -1440,7 +1489,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenChangeDistanceBy_SpringArm(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!springArm)
 	{
@@ -1480,7 +1530,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenChangeDistanceBy_SpringArm(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -1498,7 +1549,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenVectorParameterTo_Material(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!material)
 	{
@@ -1540,7 +1592,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenVectorParameterTo_Material(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -1558,7 +1611,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenVectorParameterBy_Material(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!material)
 	{
@@ -1600,7 +1654,8 @@ UQuickVectorTween* UQuickTweenLibrary::QuickTweenVectorParameterBy_Material(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -1618,7 +1673,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenScalarParameterTo_Material(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!material)
 	{
@@ -1660,7 +1716,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenScalarParameterTo_Material(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -1678,7 +1735,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenScalarParameterBy_Material(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!material)
 	{
@@ -1720,7 +1778,8 @@ UQuickFloatTween* UQuickTweenLibrary::QuickTweenScalarParameterBy_Material(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -1738,7 +1797,8 @@ UQuickColorTween* UQuickTweenLibrary::QuickTweenColorParameterTo_Material(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!material)
 	{
@@ -1780,7 +1840,8 @@ UQuickColorTween* UQuickTweenLibrary::QuickTweenColorParameterTo_Material(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 
@@ -1798,7 +1859,8 @@ UQuickColorTween* UQuickTweenLibrary::QuickTweenColorParameterBy_Material(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	if (!material)
 	{
@@ -1849,7 +1911,8 @@ UQuickColorTween* UQuickTweenLibrary::QuickTweenColorParameterBy_Material(
 		tweenTag,
 		bShouldAutoKill,
 		bShouldPlayWhilePaused,
-		bShouldAutoPlay
+		bShouldAutoPlay,
+		bShouldSnapToEndOnComplete
 	);
 }
 

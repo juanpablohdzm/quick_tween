@@ -60,8 +60,9 @@ private:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& id = FString(),
-		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false);
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldSnapToEndOnComplete = true);
 
 public:
 	virtual ~UQuickTweenSequence() override;
@@ -77,6 +78,7 @@ public:
 	 * @param id Optional identifier for the sequence.
 	 * @param bShouldAutoKill Whether to auto-kill the sequence on completion.
 	 * @param bShouldPlayWhilePaused Whether the sequence should play while the game is paused.
+	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created tween sequence.
 	 */
 	static UQuickTweenSequence* CreateSequence(
@@ -84,8 +86,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& id = FString(),
-		bool bShouldAutoKill = false,
-		bool bShouldPlayWhilePaused = false)
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldSnapToEndOnComplete = true)
 	{
 		UQuickTweenSequence* sequence = NewObject<UQuickTweenSequence>(worldContextObject);
 		sequence->SetUp(
@@ -94,7 +97,8 @@ public:
 			loopType,
 			id,
 			bShouldAutoKill,
-			bShouldPlayWhilePaused);
+			bShouldPlayWhilePaused,
+			bShouldSnapToEndOnComplete);
 		return sequence;
 	}
 
@@ -126,7 +130,7 @@ public:
 
 	virtual void Reverse() override;
 
-	virtual void Complete(bool bSnapToEnd = true) override;
+	virtual void Complete() override;
 
 	virtual void Restart() override;
 

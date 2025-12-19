@@ -26,7 +26,8 @@ void UQuickTweenSequence::SetUp(
 	ELoopType loopType,
 	const FString& id,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused)
+	bool bShouldPlayWhilePaused,
+	bool bShouldSnapToEndOnComplete)
 {
 	Loops = loops;
 	LoopType = loopType;
@@ -34,6 +35,12 @@ void UQuickTweenSequence::SetUp(
 	WorldContextObject = worldContextObject;
 	bAutoKill	= bShouldAutoKill;
 	bPlayWhilePaused = bShouldPlayWhilePaused;
+	bSnapToEndOnComplete = bShouldSnapToEndOnComplete;
+
+	if (!ensureAlwaysMsgf(WorldContextObject, TEXT("UQuickTweenSequence::SetUp: WorldContextObject is null.")))
+	{
+		return;
+	}
 
 	UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject);
 	if (!manager)
@@ -418,11 +425,10 @@ void UQuickTweenSequence::Restart()
 	RequestStateTransition(EQuickTweenState::Idle);
 }
 
-void UQuickTweenSequence::Complete(bool bSnapToEnd)
+void UQuickTweenSequence::Complete()
 {
 	if (HasOwner() || GetLoops() == INFINITE_LOOPS) return;
 
-	bSnapToEndOnComplete = bSnapToEnd;
 	if (RequestStateTransition(EQuickTweenState::Complete))
 	{
 		HandleOnComplete();

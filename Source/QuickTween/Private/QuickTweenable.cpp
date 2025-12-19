@@ -52,7 +52,7 @@ void UQuickTweenable::Restart()
 	ensureAlwaysMsgf(false, TEXT("Restart not implemented in IQuickTweenable"));
 }
 
-void UQuickTweenable::Complete(bool bSnapToEnd)
+void UQuickTweenable::Complete()
 {
 	ensureAlwaysMsgf(false, TEXT("Complete not implemented in IQuickTweenable"));
 }

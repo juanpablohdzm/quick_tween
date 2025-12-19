@@ -28,7 +28,8 @@ void UQuickTweenBase::SetUp(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay)
+	bool bShouldAutoPlay,
+	bool bShouldSnapToEndOnComplete)
 {
 	WorldContextObject = worldContextObject;
 	Duration = duration;
@@ -40,10 +41,21 @@ void UQuickTweenBase::SetUp(
 	TweenTag = tweenTag;
 	bAutoKill = bShouldAutoKill;
 	bPlayWhilePaused = bShouldPlayWhilePaused;
+	bSnapToEndOnComplete = bShouldSnapToEndOnComplete;
+
+	if (!ensureAlwaysMsgf(WorldContextObject, TEXT("UQuickTweenBase::SetUp: WorldContextObject is null.")))
+	{
+		return;
+	}
 
 	if (!ensureAlwaysMsgf(Duration > 0.f, TEXT("UQuickTweenBase::SetUp: Duration must be greater than zero, default to one.")))
 	{
 		Duration = 1.f;
+	}
+
+	if (!ensureAlwaysMsgf(TimeScale > 0.f, TEXT("UQuickTweenBase::SetUp: TimeScale must be greater than zero, default to one.")))
+	{
+		TimeScale = 1.f;
 	}
 
 	UQuickTweenManager* manager = UQuickTweenManager::Get(WorldContextObject);
@@ -236,11 +248,10 @@ void UQuickTweenBase::Restart()
 	RequestStateTransition(EQuickTweenState::Idle);
 }
 
-void UQuickTweenBase::Complete(bool bSnapToEnd)
+void UQuickTweenBase::Complete()
 {
 	if (HasOwner() || GetLoops() == INFINITE_LOOPS ) return;
 
-	bSnapToEndOnComplete = bSnapToEnd;
 	if (RequestStateTransition(EQuickTweenState::Complete))
 	{
 		HandleOnComplete();

@@ -49,11 +49,9 @@ public:
 	virtual void Restart();
 
 	/** Immediately complete the tween.
-	 *  If the tween is reversed bSnapToEnd is inverted.
-	 * @param bSnapToEnd If true, snap properties to final state when completing.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Complete(bool bSnapToEnd = true);
+	virtual void Complete();
 
 	/** Forcefully kill the tween and mark it for removal.
 	 */
