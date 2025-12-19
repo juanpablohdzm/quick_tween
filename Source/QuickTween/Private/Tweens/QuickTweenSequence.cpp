@@ -4,7 +4,6 @@
 #include "Tweens/QuickTweenSequence.h"
 
 #include "QuickTweenManager.h"
-#include "Kismet/GameplayStatics.h"
 #include "Utils/CommonValues.h"
 
 UQuickTweenSequence::~UQuickTweenSequence()
@@ -352,18 +351,22 @@ void UQuickTweenSequence::ApplyAlphaValue(float alpha)
 
 float UQuickTweenSequence::GetLoopDuration() const
 {
-	return Algo::Accumulate(TweenGroups, 0.0f, [](float sum, const FQuickTweenSequenceGroup& group)
+	float sum = 0.0f;
+	for (const FQuickTweenSequenceGroup& group : TweenGroups)
 	{
-		return sum + group.Duration;
-	});
+		sum += group.Duration;
+	}
+	return sum;
 }
 
 int32 UQuickTweenSequence::GetNumTweens() const
 {
-	return Algo::Accumulate(TweenGroups, 0, [](int32 sum, const FQuickTweenSequenceGroup& group)
+	int32 sum = 0;
+	for (const FQuickTweenSequenceGroup& group : TweenGroups)
 	{
-		return sum + group.Tweens.Num();
-	});
+		sum += group.Tweens.Num();
+	}
+	return sum;
 }
 
 UQuickTweenable* UQuickTweenSequence::GetTween(int32 index) const
