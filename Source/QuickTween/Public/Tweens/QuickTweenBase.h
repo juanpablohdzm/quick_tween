@@ -35,7 +35,7 @@ public:
 	 * @param timeScale Time scale multiplier.
 	 * @param easeType Type of easing to use.
 	 * @param easeCurve Optional custom curve for easing.
-	 * @param loops Number of loops (0 = infinite).
+	 * @param loops Number of loops (-1 = infinite).
 	 * @param loopType Looping behavior.
 	 * @param tweenTag Optional tag for identification.
 	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.

@@ -72,7 +72,7 @@ public:
 	 * Creates a new tween sequence with the specified parameters.
 	 *
 	 * @param worldContextObject Context object for world access.
-	 * @param loops Number of loops (0 = infinite).
+	 * @param loops Number of loops (-1 = infinite).
 	 * @param loopType Looping behavior.
 	 * @param id Optional identifier for the sequence.
 	 * @param bShouldAutoKill Whether to auto-kill the sequence on completion.
