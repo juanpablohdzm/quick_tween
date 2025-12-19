@@ -52,7 +52,6 @@ public:
 	 * @param tweenTag Optional tag to identify the created tween.
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickTweenSequence.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Sequence | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -63,9 +62,8 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
-		bool bShouldPlayWhilePaused = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoKill = false,
+		bool bShouldPlayWhilePaused = false);
 
 	/**
 	 * Create a latent vector tween.
@@ -89,7 +87,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickVectorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -107,10 +104,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 
 	/**
@@ -135,7 +131,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickRotatorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Rotator | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -154,10 +149,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent float tween.
@@ -180,7 +174,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickFloatTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Rotator | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -198,10 +191,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent 2D vector tween.
@@ -225,7 +217,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickVector2DTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -243,10 +234,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent color tween.
@@ -270,7 +260,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickColorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Color | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -288,10 +277,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent integer tween.
@@ -315,7 +303,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickIntTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Int | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -333,10 +320,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent MoveTo tween for a scene component.
@@ -359,7 +345,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickVectorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -377,10 +362,9 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent MoveTo tween for a UWidget.
@@ -404,7 +388,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickVector2DTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -421,10 +404,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent MoveBy tween for a scene component.
@@ -449,7 +431,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickVectorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -467,10 +448,9 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent MoveBy tween for a UWidget.
@@ -494,7 +474,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickVector2DTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector2D | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -511,10 +490,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent ScaleTo tween for a scene component.
@@ -537,7 +515,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickVectorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -555,10 +532,9 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent ScaleTo tween for a UWidget.
@@ -580,7 +556,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickVector2DTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector2D | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -597,10 +572,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent ScaleBy tween for a scene component.
@@ -623,7 +597,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickVectorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vecto | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -641,10 +614,9 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent ScaleBy tween for a UWidget.
@@ -666,7 +638,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickVector2DTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector2D | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -683,10 +654,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent RotateTo tween for a scene component.
@@ -710,7 +680,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickRotatorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Rotator | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -729,10 +698,9 @@ public:
         ELoopType loopType = ELoopType::Restart,
         EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
         const FString& tweenTag = "",
-        bool bShouldAutoKill = true,
+        bool bShouldAutoKill = false,
         bool bShouldPlayWhilePaused = false,
-        bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+        bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent RotateTo tween for a widget.
@@ -756,7 +724,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickFloatTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Flo | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -773,10 +740,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent RotateBy tween for a scene component.
@@ -800,7 +766,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickRotatorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Rotator | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -819,10 +784,9 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent RotateBy tween for a widget.
@@ -845,7 +809,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickRotatorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Rotator | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -862,10 +825,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent LookAt rotator tween for a scene component.
@@ -888,7 +850,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickRotatorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Rotator | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -906,10 +867,9 @@ public:
         int32 loops = 1,
         ELoopType loopType = ELoopType::Restart,
         const FString& tweenTag = "",
-        bool bShouldAutoKill = true,
+        bool bShouldAutoKill = false,
         bool bShouldPlayWhilePaused = false,
-        bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+        bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent RotateAround tween for a scene component.
@@ -934,7 +894,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickFloatTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -954,10 +913,9 @@ public:
         int32 loops = 1,
         ELoopType loopType = ELoopType::Restart,
         const FString& tweenTag = "",
-        bool bShouldAutoKill = true,
+        bool bShouldAutoKill = false,
         bool bShouldPlayWhilePaused = false,
-        bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+        bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent ChangeColor tween for a UImage widget.
@@ -979,7 +937,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickColorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Color | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -996,10 +953,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent ChangeOpacity tween for a generic widget.
@@ -1021,7 +977,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickFloatTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -1038,10 +993,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent ChangeFov tween for a camera component.
@@ -1063,7 +1017,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickFloatTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -1080,10 +1033,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent ChangeDistance tween for a spring arm (to target).
@@ -1105,7 +1057,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickFloatTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -1122,10 +1073,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent ChangeDistanceBy tween for a spring arm (by delta).
@@ -1147,7 +1097,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickFloatTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -1164,10 +1113,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent VectorParameterTo tween for a material instance.
@@ -1190,7 +1138,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickVectorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -1208,10 +1155,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent VectorParameterBy tween for a material instance.
@@ -1234,7 +1180,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickVectorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Vector | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -1252,10 +1197,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent ScalarParameterTo tween for a material instance.
@@ -1278,7 +1222,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickFloatTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -1296,10 +1239,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent ScalarParameterBy tween for a material instance.
@@ -1322,7 +1264,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickFloatTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Float | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -1340,10 +1281,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent ColorParameterTo tween for a material instance.
@@ -1366,7 +1306,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickColorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Color | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -1384,10 +1323,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a latent ColorParameterBy tween for a material instance.
@@ -1412,7 +1350,6 @@ public:
 	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
 	 * @param bShouldPlayWhilePaused If true the tween will update while paused.
 	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 * @return Pointer to the created UQuickColorTween.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Color | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
@@ -1430,8 +1367,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 };

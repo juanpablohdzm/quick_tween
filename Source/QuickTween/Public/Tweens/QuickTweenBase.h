@@ -41,7 +41,6 @@ public:
 	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
 	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
 	 * @param bShouldAutoPlay Whether the tween should start playing immediately.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
 	 */
 	void SetUp(
 		const UObject* worldContextObject,
@@ -52,10 +51,9 @@ public:
 		int32 loops,
 		ELoopType loopType,
 		const FString& tweenTag = FString(),
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true);
+		bool bShouldAutoPlay = false);
 
 	virtual void SetOwner(UQuickTweenable* owner) override { Owner = owner; }
 
@@ -72,7 +70,7 @@ public:
 
 	virtual void Restart() override;
 
-	virtual void Complete() override;
+	virtual void Complete(bool bSnapToEnd = true) override;
 
 	virtual void Kill() override;
 

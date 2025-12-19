@@ -31,8 +31,7 @@ UQuickTweenSequence* UQuickTweenLatentLibrary::QuickTweenCreateLatentSequence(
 	ELoopType loopType,
 	const FString& tweenTag,
 	bool bShouldAutoKill,
-	bool bShouldPlayWhilePaused,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldPlayWhilePaused)
 {
 	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
     {
@@ -46,8 +45,7 @@ UQuickTweenSequence* UQuickTweenLatentLibrary::QuickTweenCreateLatentSequence(
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, sequence, latentStep));
 			return sequence;
@@ -72,8 +70,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenVector(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!setter.IsBound())
 	{
@@ -100,9 +97,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenVector(
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -132,8 +127,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenRotator
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!setter.IsBound())
 	{
@@ -161,9 +155,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenRotator
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -192,8 +184,7 @@ UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenVector
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!setter.IsBound())
 	{
@@ -220,9 +211,7 @@ UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenVector
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -251,8 +240,7 @@ UQuickColorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenColor(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!setter.IsBound())
 	{
@@ -279,9 +267,7 @@ UQuickColorTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenColor(
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -310,8 +296,7 @@ UQuickIntTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenInt(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!setter.IsBound())
 	{
@@ -338,9 +323,7 @@ UQuickIntTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenInt(
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -369,8 +352,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenFloat(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!setter.IsBound())
 	{
@@ -397,9 +379,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenFloat(
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -428,8 +408,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentMoveTo_SceneCompone
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!component)
 	{
@@ -456,9 +435,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentMoveTo_SceneCompone
 				space,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -486,8 +463,7 @@ UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenLatentMoveTo_Widget(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!widget)
 	{
@@ -513,9 +489,7 @@ UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenLatentMoveTo_Widget(
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -545,8 +519,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentMoveBy_SceneCompone
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!component)
 	{
@@ -573,9 +546,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentMoveBy_SceneCompone
 				space,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -604,8 +575,7 @@ UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenLatentMoveBy_Widget(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!widget)
 	{
@@ -631,9 +601,7 @@ UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenLatentMoveBy_Widget(
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -663,8 +631,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleTo_SceneCompon
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!component)
 	{
@@ -691,9 +658,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleTo_SceneCompon
 				space,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -721,8 +686,7 @@ UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleTo_Widget(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!widget)
 	{
@@ -748,9 +712,7 @@ UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleTo_Widget(
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -780,8 +742,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleBy_SceneCompon
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!component)
 	{
@@ -808,9 +769,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleBy_SceneCompon
 				space,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -839,8 +798,7 @@ UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleBy_Widget(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!widget)
 	{
@@ -866,9 +824,7 @@ UQuickVector2DTween* UQuickTweenLatentLibrary::QuickTweenLatentScaleBy_Widget(
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -899,8 +855,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateTo_SceneComp
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!component)
 	{
@@ -928,9 +883,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateTo_SceneComp
 				space,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -959,8 +912,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateTo_Widget(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!widget)
 	{
@@ -986,9 +938,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateTo_Widget(
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1019,8 +969,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateBy_SceneComp
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!component)
 	{
@@ -1048,9 +997,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateBy_SceneComp
 				space,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1078,8 +1025,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateBy_Widget(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!widget)
 	{
@@ -1104,9 +1050,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateBy_Widget(
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1135,8 +1079,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentLookAt_SceneCompon
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!component)
 	{
@@ -1163,9 +1106,7 @@ UQuickRotatorTween* UQuickTweenLatentLibrary::QuickTweenLatentLookAt_SceneCompon
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1197,8 +1138,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateAroundPoint_Sc
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!component)
 	{
@@ -1227,9 +1167,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentRotateAroundPoint_Sc
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1258,8 +1196,7 @@ UQuickColorTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeColorTo_Image(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!widget)
 	{
@@ -1285,9 +1222,7 @@ UQuickColorTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeColorTo_Image(
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1316,8 +1251,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeOpacityTo_Widg
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!widget)
 	{
@@ -1343,9 +1277,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeOpacityTo_Widg
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1374,8 +1306,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeFovTo_Camera(
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!camera)
 	{
@@ -1401,9 +1332,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeFovTo_Camera(
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1432,8 +1361,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeDistanceTo_Spr
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!springArm)
 	{
@@ -1459,9 +1387,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeDistanceTo_Spr
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1490,8 +1416,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeDistanceBy_Spr
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!springArm)
 	{
@@ -1517,9 +1442,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentChangeDistanceBy_Spr
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1549,8 +1472,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentVectorParameterTo_M
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!material)
 	{
@@ -1577,9 +1499,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentVectorParameterTo_M
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1609,8 +1529,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentVectorParameterBy_M
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!material)
 	{
@@ -1637,9 +1556,7 @@ UQuickVectorTween* UQuickTweenLatentLibrary::QuickTweenLatentVectorParameterBy_M
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1669,8 +1586,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentScalarParameterTo_Ma
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!material)
 	{
@@ -1697,9 +1613,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentScalarParameterTo_Ma
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1729,8 +1643,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentScalarParameterBy_Ma
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!material)
 	{
@@ -1757,9 +1670,7 @@ UQuickFloatTween* UQuickTweenLatentLibrary::QuickTweenLatentScalarParameterBy_Ma
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1789,8 +1700,7 @@ UQuickColorTween* UQuickTweenLatentLibrary::QuickTweenLatentColorParameterTo_Mat
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!material)
 	{
@@ -1817,9 +1727,7 @@ UQuickColorTween* UQuickTweenLatentLibrary::QuickTweenLatentColorParameterTo_Mat
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)
@@ -1849,8 +1757,7 @@ UQuickColorTween* UQuickTweenLatentLibrary::QuickTweenLatentColorParameterBy_Mat
 	const FString& tweenTag,
 	bool bShouldAutoKill,
 	bool bShouldPlayWhilePaused,
-	bool bShouldAutoPlay,
-	bool bShouldSnapToEndOnComplete)
+	bool bShouldAutoPlay)
 {
 	if (!material)
 	{
@@ -1877,9 +1784,7 @@ UQuickColorTween* UQuickTweenLatentLibrary::QuickTweenLatentColorParameterBy_Mat
 				loopType,
 				tweenTag,
 				bShouldAutoKill,
-				bShouldPlayWhilePaused,
-				false,
-				bShouldSnapToEndOnComplete);
+				bShouldPlayWhilePaused);
 
 			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
 			if (bShouldAutoPlay)

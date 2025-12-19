@@ -36,10 +36,9 @@ private:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = FString(),
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true)
+		bool bShouldAutoPlay = false)
 	{
 		From = MoveTemp(from);
 		To = MoveTemp(to);
@@ -55,8 +54,7 @@ private:
 			tweenTag,
 			bShouldAutoKill,
 			bShouldPlayWhilePaused,
-			bShouldAutoPlay,
-			bShouldSnapToEndOnComplete);
+			bShouldAutoPlay);
 
 	}
 public:
@@ -80,8 +78,6 @@ public:
 	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
 	 * @param bShouldPlayWhilePaused Whether the tween should play while the game is paused.
 	 * @param bShouldAutoPlay Whether to start playing the tween immediately after setup.
-	 * @param bShouldSnapToEndOnComplete Whether to snap to the end value on completion.
-	 * @return Pointer to the created UQuickVector2DTween, or nullptr on failure.
 	 */
 	static UQuickVector2DTween* CreateTween(
 		UObject* worldContextObject,
@@ -95,10 +91,9 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = FString(),
-		bool bShouldAutoKill = true,
+		bool bShouldAutoKill = false,
 		bool bShouldPlayWhilePaused = false,
-		bool bShouldAutoPlay = false,
-		bool bShouldSnapToEndOnComplete = true)
+		bool bShouldAutoPlay = false)
 	{
 		if (!from.IsBound() || !to.IsBound() || !setter.IsBound())
 		{
@@ -121,8 +116,7 @@ public:
 			tweenTag,
 			bShouldAutoKill,
 			bShouldPlayWhilePaused,
-			bShouldAutoPlay,
-			bShouldSnapToEndOnComplete);
+			bShouldAutoPlay);
 		return tween;
 	}
 
