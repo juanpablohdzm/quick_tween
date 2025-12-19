@@ -5,91 +5,62 @@
 #include "Curves/CurveFloat.h"
 #include "Utils/EaseFunctions.h"
 
-
-void UQuickIntTween::Update(float deltaTime, UQuickTweenable* instigator)
+void UQuickIntTween::ApplyAlphaValue(float alpha)
 {
-	if (!InstigatorIsOwner(instigator)) return;
-
-	if (!StartValue.IsSet())
-	{
-		if (!From.IsBound())
-		{
-			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickIntTween::Update: 'From' delegate is not bound."));
-			return;
-		}
-		StartValue = From.Execute(this);
-	}
-
-	UQuickTweenBase::Update(deltaTime, instigator);
-
-	if (GetIsCompleted() || !GetIsPlaying()) return;
-
-	float currentLoopElapsedTime;
-
-	const float mod = FMath::Fmod(ElapsedTime, GetDuration());
-	if (FMath::IsNearlyZero(mod))
-	{
-		currentLoopElapsedTime = FMath::IsNearlyZero(ElapsedTime) ? 0.0f : GetDuration();
-	}
-	else
-	{
-		currentLoopElapsedTime = mod;
-	}
-	float progress = FMath::Abs(currentLoopElapsedTime / GetDuration());
-	if (UCurveFloat* curve = GetEaseCurve())
-	{
-		progress = curve->GetFloatValue(progress);
-	}
-
-	if (!To.IsBound())
-	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickIntTween::Update: 'To' delegate is not bound, unable to interpolate."));
-		return;
-	}
-
-	const int32 value = FEaseFunctions<int32>::Ease(StartValue.GetValue(), To.Execute(this), progress, GetEaseType());
+	const int32 value = GetEaseCurve() ?
+	FEaseFunctions<int32>::Ease(StartValue.Get(0), EndValue.Get(0), alpha, GetEaseCurve()) :
+	FEaseFunctions<int32>::Ease(StartValue.Get(0), EndValue.Get(0), alpha, GetEaseType());
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);
 	}
 
 	CurrentValue = value;
-	if (OnUpdate.IsBound())
-	{
-		OnUpdate.Broadcast(this);
-	}
 }
 
-void UQuickIntTween::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
+void UQuickIntTween::HandleOnStart()
 {
-	if (!InstigatorIsOwner(instigator)) return;
-
-	if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
+	if (!StartValue.IsSet())
 	{
-		if (Setter.IsBound())
+		if (!From.IsBound())
 		{
-			Setter.Execute(StartValue.GetValue(), this);
+			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickIntTween::HandleOnStartTransition: 'From' delegate is not bound."));
+			return;
 		}
-		return Super::Complete(instigator, false);
+
+		StartValue = From.Execute(this);
 	}
 
+	if (!EndValue.IsSet())
+	{
+		if (!To.IsBound())
+		{
+			UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickIntTween::HandleOnStartTransition: 'To' delegate is not bound."));
+			return;
+		}
+
+		EndValue = To.Execute(this);
+	}
+
+	Super::HandleOnStart();
+}
+
+void UQuickIntTween::HandleOnComplete()
+{
+	bool bSnapToEnd = GetSnapToEndOnComplete();
 	if (GetIsReversed())
 	{
 		bSnapToEnd = !bSnapToEnd;
 	}
 
-	if (!To.IsBound())
-	{
-		UE_LOG(LogQuickTweenBase, Error, TEXT("UQuickIntTween::Complete: 'To' delegate is not bound, unable to complete tween."));
-		return Super::Complete(instigator, bSnapToEnd);
-	}
-
-	int32 value = bSnapToEnd ? To.Execute(this) : StartValue.GetValue();
+	bool bSnapToBeginning = !bSnapToEnd || (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0);
+	const int32 value = bSnapToBeginning ? StartValue.Get(0) : EndValue.Get(0);
 	if (Setter.IsBound())
 	{
 		Setter.Execute(value, this);
 	}
 
 	CurrentValue = value;
-	return Super::Complete(instigator, bSnapToEnd);
+
+	Super::HandleOnComplete();
 }

@@ -4,15 +4,12 @@
 #include "Tweens/QuickTweenSequence.h"
 
 #include "QuickTweenManager.h"
-#include "Tweens/QuickTweenBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "Utils/CommonValues.h"
-
-DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenSequence, Log, All);
-
 
 UQuickTweenSequence::~UQuickTweenSequence()
 {
-	if (!WorldContextObject || Owner)
+	if (HasOwner() || !WorldContextObject)
 	{
 		return;
 	}
@@ -74,12 +71,13 @@ UQuickTweenSequence* UQuickTweenSequence::Join(UQuickTweenable* tween)
 	}
 	else
 	{
-		UE_LOG(LogQuickTweenSequence, Log, TEXT("Failed to get QuickTweenManager when appending a tween to sequence."));
+		UE_LOG(LogQuickTweenSequence, Log, TEXT("Failed to get QuickTweenManager when joining a tween to sequence."));
 	}
 	tween->SetOwner(this);
 
 	FQuickTweenSequenceGroup& lastGroup = TweenGroups.Last();
 	lastGroup.Tweens.Add(tween);
+	lastGroup.Duration = FMath::Max(lastGroup.Duration, tween->GetTotalDuration());
 	return this;
 }
 
@@ -109,451 +107,392 @@ UQuickTweenSequence* UQuickTweenSequence::Append(UQuickTweenable* tween)
 
 	FQuickTweenSequenceGroup group;
 	group.Tweens.Add(tween);
+	group.Duration = tween->GetTotalDuration();
+	if (TweenGroups.Num() == 0)
+	{
+		group.StartTime = 0.f;
+	}
+	else
+	{
+		const FQuickTweenSequenceGroup& lastGroup = TweenGroups.Last();
+		group.StartTime = lastGroup.StartTime + lastGroup.Duration;
+	}
+
 	TweenGroups.Add(group);
 	return this;
 }
 
-void UQuickTweenSequence::Play(UQuickTweenable* instigator)
+void UQuickTweenSequence::Update(float deltaTime)
 {
-	if (!InstigatorIsOwner(instigator)) return;
-	
-	if (bIsCompleted || bIsPendingKill)
-	{
-		return;
-	}
+	if (HasOwner()) return;
 
-	bIsPlaying = true;
-	for (auto [tweens] : TweenGroups)
+	ElapsedTime += (bIsReversed ? -1.f : 1.f) * deltaTime;
+
+	FQuickTweenSequenceStateResult state = ComputeSequenceState(ElapsedTime);
+
+	// ... in case deltaTime is large enough to cross multiple loops in a single update
+	if (state.Loop != CurrentLoop)
 	{
-		for (UQuickTweenable* weakTween : tweens)
+		const int32 crossed = FMath::Abs(state.Loop - CurrentLoop);
+		CurrentLoop = state.Loop;
+
+		if (OnLoop.IsBound())
 		{
-			weakTween->Play(this);
-		}
-	}
-}
-
-void UQuickTweenSequence::Pause(UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-	if (bIsCompleted || bIsPendingKill)
-	{
-		return;
-	}
-
-	bIsPlaying = false;
-	for (auto [tweens] : TweenGroups)
-	{
-		for (UQuickTweenable* weakTween : tweens)
-		{
-			weakTween->Pause(this);
-		}
-	}
-}
-
-void UQuickTweenSequence::Stop(UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-	if (CurrentTweenGroupIndex < TweenGroups.Num() && CurrentTweenGroupIndex >= 0)
-	{
-		for (UQuickTweenable* tween : TweenGroups[CurrentTweenGroupIndex].Tweens)
-		{
-			tween->Stop(this);
-		}
-	}
-}
-
-void UQuickTweenSequence::Complete(UQuickTweenable* instigator, bool bSnapToEnd)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-	if (bIsCompleted || bIsPendingKill)
-	{
-		return;
-	}
-
-	bIsPlaying   = false;
-	bIsCompleted = true;
-
-	ElapsedTime = GetDuration() * GetLoops();
-	Progress    = 1.0f;
-	CurrentLoop = Loops;
-
-	if (CurrentTweenGroupIndex >= 0 && CurrentTweenGroupIndex < TweenGroups.Num())
-	{
-		auto completeGroup = [&](TArray<UQuickTweenable*>& tweens, bool toEnd, bool forceUpdate = false)
-		{
-			for (UQuickTweenable* tween : tweens)
+			for (int32 i = 0; i < crossed; ++i)
 			{
-				if (forceUpdate)
+				OnLoop.Broadcast(this);
+			}
+		}
+	}
+
+	//... check for completion
+	if (Loops != INFINITE_LOOPS)
+	{
+		if ((!bIsReversed && CurrentLoop >= Loops) || (bIsReversed && ElapsedTime < 0.0f))
+		{
+			if (RequestStateTransition(EQuickTweenState::Complete))
+			{
+				HandleOnComplete();
+				if (bAutoKill && RequestStateTransition(EQuickTweenState::Kill))
 				{
-					tween->Update(0.0f, this); // force an update to ensure the tween is fully initialized
+					HandleOnKill();
 				}
-				tween->Complete(this, toEnd);
-			}
-		};
-
-		if (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0)
-		{
-			if (!bIsReversed)
-			{
-				Reverse(instigator);
-			}
-
-			for (int32 groupIdx = CurrentTweenGroupIndex; groupIdx>= 0; --groupIdx)
-			{
-				completeGroup(TweenGroups[groupIdx].Tweens, true);
 			}
 			return;
 		}
+	}
 
-		if (!bIsReversed)
+	ApplyAlphaValue(state.Alpha);
+
+	if (OnUpdate.IsBound())
+	{
+		OnUpdate.Broadcast(this);
+	}
+}
+
+void UQuickTweenSequence::Evaluate(bool bIsActive, float value, const UQuickTweenable* instigator)
+{
+	if (!HasOwner() || !InstigatorIsOwner(instigator)) return;
+
+	bIsReversed = instigator->GetIsReversed();
+	ElapsedTime = FMath::Clamp(value * GetTotalDuration(), 0.f, GetTotalDuration());
+
+	if (bWasActive != bIsActive)
+	{
+		auto simulateOnStart = [&]()
 		{
-			for (int32 groupIdx = CurrentTweenGroupIndex; groupIdx < TweenGroups.Num(); ++groupIdx)
+			CurrentLoop = bIsReversed ? GetLoops() - 1 : 0;
+			CurrentAlpha = bIsReversed ? 1.0f : 0.0f;
+			HandleOnStart();
+		};
+
+		auto shouldSimulateOnComplete = [&]()
+		{
+			if ((bIsReversed && FMath::IsNearlyZero(ElapsedTime)) ||
+				(!bIsReversed && FMath::IsNearlyEqual(ElapsedTime, GetTotalDuration())))
 			{
-				completeGroup(TweenGroups[groupIdx].Tweens, bSnapToEnd, true);
+				CurrentLoop = bIsReversed ? 0 : GetLoops() - 1;
+				HandleOnComplete();
 			}
+		};
+
+		if (bIsActive)
+		{
+			simulateOnStart();
 		}
 		else
 		{
-			for (int32 groupIdx = CurrentTweenGroupIndex; groupIdx>= 0; --groupIdx)
-			{
-				completeGroup(TweenGroups[groupIdx].Tweens, bSnapToEnd);
-			}
+			shouldSimulateOnComplete();
 		}
+		bWasActive = bIsActive;
 	}
 
-	CurrentTweenGroupIndex = !bIsReversed ? FMath::Max(TweenGroups.Num() -1, 0) : 0;
-
-	OnComplete.Broadcast(this);
-
-	if (bAutoKill)
+	if (!bIsActive)
 	{
-		Kill(nullptr);
-	}
-
-}
-
-void UQuickTweenSequence::Restart(UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-	if (bIsPendingKill)
-	{
-		UE_LOG(LogQuickTweenSequence, Warning, TEXT("Cannot restart a sequence that is pending kill."));
 		return;
 	}
-	bIsPlaying   = true;
-	bIsCompleted = false;
-	bIsBackwards = false;
-	bHasStarted = false;
 
-	ElapsedTime = bIsReversed ? GetDuration() * GetLoops() : 0.0f;
-	Progress    = bIsReversed ? 1.0f     : 0.0f;
+	FQuickTweenSequenceStateResult state = ComputeSequenceState(ElapsedTime);
 
-	CurrentLoop = bIsReversed ? Loops : 1;
-	CurrentTweenGroupIndex = bIsReversed ? TweenGroups.Num() - 1 : 0;
-
-	for (FQuickTweenSequenceGroup& group : TweenGroups)
+	// ... in case deltaTime is large enough to cross multiple loops in a single update
+	if (state.Loop != CurrentLoop)
 	{
-		for (UQuickTweenable* tween : group.Tweens)
+		const int32 crossed = FMath::Abs(state.Loop - CurrentLoop);
+		CurrentLoop = state.Loop;
+
+		if (OnLoop.IsBound())
 		{
-			if (tween->GetIsReversed() != bIsReversed)
+			for (int32 i = 0; i < crossed; ++i)
 			{
-				tween->Reverse(this);
+				OnLoop.Broadcast(this);
 			}
-			tween->Restart(this);
-		}
-	}
-}
-
-void UQuickTweenSequence::Kill(UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-	if (bIsPendingKill) return;
-
-	bIsPlaying = false;
-	bIsCompleted = true;
-
-	Stop(instigator);
-	CurrentTweenGroupIndex = 0;
-
-	for (FQuickTweenSequenceGroup& group : TweenGroups)
-	{
-		for (UQuickTweenable* tween : group.Tweens)
-		{
-			tween->Kill(this);
 		}
 	}
 
-	bIsPendingKill = true;
-	if (OnKilled.IsBound())
+	ApplyAlphaValue(state.Alpha);
+
+	if (OnUpdate.IsBound())
 	{
-		OnKilled.Broadcast(this);
+		OnUpdate.Broadcast(this);
 	}
 }
 
-void UQuickTweenSequence::Reverse(UQuickTweenable* instigator)
+UQuickTweenSequence::FQuickTweenSequenceStateResult UQuickTweenSequence::ComputeSequenceState(float time) const
 {
-	if (!InstigatorIsOwner(instigator)) return;
+	FQuickTweenSequenceStateResult result;
 
-	bIsReversed = !bIsReversed;
-	Reverse_Tweens();
+	const float loopDuration = GetLoopDuration();
 
-	const auto restartGroup = [&](TArray<UQuickTweenable*>& tweens)
+	result.Loop = FMath::FloorToInt(time / loopDuration);
+
+	float localTime = FMath::Fmod(time, loopDuration);
+
+	if (result.Loop != 0 && FMath::IsNearlyZero(localTime))
 	{
-		for (UQuickTweenable* weakTween : tweens)
+		localTime  = GetLoopDuration();
+	}
+
+	if (localTime < 0.f)
+	{
+		localTime += loopDuration;
+	}
+
+	result.Alpha = localTime / loopDuration;
+	if (GetLoopType() == ELoopType::PingPong && (result.Loop & 1) != 0) // ... odd loop, backward traversal
+	{
+		result.Alpha = 1.f - result.Alpha;
+	}
+
+	return result;
+}
+
+void UQuickTweenSequence::ApplyAlphaValue(float alpha)
+{
+	const float fromTime = CurrentAlpha * GetLoopDuration();
+	const float toTime = alpha * GetLoopDuration();
+	const float deltaTime = FMath::Abs(toTime - fromTime);
+	const bool bIsForward = toTime >= fromTime;
+
+	const auto evaluateAtTime = [&](float sequenceTime)
+	{
+		for (FQuickTweenSequenceGroup& group : TweenGroups)
 		{
-			weakTween->Restart(this);
+			const float startTime = group.StartTime;
+			const float endTime = (group.StartTime + group.Duration);
+			const bool bIsGroupActive = sequenceTime >= startTime && sequenceTime <= endTime;
+
+			for (UQuickTweenable* tween : group.Tweens)
+			{
+				const bool bIsActive = bIsGroupActive &&  /*isSpecificTweenActive*/ (sequenceTime >= startTime && sequenceTime <= (startTime + tween->GetTotalDuration()));
+				if (bIsActive)
+				{
+					const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration();
+					tween->Evaluate(/*bIsActive*/ true, childTime, this);
+				}
+				else
+				{
+					tween->Evaluate(/*bIsActive*/ false, bIsReversed ? 0.0f : 1.0f, this);
+				}
+			}
 		}
 	};
 
-	if (bIsReversed)
+	constexpr float smallStepThreshold = 0.01f;
+
+	// ... if the step is small enough, just evaluate directly
+	if (deltaTime <= smallStepThreshold)
 	{
-		for (int32 i = 0; i < CurrentTweenGroupIndex; ++i)
-		{
-			restartGroup(TweenGroups[i].Tweens);
-		}
-	}
-	else
-	{
-		for (int32 i = CurrentTweenGroupIndex + 1; i < TweenGroups.Num(); ++i)
-		{
-			restartGroup(TweenGroups[i].Tweens);
-		}
-	}
-}
-
-void UQuickTweenSequence::Reverse_Tweens()
-{
-	for (auto [tweens] : TweenGroups)
-	{
-		for (UQuickTweenable* weakTween : tweens)
-		{
-			weakTween->Reverse(this);
-		}
-	}
-}
-
-void UQuickTweenSequence::Update(float deltaTime, UQuickTweenable* instigator)
-{
-
-	if (!InstigatorIsOwner(instigator)) return;
-
-	if (GetIsCompleted() || !GetIsPlaying()) return;
-
-	if (!bHasStarted)
-	{
-		bHasStarted = true;
-		if (OnStart.IsBound())
-		{
-			OnStart.Broadcast(this);
-		}
-	}
-
-	switch (LoopType)
-	{
-		case ELoopType::Restart:
-			Update_Restart(deltaTime, instigator);
-			break;
-		case ELoopType::PingPong:
-			Update_PingPong(deltaTime, instigator);
-			break;
-	}
-}
-
-void UQuickTweenSequence::Update_Restart(float deltaTime, UQuickTweenable* instigator)
-{
-	ElapsedTime = !bIsReversed ?  ElapsedTime + deltaTime : ElapsedTime - deltaTime;
-
-	if (OnUpdate.IsBound())
-	{
-		OnUpdate.Broadcast(this);
-	}
-
-	bool shouldComplete;
-	if (!bIsReversed)
-	{
-		CurrentLoop = (ElapsedTime / GetDuration()) + 1;
-		shouldComplete = CurrentLoop > Loops;
-	}
-	else
-	{
-		if (ElapsedTime < 0.0f)
-		{
-			shouldComplete = true;
-		}
-		else
-		{
-			const float mod = FMath::Fmod(ElapsedTime, GetDuration());
-			const uint32 loop = ElapsedTime / GetDuration();
-			CurrentLoop = loop + 1;
-			shouldComplete = loop <= 0 && FMath::IsNearlyZero(mod);
-		}
-	}
-
-	if (Loops != INFINITE_LOOPS && shouldComplete)
-	{
-		Complete(instigator);
+		evaluateAtTime(toTime);
+		CurrentAlpha = alpha;
 		return;
 	}
 
+	// ... otherwise, collect breakpoints and evaluate at each
+	TArray<float> breakpoints;
+	breakpoints.Add(toTime);
 
-	bool bShouldCompleteLoop = CurrentTweenGroupIndex >= TweenGroups.Num() || CurrentTweenGroupIndex < 0;
-
-	if (!bShouldCompleteLoop)
+	// ... collect breakpoints
+	[&](TArray<float>& points)
 	{
-		const FQuickTweenSequenceGroup& currentGroup = TweenGroups[CurrentTweenGroupIndex];
-		uint32 completedTweens = 0;
-		for (UQuickTweenable* tween : currentGroup.Tweens)
-		{
-			tween->Update(deltaTime, this);
+		const float Min = FMath::Min(fromTime, toTime);
+		const float Max = FMath::Max(fromTime, toTime);
 
-			if (tween->GetIsCompleted())
+		for (const FQuickTweenSequenceGroup& group : TweenGroups)
+		{
+			for (UQuickTweenable* tween : group.Tweens)
 			{
-				completedTweens++;
+				if (!tween) continue;
+
+				const float start = group.StartTime;
+				const float end   = start + tween->GetTotalDuration();
+
+				if (start > Min && start < Max)
+					points.AddUnique(start);
+
+				if (end > Min && end < Max)
+					points.AddUnique(end);
 			}
 		}
-		bShouldCompleteLoop = completedTweens == currentGroup.Tweens.Num();
-	}
+	}(breakpoints);
 
-	if (bShouldCompleteLoop)
+	breakpoints.Sort();
+
+	if (!bIsForward)
 	{
-		CurrentTweenGroupIndex += bIsReversed ? -1 : 1;
-
-		if (CurrentTweenGroupIndex >= TweenGroups.Num() || CurrentTweenGroupIndex < 0)
-		{
-			CurrentTweenGroupIndex = bIsReversed ? TweenGroups.Num() - 1 : 0;
-			for (auto [tweens] : TweenGroups)
-			{
-				for (UQuickTweenable* tween : tweens)
-				{
-					tween->Restart(this);
-				}
-			}
-			CurrentLoop = bIsReversed ? CurrentLoop - 1 : CurrentLoop + 1;
-			if (OnLoop.IsBound())
-			{
-				OnLoop.Broadcast(this);
-			}
-		}
+		Algo::Reverse(breakpoints);
 	}
+
+	for (float point : breakpoints)
+	{
+		evaluateAtTime(point);
+	}
+
+	CurrentAlpha = alpha;
 }
 
-void UQuickTweenSequence::Update_PingPong(float deltaTime, UQuickTweenable* instigator)
+float UQuickTweenSequence::GetLoopDuration() const
 {
-	ElapsedTime = !bIsReversed ?  ElapsedTime + deltaTime : ElapsedTime - deltaTime;
-
-	if (OnUpdate.IsBound())
+	return Algo::Accumulate(TweenGroups, 0.0f, [](float sum, const FQuickTweenSequenceGroup& group)
 	{
-		OnUpdate.Broadcast(this);
-	}
-
-	bool bShouldCompleteLoop = CurrentTweenGroupIndex >= TweenGroups.Num() || CurrentTweenGroupIndex < 0;
-
-	if (!bShouldCompleteLoop)
-	{
-		const FQuickTweenSequenceGroup& currentGroup = TweenGroups[CurrentTweenGroupIndex];
-		uint32 completedTweens = 0;
-		for (UQuickTweenable* tween : currentGroup.Tweens)
-		{
-			tween->Update(deltaTime, this);
-
-			if (tween->GetIsCompleted())
-			{
-				completedTweens++;
-			}
-		}
-		bShouldCompleteLoop = completedTweens == currentGroup.Tweens.Num();
-	}
-
-	if (bShouldCompleteLoop)
-	{
-		const int32 Negate = bIsReversed ? -1 : 1;
-		CurrentTweenGroupIndex += bIsBackwards ? -1 * Negate : 1 * Negate;
-
-		if (CurrentTweenGroupIndex >= TweenGroups.Num() || CurrentTweenGroupIndex < 0)
-		{
-			CurrentLoop = bIsReversed ? CurrentLoop - 1 : CurrentLoop + 1;
-			if (OnLoop.IsBound())
-			{
-				OnLoop.Broadcast(this);
-			}
-
-			if (Loops != INFINITE_LOOPS && (!bIsReversed && CurrentLoop > Loops || bIsReversed && (CurrentLoop - 1) <= 0))
-			{
-				Complete(instigator);
-				return;
-			}
-
-			for (auto [tweens] : TweenGroups)
-			{
-				for (UQuickTweenable* tween : tweens)
-				{
-					if (!(tween->GetLoopType() == ELoopType::PingPong && tween->GetLoops() % 2 == 0))
-					{
-						tween->Reverse(this);
-					}
-					tween->Restart(this);
-				}
-			}
-
-			bIsBackwards = !bIsBackwards;
-			CurrentTweenGroupIndex = bIsBackwards ? TweenGroups.Num() - 1 : 0;
-		}
-	}
-}
-
-void UQuickTweenSequence::SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator)
-{
-	if (!InstigatorIsOwner(instigator)) return;
-
-	bAutoKill = bShouldAutoKill;
-	if (GetIsCompleted())
-	{
-		bIsPendingKill = bAutoKill;
-	}
-}
-
-float UQuickTweenSequence::GetDuration() const
-{
-	float totalDuration = 0.0f;
-	for (const FQuickTweenSequenceGroup& group : TweenGroups)
-	{
-		float groupMaxDuration = 0.0f;
-		for (const UQuickTweenable* tween : group.Tweens)
-		{
-			groupMaxDuration  = FMath::Max(groupMaxDuration, tween->GetDuration() * tween->GetLoops() / tween->GetTimeScale());
-		}
-		totalDuration += groupMaxDuration;
-	}
-	return totalDuration;
+		return sum + group.Duration;
+	});
 }
 
 int32 UQuickTweenSequence::GetNumTweens() const
 {
-	uint32 count = 0;
-	for (const FQuickTweenSequenceGroup& group : TweenGroups)
+	return Algo::Accumulate(TweenGroups, 0, [](int32 sum, const FQuickTweenSequenceGroup& group)
 	{
-		count += group.Tweens.Num();
-	}
-	return count;
+		return sum + group.Tweens.Num();
+	});
 }
 
-UObject* UQuickTweenSequence::GetTween(int32 index) const
+UQuickTweenable* UQuickTweenSequence::GetTween(int32 index) const
 {
 	int32 currentTweenIndex = 0;
 	for (const FQuickTweenSequenceGroup& group : TweenGroups)
 	{
 		if (index < currentTweenIndex + group.Tweens.Num())
 		{
-			return Cast<UObject>(group.Tweens[index - currentTweenIndex]);
+			return group.Tweens[index - currentTweenIndex];
 		}
 		currentTweenIndex += group.Tweens.Num();
 	}
 	return nullptr;
+}
+
+void UQuickTweenSequence::Play()
+{
+	if (HasOwner()) return;
+
+	const EQuickTweenState prevState = SequenceState;
+	if (RequestStateTransition(EQuickTweenState::Play))
+	{
+		if (prevState == EQuickTweenState::Idle)
+		{
+			ElapsedTime = bIsReversed ? GetTotalDuration() : 0.0f;
+			CurrentLoop = bIsReversed ? GetLoops() - 1 : 0;
+			CurrentAlpha = bIsReversed ? 1.0f : 0.0f;
+			HandleOnStart();
+		}
+	}
+}
+
+void UQuickTweenSequence::Pause()
+{
+	if (HasOwner()) return;
+
+	RequestStateTransition(EQuickTweenState::Pause);
+}
+
+void UQuickTweenSequence::Reverse()
+{
+	if (HasOwner()) return;
+
+	bIsReversed = !bIsReversed;
+}
+
+void UQuickTweenSequence::Restart()
+{
+	if (HasOwner()) return;
+
+	RequestStateTransition(EQuickTweenState::Idle);
+}
+
+void UQuickTweenSequence::Complete(bool bSnapToEnd)
+{
+	if (HasOwner() || GetLoops() == INFINITE_LOOPS) return;
+
+	bSnapToEndOnComplete = bSnapToEnd;
+	if (RequestStateTransition(EQuickTweenState::Complete))
+	{
+		HandleOnComplete();
+		if (bAutoKill)
+		{
+			if (RequestStateTransition(EQuickTweenState::Kill))
+			{
+				HandleOnKill();
+			}
+		}
+	}
+}
+
+void UQuickTweenSequence::Kill()
+{
+	if (HasOwner()) return;
+
+	if (RequestStateTransition(EQuickTweenState::Kill))
+	{
+		HandleOnKill();
+	}
+}
+
+bool UQuickTweenSequence::RequestStateTransition(EQuickTweenState newState)
+{
+	if (newState == SequenceState) return false;
+
+	if (ValidTransitions[SequenceState].Contains(newState))
+	{
+		SequenceState = newState;
+		return true;
+	}
+
+	UE_LOG(LogQuickTweenSequence, Warning, TEXT("Invalid state transition from %s to %s"),  *UEnum::GetValueAsString(SequenceState), *UEnum::GetValueAsString(newState));
+	return false;
+}
+
+void UQuickTweenSequence::HandleOnStart()
+{
+	if (OnStart.IsBound())
+	{
+		OnStart.Broadcast(this);
+	}
+}
+
+void UQuickTweenSequence::HandleOnComplete()
+{
+	ElapsedTime = bIsReversed ? 0.0f : GetTotalDuration();
+
+	bool bSnapToEnd = bSnapToEndOnComplete;
+	if (GetIsReversed())
+	{
+		bSnapToEnd = !bSnapToEnd;
+	}
+
+	const bool bSnapToBeginning  = !bSnapToEnd || (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0);
+	ApplyAlphaValue(bSnapToBeginning ? 0.0f : 1.f);
+
+	if (OnComplete.IsBound())
+	{
+		OnComplete.Broadcast(this);
+	}
+}
+
+void UQuickTweenSequence::HandleOnKill()
+{
+	if (OnKilled.IsBound())
+	{
+		OnKilled.Broadcast(this);
+	}
 }
 
 void UQuickTweenSequence::AssignOnStartEvent(FDynamicDelegateTweenSequence callback)

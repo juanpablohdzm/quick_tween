@@ -1945,17 +1945,6 @@ void UQuickTweenLibrary::QuickTweenCompleteAllTweens(const UObject* worldContext
 	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenCompleteAllTweens: Failed to get QuickTweenManager."));
 }
 
-void UQuickTweenLibrary::QuickTweenStopAllTweens(const UObject* worldContextObject)
-{
-	if (UQuickTweenManager* manager = UQuickTweenManager::Get(worldContextObject))
-	{
-		manager->ExecutePredicateByCondition(
-			[](UQuickTweenable* tween){ tween->Stop(); },
-			[](const UQuickTweenable*){ return true; }); // ...stop all
-	}
-	UE_LOG(LogQuickTweenLibrary, Warning, TEXT("QuickTweenStopAllTweens: Failed to get QuickTweenManager."));
-}
-
 void UQuickTweenLibrary::QuickTweenExecuteActionOnAllTweens(
 	const UObject* worldContextObject,
 	const FQuickTweenableAction& action)

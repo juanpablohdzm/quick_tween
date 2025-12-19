@@ -28,61 +28,49 @@ public:
 	virtual void SetOwner(UQuickTweenable* owner);
 
 	/** Start or resume playback of the tween.
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Play(UQuickTweenable* instigator = nullptr);
+	virtual void Play();
 
 	/** Pause playback of the tween.
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Pause(UQuickTweenable* instigator = nullptr);
-
-	/** Stop playback and reset internal state as appropriate.
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
-	 */
-	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Stop(UQuickTweenable* instigator = nullptr);
+	virtual void Pause();
 
 	/** Play the tween in reverse (playback direction is inverted).
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Reverse(UQuickTweenable* instigator = nullptr);
+	virtual void Reverse();
 
 	/** Restart the tween from its beginning (in case it is reversed, it will restart at the end).
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
+	 *  Must be played again after restarting.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Restart(UQuickTweenable* instigator = nullptr);
+	virtual void Restart();
 
 	/** Immediately complete the tween.
 	 *  If the tween is reversed bSnapToEnd is inverted.
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
 	 * @param bSnapToEnd If true, snap properties to final state when completing.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true);
+	virtual void Complete(bool bSnapToEnd = true);
 
 	/** Forcefully kill the tween and mark it for removal.
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void Kill(UQuickTweenable* instigator = nullptr);
+	virtual void Kill();
 
 	/** Update the tween state by a time delta.
 	 * @param deltaTime Time in seconds to advance the tween.
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
 	 */
-	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr);
+	virtual void Update(float deltaTime);
 
-	/** Configure whether the tween should be automatically removed after completion.
-	 * @param bShouldAutoKill Whether to auto-kill when completed.
-	 * @param instigator Optional pointer indicating which tween initiated the call, if tween is in sequence only the owner can run the function.
+	/** Evaluate the tween with value.
+	 * @param bIsActive if true, this tween is active.
+	 * @param value .
+	 * @param instigator
 	 */
-	UFUNCTION(BlueprintCallable, Category= "Tween|Control")
-	virtual void SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator = nullptr);
+	virtual void Evaluate(bool bIsActive, float value, const UQuickTweenable* instigator);
 
 	/**
 	 * Query whether this tween is pending removal from the manager.
@@ -91,9 +79,13 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual bool GetIsPendingKill() const;
 
-	/** Get the configured duration of the tween in seconds. */
+	/** Get the configured duration of the loop in seconds. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] virtual float GetDuration() const;
+	[[nodiscard]] virtual float GetLoopDuration() const;
+
+	/** Get the total duration of the whole tween (max value for infinite) */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
+	[[nodiscard]] virtual float GetTotalDuration() const;
 
 	/** Get the total elapsed time since the tween started (in seconds). */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
@@ -112,10 +104,6 @@ public:
 	/** Check whether the tween has reached its completion state. */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual bool GetIsCompleted() const;
-
-	/** Returns true if the tween is currently playing backwards in time. */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
-	[[nodiscard]] virtual bool GetIsBackwards() const;
 
 	/** Returns true if the tween's reversed flag is set (affects playback direction). */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
@@ -143,8 +131,8 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category = "Tween|Info")
 	[[nodiscard]] virtual FString GetTweenTag() const;
 
-	/** Get the current loop index (1-based) the tween is on.
-	 * @return 1 for the first loop, 2 for the second, etc.
+	/** Get the current loop index (0-based) the tween is on.
+	 * @return 0 for the first loop, 1 for the second, etc.
 	 */
 	UFUNCTION(BlueprintCallable, Category= "Tween|Info")
 	[[nodiscard]] virtual int32 GetCurrentLoop() const;

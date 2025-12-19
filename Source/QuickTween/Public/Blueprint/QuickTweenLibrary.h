@@ -59,7 +59,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false);
 
 	/**
@@ -95,7 +95,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -133,7 +133,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -169,7 +169,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -209,7 +209,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -248,7 +248,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -287,14 +287,14 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a vector tween that moves a SceneComponent to a target location.
 	 *
-	 * Note: The start value will be cached from the component's current location at the first update.
+	 * Note: The start and end value will be cached from the component's current location at the first update.
 	 *
 	 * @param worldContextObject  Context object used to find the world for the tween.
 	 * @param component           The SceneComponent to move.
@@ -325,7 +325,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -364,7 +364,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 	
@@ -407,7 +407,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -447,14 +447,14 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a vector tween that scales a SceneComponent to a target scale.
 	 *
-	 * Note: The start value will be cached from the component's current location at the first update.
+	 * Note: The start and end value will be cached from the component's current location at the first update.
 	 *
 	 * @param worldContextObject  Context object used to find the world for the tween.
 	 * @param component           The SceneComponent to scale.
@@ -485,7 +485,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -524,7 +524,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -566,7 +566,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -606,14 +606,14 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
 	/**
 	 * Create a rotator tween that rotates a SceneComponent to a target rotator.
 	 *
-	 * Note: The start value will be cached from the component's current location at the first update.
+	 * Note: The start and end value will be cached from the component's current location at the first update.
 	 *
 	 * @param worldContextObject  Context object used to find the world for the tween.
 	 * @param component           The SceneComponent to rotate.
@@ -646,7 +646,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -686,7 +686,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -730,7 +730,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -769,7 +769,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -778,7 +778,7 @@ public:
 	/**
 	 * Create a rotator tween that orients a SceneComponent to look at a target point.
 	 *
-	 * Note: The start value will be cached from the component's current location at the first update.
+	 * Note: The start and end value will be cached from the component's current location at the first update.
 	 *
 	 * @param worldContextObject  Context object used to find the world for the tween.
 	 * @param component           The SceneComponent to rotate.
@@ -809,7 +809,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -855,7 +855,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -894,7 +894,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -933,7 +933,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -972,7 +972,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1011,7 +1011,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1049,7 +1049,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1089,7 +1089,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1129,7 +1129,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1170,7 +1170,7 @@ public:
 	int32 loops = 1,
 	ELoopType loopType = ELoopType::Restart,
 	const FString& tweenTag = "",
-	bool bShouldAutoKill = false,
+	bool bShouldAutoKill = true,
 	bool bShouldPlayWhilePaused = false,
 	bool bShouldAutoPlay = false);
 
@@ -1211,7 +1211,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1251,7 +1251,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1292,7 +1292,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1379,18 +1379,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Complete | All", WorldContext = "worldContextObject"), Category = "QuickTween")
 	static void QuickTweenCompleteAllTweens(const UObject* worldContextObject);
-
-	/**
-	 * Stop all active QuickTweens within the specified world context.
-	 *
-	 * This function finds the tween manager associated with \p worldContextObject
-	 * and stops all currently active tweens. Stopped tweens are paused and reset
-	 * to their initial state (as if they were never played).
-	 *
-	 * @param worldContextObject Context object used to locate the world that contains the tweens.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween | Stop | All", WorldContext = "worldContextObject"), Category = "QuickTween")
-	static void QuickTweenStopAllTweens(const UObject* worldContextObject);
 
 	/**
 	 * Execute a specified action on all active QuickTweens within the given world context.

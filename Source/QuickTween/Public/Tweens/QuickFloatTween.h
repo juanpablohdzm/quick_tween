@@ -35,7 +35,7 @@ private:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = FString(),
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false)
 	{
@@ -61,13 +61,13 @@ public:
 	/**
 	 * Create and set up a UQuickFloatTween with the specified parameters.
 	 *
-	 * Note: The start value will be cached from the component's current location at the first update.
+	 * Note: The start and end value will be cached at the first update.
 	 *
 	 * @param worldContextObject Context object for world access.
 	 * @param from Function to get the FROM value.
 	 * @param to Function to get the TO value.
 	 * @param setter Function to apply the interpolated value.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Multiplier for the tween's speed.
 	 * @param easeType Type of easing to apply.
 	 * @param easeCurve Optional custom curve for easing.
@@ -90,7 +90,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = FString(),
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false)
 	{
@@ -119,17 +119,24 @@ public:
 		return tween;
 	}
 
-	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
-
-	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
-
 	/** Get the current interpolated float value. */
 	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween"), Category= "Tween|Info")
 	[[nodiscard]] float GetCurrentValue() const { return CurrentValue; }
 
 	/** Get the starting float value. Set after the first tick */
 	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category= "Tween|Info")
-	[[nodiscard]] float GetStartValue() const { return StartValue.Get(CurrentValue); }
+	[[nodiscard]] float GetStartValue() const { return StartValue.Get(0.0f); }
+
+  	/** Get the ending float value. Set after the first tick */
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Tween"), Category= "Tween|Info")
+	[[nodiscard]] float GetEndValue() const { return EndValue.Get(0.0f); }
+protected:
+	virtual void ApplyAlphaValue(float alpha) override;
+
+	virtual void HandleOnStart() override;
+
+	virtual void HandleOnComplete() override;
+
 private:
 	/** Starting function returning float. */
 	FNativeFloatGetter From;
@@ -139,6 +146,9 @@ private:
 
 	/** Starting value. */
 	TOptional<float> StartValue;
+
+	/** Target value. */
+	TOptional<float> EndValue;
 
 	/** Function to set the interpolated FVector value. */
 	FNativeFloatSetter Setter;

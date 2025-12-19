@@ -123,7 +123,7 @@ public:
 
 	/** Execute a function on all tweens matching the given predicate.
 	 *
-	 * @param condition - Function to execute on each matching tween.
+	 * @param action - Function to execute on each matching tween.
 	 * @param predicate - Function that returns true for the desired tweens.
 	 */
 	void ExecutePredicateByCondition(TFunctionRef<void(UQuickTweenable*)> action, TFunctionRef<bool(const UQuickTweenable*)> predicate) const;

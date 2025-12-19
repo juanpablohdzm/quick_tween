@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CommonValues.h"
 #include "QuickTweenable.h"
 #include "../Utils/EaseType.h"
 #include "../Utils/LoopType.h"
@@ -30,11 +31,11 @@ public:
 	/**
 	 * Set up the tween with the specified parameters.
 	 * @param worldContextObject Context object for world access.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Time scale multiplier.
 	 * @param easeType Type of easing to use.
 	 * @param easeCurve Optional custom curve for easing.
-	 * @param loops Number of loops (0 = infinite).
+	 * @param loops Number of loops (-1 = infinite).
 	 * @param loopType Looping behavior.
 	 * @param tweenTag Optional tag for identification.
 	 * @param bShouldAutoKill Whether to auto-kill the tween on completion.
@@ -50,7 +51,7 @@ public:
 		int32 loops,
 		ELoopType loopType,
 		const FString& tweenTag = FString(),
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -61,48 +62,47 @@ public:
 #pragma region Tween Control
 public:
 
-	virtual void Play(UQuickTweenable* instigator = nullptr) override;
+	virtual void Play() override;
 
-	virtual void Pause(UQuickTweenable* instigator = nullptr) override;
+	virtual void Pause() override;
 
-	virtual void Stop(UQuickTweenable* instigator = nullptr) override;
+	virtual void Reverse() override;
 
-	virtual void Reverse(UQuickTweenable* instigator = nullptr) override;
+	virtual void Restart() override;
 
-	virtual void Restart(UQuickTweenable* instigator = nullptr) override;
+	virtual void Complete(bool bSnapToEnd = true) override;
 
-	virtual void Complete(UQuickTweenable* instigator = nullptr, bool bSnapToEnd = true) override;
+	virtual void Kill() override;
 
-	virtual void Kill(UQuickTweenable* instigator = nullptr) override;
+	virtual void Update(float deltaTime) override;
 
-	virtual void Update(float deltaTime, UQuickTweenable* instigator = nullptr) override;
-
-	virtual void SetAutoKill(bool bShouldAutoKill, UQuickTweenable* instigator = nullptr) override;
-private:
-
-	void Update_Restart(float deltaTime, UQuickTweenable* instigator);
-
-
-	void Update_PingPong(float deltaTime, UQuickTweenable* instigator);
+	virtual void Evaluate(bool bIsActive, float value, const UQuickTweenable* instigator) override;
 
 #pragma endregion
 
 #pragma region Tween State Queries
 public:
 
-	virtual bool GetIsPendingKill() const override { return bIsPendingKill; }
+	[[nodiscard]] virtual bool GetIsPendingKill() const override { return TweenState == EQuickTweenState::Kill; }
 
-	[[nodiscard]] virtual float GetDuration() const override { return Duration;}
+	[[nodiscard]] virtual float GetLoopDuration() const override { return Duration;}
+
+	[[nodiscard]] virtual float GetTotalDuration() const override
+	{
+		if (Loops == INFINITE_LOOPS)
+		{
+			return TNumericLimits<float>::Max();
+		}
+		return GetLoopDuration() * GetLoops() / GetTimeScale();
+	}
 
 	[[nodiscard]] virtual float GetElapsedTime() const override { return ElapsedTime; }
 
 	[[nodiscard]] virtual float GetTimeScale() const override { return TimeScale; }
 
-	[[nodiscard]] virtual bool GetIsPlaying() const override { return bIsPlaying; }
+	[[nodiscard]] virtual bool GetIsPlaying() const override { return TweenState == EQuickTweenState::Play; }
 
-	[[nodiscard]] virtual bool GetIsCompleted() const override { return bIsCompleted; }
-
-	[[nodiscard]] virtual bool GetIsBackwards() const override { return bIsBackwards; }
+	[[nodiscard]] virtual bool GetIsCompleted() const override { return TweenState == EQuickTweenState::Complete; }
 
 	[[nodiscard]] virtual bool GetIsReversed() const override { return bIsReversed; }
 
@@ -121,13 +121,13 @@ public:
 	[[nodiscard]] virtual bool GetAutoKill() const override { return bAutoKill; }
 
 	[[nodiscard]] virtual bool GetShouldPlayWhilePaused() const override {return bPlayWhilePaused;}
+
+	[[nodiscard]] bool GetSnapToEndOnComplete() const { return bSnapToEndOnComplete; }
 #pragma endregion
 
-	bool InstigatorIsOwner(UQuickTweenable* instigator) const
-	{
-		if (!Owner) return true; // No owner means it's not in a sequence
-		return instigator == Owner;
-	};
+	bool InstigatorIsOwner(const UQuickTweenable* instigator) const { return instigator == Owner; }
+	
+	bool HasOwner() const { return Owner != nullptr; }
 
 	/**
 	 * Assign a Blueprint dynamic delegate to be invoked when the tween starts.
@@ -219,29 +219,85 @@ public:
 	/** Event triggered when the tween loops. */
 	FNativeDelegateTween OnLoop;
 
+protected:
+
+	/**
+	 * Apply the interpolated alpha value to the tweened property.
+	 * @param alpha Interpolated alpha value (0.0 to 1.0).
+	 */
+	virtual void ApplyAlphaValue(float alpha);
+
+	/**
+	 * Called when the tween transitions to the Start state.
+	 *
+	 * This is invoked once when the tween begins. Implementations should perform
+	 * any initialization required before the first update tick (e.g. set initial
+	 * values, invoke start events).
+	 */
+	virtual void HandleOnStart();
+
+	/**
+	 * Called when the tween transitions to the Complete state.
+	 *
+	 */
+	virtual void HandleOnComplete();
+
+	/**
+	 * Called when the tween transitions to the Kill state.
+	 *
+	 * This is invoked once when the tween is being removed. Implementations should
+	 * perform any necessary cleanup and invoke killed events.
+	 */
+	virtual void HandleOnKill();
+private:
+
+	struct FQuickTweenStateResult
+	{
+		int32 Loop = 0;
+		float Alpha = 0.0f;
+	};
+
+
+	/**
+	 * Compute the internal tween state for a given time.
+	 *
+	 * @param time Global time (seconds) used to compute the tween state. This value
+	 *             is interpreted in the context of the tween's Duration and TimeScale.
+	 * @return FQuickTweenStateResult Struct containing the calculated ElapsedTime,
+	 *         Loop index, and Alpha for use when applying the tween.
+	 */
+	FQuickTweenStateResult ComputeTweenState(float time) const;
+
+	/**
+	 * Request a state transition for this tween.
+	 *
+	 * Validates the requested transition against allowed transitions and, if valid,
+	 * performs the transition and invokes the corresponding transition handler.
+	 *
+	 * @param newState Target `EQuickTweenState` to transition into.
+	 */
+	bool RequestStateTransition(EQuickTweenState newState);
+
+	/** Current state of the tween. */
+	EQuickTweenState TweenState = EQuickTweenState::Idle;
+
 	/** Time elapsed since the tween started. */
 	float ElapsedTime = 0.0f;
 
-private:
-	/** Duration of the tween in seconds. */
+	/** Duration of the loop in seconds. */
 	float Duration = 0.0f;
+
 	/** Time scale multiplier. */
 	float TimeScale = 1.0f;
 
-	/** Whether the tween has started. */
-	bool bHasStarted = false;
-
-	/** Whether the tween is currently playing. */
-	bool bIsPlaying = false;
-
-	/** Whether the tween is completed. */
-	bool bIsCompleted = false;
-
-	/** Whether the tween is playing backwards. */
-	bool bIsBackwards = false;
-
 	/** Internal flag to track if the tween is reversed. */
 	bool bIsReversed = false;
+
+	/** Internal flag to track if the tween was previously active within a sequence. */
+	bool bWasActive = false;
+
+	/** Whether to snap to the end value upon completion. */
+	bool bSnapToEndOnComplete = true;
 
 	/** Easing type for the tween. */
 	EEaseType EaseType = EEaseType::Linear;
@@ -250,8 +306,8 @@ private:
 	UPROPERTY(Transient)
 	UCurveFloat* EaseCurve = nullptr;
 
-	/** Current loop index (1-based). */
-	int32 CurrentLoop = 1;
+	/** Current loop index (0-based). */
+	int32 CurrentLoop = 0;
 
 	/** Number of loops (-1 = infinite). */
 	int32 Loops = -1;
@@ -260,14 +316,11 @@ private:
 	ELoopType LoopType = ELoopType::Restart;
 
 	/** Optional tag for identifying the tween. */
-	FString TweenTag;
+	FString TweenTag = FString();
 
 	/** If this tween has an owner */
 	UPROPERTY()
 	UQuickTweenable* Owner = nullptr;
-
-	/** If this tween should be eliminated from the manager. */
-	bool bIsPendingKill = false;
 
 	/** If the tween should auto-kill upon completion. */
 	bool bAutoKill = true;

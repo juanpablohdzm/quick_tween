@@ -21,5 +21,9 @@
 			"LoadingPhase": "Default"
 		}
 	],
-	"Icon": "Resources/QuickTweenIcon.png"
+	"Icon": "Resources/QuickTweenIcon.png",
+	"PlatformAllowList": [
+		"Win64",
+		"Win32"
+	]
 }

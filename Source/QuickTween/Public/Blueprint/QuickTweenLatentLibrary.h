@@ -62,7 +62,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false);
 
 	/**
@@ -77,7 +77,7 @@ public:
 	 * @param from Starting vector.
 	 * @param to Target vector.
 	 * @param setter Callback used to apply interpolated FVector values.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -104,7 +104,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -121,7 +121,7 @@ public:
 	 * @param to Target rotator.
 	 * @param setter Callback used to apply interpolated FRotator values.
 	 * @param bUseShortestPath When true, interpolation will use the shortest rotational path.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -149,7 +149,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -164,7 +164,7 @@ public:
 	 * @param from Starting float value.
 	 * @param to Target float value.
 	 * @param setter Callback used to apply interpolated float values.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -191,7 +191,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -207,7 +207,7 @@ public:
 	 * @param from Starting 2D vector.
 	 * @param to Target 2D vector.
 	 * @param setter Callback used to apply interpolated FVector2D values.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -234,7 +234,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -250,7 +250,7 @@ public:
 	 * @param from Starting color.
 	 * @param to Target color.
 	 * @param setter Callback used to apply interpolated FColor values.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -277,7 +277,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -293,7 +293,7 @@ public:
 	 * @param from Starting integer value.
 	 * @param to Target integer value.
 	 * @param setter Callback used to apply interpolated int32 values.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -320,7 +320,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -362,7 +362,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -404,7 +404,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -448,7 +448,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -490,7 +490,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -504,7 +504,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param component Scene component whose scale will be tweened.
 	 * @param to Target scale.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve.
@@ -532,7 +532,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -546,7 +546,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param widget Target widget whose scale will be changed.
 	 * @param to Target 2D scale.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve.
@@ -572,7 +572,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -586,7 +586,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param component Scene component whose scale will be adjusted.
 	 * @param by Delta scale to be applied to current scale.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve.
@@ -614,7 +614,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -628,7 +628,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param widget Target widget whose scale will be changed.
 	 * @param by 2D delta scale to apply to current scale.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve.
@@ -654,7 +654,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -698,7 +698,7 @@ public:
         ELoopType loopType = ELoopType::Restart,
         EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
         const FString& tweenTag = "",
-        bool bShouldAutoKill = false,
+        bool bShouldAutoKill = true,
         bool bShouldPlayWhilePaused = false,
         bool bShouldAutoPlay = false);
 
@@ -714,7 +714,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param widget Target widget whose rotation will be changed.
 	 * @param to Target rotation value (in degrees).
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -740,7 +740,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -784,7 +784,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -825,7 +825,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -867,7 +867,7 @@ public:
         int32 loops = 1,
         ELoopType loopType = ELoopType::Restart,
         const FString& tweenTag = "",
-        bool bShouldAutoKill = false,
+        bool bShouldAutoKill = true,
         bool bShouldPlayWhilePaused = false,
         bool bShouldAutoPlay = false);
 
@@ -913,7 +913,7 @@ public:
         int32 loops = 1,
         ELoopType loopType = ELoopType::Restart,
         const FString& tweenTag = "",
-        bool bShouldAutoKill = false,
+        bool bShouldAutoKill = true,
         bool bShouldPlayWhilePaused = false,
         bool bShouldAutoPlay = false);
 
@@ -927,7 +927,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param widget UImage widget whose color will be changed.
 	 * @param to Target color.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -953,7 +953,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -967,7 +967,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param widget Target widget whose opacity will be changed.
 	 * @param to Target opacity value (0.0 - 1.0).
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -993,7 +993,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1007,7 +1007,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param camera Camera component whose FOV will be changed.
 	 * @param to Target FOV value in degrees.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -1033,7 +1033,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1047,7 +1047,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param springArm Spring arm component whose length will be changed.
 	 * @param to Target arm length.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -1073,7 +1073,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1087,7 +1087,7 @@ public:
 	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
 	 * @param springArm Spring arm component whose length will be changed.
 	 * @param by Delta to add to the current arm length.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -1113,7 +1113,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1128,7 +1128,7 @@ public:
 	 * @param material Dynamic material instance to modify.
 	 * @param parameterName Name of the vector parameter.
 	 * @param to Target vector value.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -1155,7 +1155,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1170,7 +1170,7 @@ public:
 	 * @param material Dynamic material instance to modify.
 	 * @param parameterName Name of the vector parameter.
 	 * @param by Vector delta to add to the current parameter value.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -1197,7 +1197,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1212,7 +1212,7 @@ public:
 	 * @param material Dynamic material instance to modify.
 	 * @param parameterName Name of the scalar parameter.
 	 * @param to Target scalar value.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -1239,7 +1239,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1254,7 +1254,7 @@ public:
 	 * @param material Dynamic material instance to modify.
 	 * @param parameterName Name of the scalar parameter.
 	 * @param by Delta to add to the current scalar parameter.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -1281,7 +1281,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1296,7 +1296,7 @@ public:
 	 * @param material Dynamic material instance to modify.
 	 * @param parameterName Name of the color parameter.
 	 * @param to Target color value.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -1323,7 +1323,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1340,7 +1340,7 @@ public:
 	 * @param material Dynamic material instance to modify.
 	 * @param parameterName Name of the color parameter.
 	 * @param by FColor delta to apply.
-	 * @param duration Duration of the tween in seconds.
+	 * @param duration Duration of the loop in seconds.
 	 * @param timeScale Global time scale multiplier for the tween.
 	 * @param easeType Built-in easing type to apply.
 	 * @param easeCurve Optional custom ease curve (overrides easeType when provided).
@@ -1367,7 +1367,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 };
