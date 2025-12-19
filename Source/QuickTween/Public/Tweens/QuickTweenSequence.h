@@ -377,6 +377,12 @@ private:
 	/** Whether the sequence was previously active within a parent sequence. */
 	bool bWasActive = false;
 
+	/** Current normalized alpha value (0.0 - 1.0). */
+	float CurrentAlpha = 0.0f;
+
+	/** Whether to snap to the end value upon completion. */
+	bool bSnapToEndOnComplete = true;
+
 	/** Current loop index. */
 	int32 CurrentLoop = 1;
 
@@ -388,9 +394,6 @@ private:
 
 	/** Identifier for the sequence. */
 	FString SequenceTweenId;
-
-	/** Index of the current tween group. */
-	int32 CurrentTweenGroupIndex = INDEX_NONE;
 
 	/** If the sequence should be eliminated from the manager when completed. */
 	bool bAutoKill = true;

@@ -4,6 +4,7 @@
 #include "Tweens/QuickTweenSequence.h"
 
 #include "QuickTweenManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "Utils/CommonValues.h"
 
 UQuickTweenSequence::~UQuickTweenSequence()
@@ -181,6 +182,7 @@ void UQuickTweenSequence::Evaluate(bool bIsActive, float value, const UQuickTwee
 		auto simulateOnStart = [&]()
 		{
 			CurrentLoop = bIsReversed ? GetLoops() - 1 : 0;
+			CurrentAlpha = bIsReversed ? 1.0f : 0.0f;
 			HandleOnStart();
 		};
 
@@ -266,27 +268,86 @@ UQuickTweenSequence::FQuickTweenSequenceStateResult UQuickTweenSequence::Compute
 
 void UQuickTweenSequence::ApplyAlphaValue(float alpha)
 {
-	float sequenceTime = alpha * GetLoopDuration();
-	for (FQuickTweenSequenceGroup& group : TweenGroups)
-	{
-		const float startTime = group.StartTime;
-		const float endTime = (group.StartTime + group.Duration);
-		const bool bIsGroupActive = sequenceTime >= startTime && sequenceTime <= endTime;
+	const float fromTime = CurrentAlpha * GetLoopDuration();
+	const float toTime = alpha * GetLoopDuration();
+	const float deltaTime = FMath::Abs(toTime - fromTime);
+	const bool bIsForward = toTime >= fromTime;
 
-		for (UQuickTweenable* tween : group.Tweens)
+	const auto evaluateAtTime = [&](float sequenceTime)
+	{
+		for (FQuickTweenSequenceGroup& group : TweenGroups)
 		{
-			const bool bIsActive = bIsGroupActive &&  /*isSpecificTweenActive*/ (sequenceTime >= startTime && sequenceTime <= (startTime + tween->GetTotalDuration()));
-			if (bIsActive)
+			const float startTime = group.StartTime;
+			const float endTime = (group.StartTime + group.Duration);
+			const bool bIsGroupActive = sequenceTime >= startTime && sequenceTime <= endTime;
+
+			for (UQuickTweenable* tween : group.Tweens)
 			{
-				const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration();
-				tween->Evaluate(/*bIsActive*/ true, childTime, this);
-			}
-			else
-			{
-				tween->Evaluate(/*bIsActive*/ false, bIsReversed ? 0.0f : 1.0f, this);
+				const bool bIsActive = bIsGroupActive &&  /*isSpecificTweenActive*/ (sequenceTime >= startTime && sequenceTime <= (startTime + tween->GetTotalDuration()));
+				if (bIsActive)
+				{
+					const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration();
+					tween->Evaluate(/*bIsActive*/ true, childTime, this);
+				}
+				else
+				{
+					tween->Evaluate(/*bIsActive*/ false, bIsReversed ? 0.0f : 1.0f, this);
+				}
 			}
 		}
+	};
+
+	constexpr float smallStepThreshold = 0.01f;
+
+	// ... if the step is small enough, just evaluate directly
+	if (deltaTime <= smallStepThreshold)
+	{
+		evaluateAtTime(toTime);
+		CurrentAlpha = alpha;
+		return;
 	}
+
+	// ... otherwise, collect breakpoints and evaluate at each
+	TArray<float> breakpoints;
+	breakpoints.Add(toTime);
+
+	// ... collect breakpoints
+	[&](TArray<float>& points)
+	{
+		const float Min = FMath::Min(fromTime, toTime);
+		const float Max = FMath::Max(fromTime, toTime);
+
+		for (const FQuickTweenSequenceGroup& group : TweenGroups)
+		{
+			for (UQuickTweenable* tween : group.Tweens)
+			{
+				if (!tween) continue;
+
+				const float start = group.StartTime;
+				const float end   = start + tween->GetTotalDuration();
+
+				if (start > Min && start < Max)
+					points.AddUnique(start);
+
+				if (end > Min && end < Max)
+					points.AddUnique(end);
+			}
+		}
+	}(breakpoints);
+
+	breakpoints.Sort();
+
+	if (!bIsForward)
+	{
+		Algo::Reverse(breakpoints);
+	}
+
+	for (float point : breakpoints)
+	{
+		evaluateAtTime(point);
+	}
+
+	CurrentAlpha = alpha;
 }
 
 float UQuickTweenSequence::GetLoopDuration() const
@@ -330,6 +391,7 @@ void UQuickTweenSequence::Play()
 		{
 			ElapsedTime = bIsReversed ? GetTotalDuration() : 0.0f;
 			CurrentLoop = bIsReversed ? GetLoops() - 1 : 0;
+			CurrentAlpha = bIsReversed ? 1.0f : 0.0f;
 			HandleOnStart();
 		}
 	}
@@ -360,6 +422,7 @@ void UQuickTweenSequence::Complete(bool bSnapToEnd)
 {
 	if (HasOwner() || GetLoops() == INFINITE_LOOPS) return;
 
+	bSnapToEndOnComplete = bSnapToEnd;
 	if (RequestStateTransition(EQuickTweenState::Complete))
 	{
 		HandleOnComplete();
@@ -409,7 +472,13 @@ void UQuickTweenSequence::HandleOnComplete()
 {
 	ElapsedTime = bIsReversed ? 0.0f : GetTotalDuration();
 
-	const bool bSnapToBeginning  = bIsReversed || (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0);
+	bool bSnapToEnd = bSnapToEndOnComplete;
+	if (GetIsReversed())
+	{
+		bSnapToEnd = !bSnapToEnd;
+	}
+
+	const bool bSnapToBeginning  = !bSnapToEnd || (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0);
 	ApplyAlphaValue(bSnapToBeginning ? 0.0f : 1.f);
 
 	if (OnComplete.IsBound())
