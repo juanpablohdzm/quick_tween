@@ -60,7 +60,7 @@ private:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& id = FString(),
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false);
 
 public:
@@ -84,7 +84,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& id = FString(),
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false)
 	{
 		UQuickTweenSequence* sequence = NewObject<UQuickTweenSequence>(worldContextObject);

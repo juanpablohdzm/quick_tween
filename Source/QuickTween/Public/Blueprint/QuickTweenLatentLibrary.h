@@ -62,7 +62,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false);
 
 	/**
@@ -104,7 +104,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -149,7 +149,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -191,7 +191,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -234,7 +234,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -277,7 +277,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -320,7 +320,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -362,7 +362,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -404,7 +404,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -448,7 +448,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::WorldSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -490,7 +490,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -532,7 +532,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -572,7 +572,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -614,7 +614,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -654,7 +654,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -698,7 +698,7 @@ public:
         ELoopType loopType = ELoopType::Restart,
         EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
         const FString& tweenTag = "",
-        bool bShouldAutoKill = false,
+        bool bShouldAutoKill = true,
         bool bShouldPlayWhilePaused = false,
         bool bShouldAutoPlay = false);
 
@@ -740,7 +740,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -784,7 +784,7 @@ public:
 		ELoopType loopType = ELoopType::Restart,
 		EQuickTweenSpace space = EQuickTweenSpace::LocalSpace,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -825,7 +825,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -867,7 +867,7 @@ public:
         int32 loops = 1,
         ELoopType loopType = ELoopType::Restart,
         const FString& tweenTag = "",
-        bool bShouldAutoKill = false,
+        bool bShouldAutoKill = true,
         bool bShouldPlayWhilePaused = false,
         bool bShouldAutoPlay = false);
 
@@ -913,7 +913,7 @@ public:
         int32 loops = 1,
         ELoopType loopType = ELoopType::Restart,
         const FString& tweenTag = "",
-        bool bShouldAutoKill = false,
+        bool bShouldAutoKill = true,
         bool bShouldPlayWhilePaused = false,
         bool bShouldAutoPlay = false);
 
@@ -953,7 +953,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -993,7 +993,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1033,7 +1033,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1073,7 +1073,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1113,7 +1113,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1155,7 +1155,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1197,7 +1197,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1239,7 +1239,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1281,7 +1281,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1323,7 +1323,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
@@ -1367,7 +1367,7 @@ public:
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
 		const FString& tweenTag = "",
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 };

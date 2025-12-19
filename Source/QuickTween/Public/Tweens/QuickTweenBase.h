@@ -51,7 +51,7 @@ public:
 		int32 loops,
 		ELoopType loopType,
 		const FString& tweenTag = FString(),
-		bool bShouldAutoKill = false,
+		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
 		bool bShouldAutoPlay = false);
 
