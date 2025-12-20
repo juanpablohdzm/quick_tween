@@ -18,12 +18,9 @@
 		{
 			"Name": "QuickTween",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"PlatformAllowList": []
 		}
 	],
-	"Icon": "Resources/QuickTweenIcon.png",
-	"PlatformAllowList": [
-		"Win64",
-		"Win32"
-	]
+	"Icon": "Resources/QuickTweenIcon.png"
 }
