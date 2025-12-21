@@ -11,7 +11,7 @@
 	"MarketplaceURL": "",
 	"SupportURL": "mosti.dev@gmail.com",
 	"CanContainContent": true,
-	"IsBetaVersion": true,
+	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [
@@ -19,7 +19,14 @@
 			"Name": "QuickTween",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
-			"PlatformAllowList": []
+			"PlatformAllowList": [
+				"Win64",
+				"Mac",
+				"Linux",
+				"Android",
+				"IOS",
+				"TVOS"
+			]
 		}
 	],
 	"Icon": "Resources/QuickTweenIcon.png"
