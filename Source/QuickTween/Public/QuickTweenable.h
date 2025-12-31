@@ -7,6 +7,7 @@
 #include "Utils/LoopType.h"
 #include "QuickTweenable.generated.h"
 
+struct FQuickTweenEvaluatePayload;
 /**
  * Base UObject for QuickTween tweens.
  *
@@ -66,11 +67,10 @@ public:
 	virtual void Update(float deltaTime);
 
 	/** Evaluate the tween with value.
-	 * @param bIsActive if true, this tween is active.
-	 * @param value .
+	 * @param payload Evaluation payload containing active state and value.
 	 * @param instigator
 	 */
-	virtual void Evaluate(bool bIsActive, float value, const UQuickTweenable* instigator);
+	virtual void Evaluate(const FQuickTweenEvaluatePayload& payload, const UQuickTweenable* instigator);
 
 	/**
 	 * Query whether this tween is pending removal from the manager.

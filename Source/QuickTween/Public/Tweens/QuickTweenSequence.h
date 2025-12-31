@@ -134,7 +134,7 @@ public:
 
 	virtual void Update(float deltaTime) override;
 
-	virtual void Evaluate(bool bIsActive, float value, const UQuickTweenable* instigator) override;
+	virtual void Evaluate(const FQuickTweenEvaluatePayload& payload, const UQuickTweenable* instigator) override;
 
 	[[nodiscard]] virtual bool GetIsPendingKill() const override { return SequenceState == EQuickTweenState::Kill; }
 #pragma endregion

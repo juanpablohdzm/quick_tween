@@ -169,14 +169,14 @@ void UQuickTweenSequence::Update(float deltaTime)
 	}
 }
 
-void UQuickTweenSequence::Evaluate(bool bIsActive, float value, const UQuickTweenable* instigator)
+void UQuickTweenSequence::Evaluate(const FQuickTweenEvaluatePayload& payload, const UQuickTweenable* instigator)
 {
 	if (!HasOwner() || !InstigatorIsOwner(instigator)) return;
 
-	bIsReversed = instigator->GetIsReversed();
-	ElapsedTime = FMath::Clamp(value * GetTotalDuration(), 0.f, GetTotalDuration());
+	bIsReversed = payload.bIsReversed;
+	ElapsedTime = FMath::Clamp(payload.Value * GetTotalDuration(), 0.f, GetTotalDuration());
 
-	if (bWasActive != bIsActive)
+	if (bWasActive != payload.bIsActive)
 	{
 		auto simulateOnStart = [&]()
 		{
@@ -195,7 +195,7 @@ void UQuickTweenSequence::Evaluate(bool bIsActive, float value, const UQuickTwee
 			}
 		};
 
-		if (bIsActive)
+		if (payload.bIsActive)
 		{
 			simulateOnStart();
 		}
@@ -203,10 +203,10 @@ void UQuickTweenSequence::Evaluate(bool bIsActive, float value, const UQuickTwee
 		{
 			shouldSimulateOnComplete();
 		}
-		bWasActive = bIsActive;
+		bWasActive = payload.bIsActive;
 	}
 
-	if (!bIsActive)
+	if (!payload.bIsActive)
 	{
 		return;
 	}
@@ -286,11 +286,21 @@ void UQuickTweenSequence::ApplyAlphaValue(float alpha)
 				if (bIsActive)
 				{
 					const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration();
-					tween->Evaluate(/*bIsActive*/ true, childTime, this);
+					FQuickTweenEvaluatePayload payload{
+						.bIsActive = true,
+						.bIsReversed = !bIsForward,
+						.Value = childTime
+					};
+					tween->Evaluate(payload, this);
 				}
 				else
 				{
-					tween->Evaluate(/*bIsActive*/ false, bIsReversed ? 0.0f : 1.0f, this);
+					FQuickTweenEvaluatePayload payload{
+						.bIsActive = false,
+						.bIsReversed = !bIsForward,
+						.Value = bIsForward ? 1.0f : 0.0f
+					};
+					tween->Evaluate(payload, this);
 				}
 			}
 		}

@@ -105,14 +105,14 @@ void UQuickTweenBase::Update(float deltaTime)
 	}
 }
 
-void UQuickTweenBase::Evaluate(bool bIsActive, float value, const UQuickTweenable* instigator)
+void UQuickTweenBase::Evaluate(const FQuickTweenEvaluatePayload& payload, const UQuickTweenable* instigator)
 {
 	if (!HasOwner() || !InstigatorIsOwner(instigator)) return;
 
-	bIsReversed = instigator->GetIsReversed();
-	ElapsedTime = FMath::Clamp(value * GetTotalDuration(), 0.f, GetTotalDuration());
+	bIsReversed = payload.bIsReversed;
+	ElapsedTime = FMath::Clamp(payload.Value * GetTotalDuration(), 0.f, GetTotalDuration());
 
-	if (bWasActive != bIsActive)
+	if (bWasActive != payload.bIsActive)
 	{
 		auto simulateOnStart = [&]()
 		{
@@ -130,7 +130,7 @@ void UQuickTweenBase::Evaluate(bool bIsActive, float value, const UQuickTweenabl
 			}
 		};
 
-		if (bIsActive)
+		if (payload.bIsActive)
 		{
 			simulateOnStart();
 		}
@@ -138,10 +138,10 @@ void UQuickTweenBase::Evaluate(bool bIsActive, float value, const UQuickTweenabl
 		{
 			shouldSimulateOnComplete();
 		}
-		bWasActive = bIsActive;
+		bWasActive = payload.bIsActive;
 	}
 
-	if (!bIsActive)
+	if (!payload.bIsActive)
 	{
 		return;
 	}
