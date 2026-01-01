@@ -314,7 +314,7 @@ void UQuickTweenSequence::ApplyAlphaValue(float alpha)
 	// ... if the step is small enough, just evaluate directly
 	if (deltaTime <= smallStepThreshold)
 	{
-		evaluateAtTime(toTime);
+		evaluateAtTime(toTime, bTriggerEvents);
 		CurrentAlpha = alpha;
 		return;
 	}
