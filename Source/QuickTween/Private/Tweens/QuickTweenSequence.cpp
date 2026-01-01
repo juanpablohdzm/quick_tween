@@ -273,7 +273,7 @@ void UQuickTweenSequence::ApplyAlphaValue(float alpha)
 	const float deltaTime = FMath::Abs(toTime - fromTime);
 	const bool bIsForward = toTime >= fromTime;
 
-	const auto evaluateAtTime = [&](float sequenceTime, bool bTriggerEvents  = true)
+	const auto evaluateAtTime = [&](float sequenceTime, bool bEnableEvents  = true)
 	{
 		for (FQuickTweenSequenceGroup& group : TweenGroups)
 		{
@@ -290,7 +290,7 @@ void UQuickTweenSequence::ApplyAlphaValue(float alpha)
 					FQuickTweenEvaluatePayload payload{
 						.bIsActive = true,
 						.bIsReversed = !bIsForward,
-						.bShouldTriggerEvents = bTriggerEvents,
+						.bShouldTriggerEvents = bEnableEvents,
 						.Value = childTime
 					};
 					tween->Evaluate(payload, this);
@@ -300,7 +300,7 @@ void UQuickTweenSequence::ApplyAlphaValue(float alpha)
 					FQuickTweenEvaluatePayload payload{
 						.bIsActive = false,
 						.bIsReversed = !bIsForward,
-						.bShouldTriggerEvents = bTriggerEvents,
+						.bShouldTriggerEvents = bEnableEvents,
 						.Value = bIsForward ? 1.0f : 0.0f
 					};
 					tween->Evaluate(payload, this);
@@ -356,7 +356,7 @@ void UQuickTweenSequence::ApplyAlphaValue(float alpha)
 
 	for (float point : breakpoints)
 	{
-		evaluateAtTime(point, /*bTriggerEvents*/ false);
+		evaluateAtTime(point, /*bEnableEvents*/ false);
 	}
 
 	CurrentAlpha = alpha;
