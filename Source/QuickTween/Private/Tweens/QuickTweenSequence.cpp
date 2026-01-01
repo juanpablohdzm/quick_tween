@@ -135,7 +135,7 @@ void UQuickTweenSequence::Update(float deltaTime)
 		const int32 crossed = FMath::Abs(state.Loop - CurrentLoop);
 		CurrentLoop = state.Loop;
 
-		if (OnLoop.IsBound())
+		if (bTriggerEvents && OnLoop.IsBound())
 		{
 			for (int32 i = 0; i < crossed; ++i)
 			{
@@ -163,7 +163,7 @@ void UQuickTweenSequence::Update(float deltaTime)
 
 	ApplyAlphaValue(state.Alpha);
 
-	if (OnUpdate.IsBound())
+	if (bTriggerEvents && OnUpdate.IsBound())
 	{
 		OnUpdate.Broadcast(this);
 	}
@@ -174,6 +174,7 @@ void UQuickTweenSequence::Evaluate(const FQuickTweenEvaluatePayload& payload, co
 	if (!HasOwner() || !InstigatorIsOwner(instigator)) return;
 
 	bIsReversed = payload.bIsReversed;
+	bTriggerEvents = payload.bShouldTriggerEvents;
 	ElapsedTime = FMath::Clamp(payload.Value * GetTotalDuration(), 0.f, GetTotalDuration());
 
 	if (bWasActive != payload.bIsActive)
@@ -219,7 +220,7 @@ void UQuickTweenSequence::Evaluate(const FQuickTweenEvaluatePayload& payload, co
 		const int32 crossed = FMath::Abs(state.Loop - CurrentLoop);
 		CurrentLoop = state.Loop;
 
-		if (OnLoop.IsBound())
+		if (bTriggerEvents && OnLoop.IsBound())
 		{
 			for (int32 i = 0; i < crossed; ++i)
 			{
@@ -230,7 +231,7 @@ void UQuickTweenSequence::Evaluate(const FQuickTweenEvaluatePayload& payload, co
 
 	ApplyAlphaValue(state.Alpha);
 
-	if (OnUpdate.IsBound())
+	if (bTriggerEvents && OnUpdate.IsBound())
 	{
 		OnUpdate.Broadcast(this);
 	}
@@ -272,7 +273,7 @@ void UQuickTweenSequence::ApplyAlphaValue(float alpha)
 	const float deltaTime = FMath::Abs(toTime - fromTime);
 	const bool bIsForward = toTime >= fromTime;
 
-	const auto evaluateAtTime = [&](float sequenceTime)
+	const auto evaluateAtTime = [&](float sequenceTime, bool bTriggerEvents  = true)
 	{
 		for (FQuickTweenSequenceGroup& group : TweenGroups)
 		{
@@ -289,6 +290,7 @@ void UQuickTweenSequence::ApplyAlphaValue(float alpha)
 					FQuickTweenEvaluatePayload payload{
 						.bIsActive = true,
 						.bIsReversed = !bIsForward,
+						.bShouldTriggerEvents = bTriggerEvents,
 						.Value = childTime
 					};
 					tween->Evaluate(payload, this);
@@ -298,6 +300,7 @@ void UQuickTweenSequence::ApplyAlphaValue(float alpha)
 					FQuickTweenEvaluatePayload payload{
 						.bIsActive = false,
 						.bIsReversed = !bIsForward,
+						.bShouldTriggerEvents = bTriggerEvents,
 						.Value = bIsForward ? 1.0f : 0.0f
 					};
 					tween->Evaluate(payload, this);
@@ -353,7 +356,7 @@ void UQuickTweenSequence::ApplyAlphaValue(float alpha)
 
 	for (float point : breakpoints)
 	{
-		evaluateAtTime(point);
+		evaluateAtTime(point, /*bTriggerEvents*/ false);
 	}
 
 	CurrentAlpha = alpha;
@@ -475,7 +478,7 @@ bool UQuickTweenSequence::RequestStateTransition(EQuickTweenState newState)
 
 void UQuickTweenSequence::HandleOnStart()
 {
-	if (OnStart.IsBound())
+	if (bTriggerEvents && OnStart.IsBound())
 	{
 		OnStart.Broadcast(this);
 	}
@@ -492,9 +495,9 @@ void UQuickTweenSequence::HandleOnComplete()
 	}
 
 	const bool bSnapToBeginning  = !bSnapToEnd || (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0);
-	ApplyAlphaValue(bSnapToBeginning ? 0.0f : 1.f);
+	ApplyAlphaValue(bSnapToBeginning ? -0.1f : 1.1f); // ... to ensure all child tweens reach their end state
 
-	if (OnComplete.IsBound())
+	if (bTriggerEvents && OnComplete.IsBound())
 	{
 		OnComplete.Broadcast(this);
 	}
@@ -502,7 +505,7 @@ void UQuickTweenSequence::HandleOnComplete()
 
 void UQuickTweenSequence::HandleOnKill()
 {
-	if (OnKilled.IsBound())
+	if (bTriggerEvents && OnKilled.IsBound())
 	{
 		OnKilled.Broadcast(this);
 	}

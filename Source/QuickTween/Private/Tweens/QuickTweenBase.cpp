@@ -71,7 +71,7 @@ void UQuickTweenBase::Update(float deltaTime)
 	FQuickTweenStateResult state = ComputeTweenState(ElapsedTime);
 
 	const int32 numLoopsCrossed = FMath::Abs(state.Loop - CurrentLoop);
-	if (OnLoop.IsBound())
+	if (bTriggerEvents && OnLoop.IsBound())
 	{
 		for (int32 i = 0; i < numLoopsCrossed; ++i)
 		{
@@ -99,7 +99,7 @@ void UQuickTweenBase::Update(float deltaTime)
 
 	ApplyAlphaValue(state.Alpha);
 
-	if (OnUpdate.IsBound())
+	if (bTriggerEvents && OnUpdate.IsBound())
 	{
 		OnUpdate.Broadcast(this);
 	}
@@ -110,6 +110,7 @@ void UQuickTweenBase::Evaluate(const FQuickTweenEvaluatePayload& payload, const 
 	if (!HasOwner() || !InstigatorIsOwner(instigator)) return;
 
 	bIsReversed = payload.bIsReversed;
+	bTriggerEvents = payload.bShouldTriggerEvents;
 	ElapsedTime = FMath::Clamp(payload.Value * GetTotalDuration(), 0.f, GetTotalDuration());
 
 	if (bWasActive != payload.bIsActive)
@@ -149,7 +150,7 @@ void UQuickTweenBase::Evaluate(const FQuickTweenEvaluatePayload& payload, const 
 	FQuickTweenStateResult state = ComputeTweenState(ElapsedTime);
 
 	const int32 numLoopsCrossed = FMath::Abs(state.Loop - CurrentLoop);
-	if (OnLoop.IsBound())
+	if (bTriggerEvents && OnLoop.IsBound())
 	{
 		for (int32 i = 0; i < numLoopsCrossed; ++i)
 		{
@@ -160,7 +161,7 @@ void UQuickTweenBase::Evaluate(const FQuickTweenEvaluatePayload& payload, const 
 
 	ApplyAlphaValue(state.Alpha);
 
-	if (OnUpdate.IsBound())
+	if (bTriggerEvents && OnUpdate.IsBound())
 	{
 		OnUpdate.Broadcast(this);
 	}
@@ -280,7 +281,7 @@ bool UQuickTweenBase::RequestStateTransition(EQuickTweenState newState)
 
 void UQuickTweenBase::HandleOnStart()
 {
-	if (OnStart.IsBound())
+	if (bTriggerEvents && OnStart.IsBound())
 	{
 		OnStart.Broadcast(this);
 	}
@@ -290,7 +291,7 @@ void UQuickTweenBase::HandleOnComplete()
 {
 	ElapsedTime = bIsReversed ? 0.0f : GetTotalDuration();
 
-	if (OnComplete.IsBound())
+	if (bTriggerEvents && OnComplete.IsBound())
 	{
 		OnComplete.Broadcast(this);
 	}
@@ -298,7 +299,7 @@ void UQuickTweenBase::HandleOnComplete()
 
 void UQuickTweenBase::HandleOnKill()
 {
-	if (OnKilled.IsBound())
+	if (bTriggerEvents && OnKilled.IsBound())
 	{
 		OnKilled.Broadcast(this);
 	}

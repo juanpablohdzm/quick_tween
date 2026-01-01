@@ -299,6 +299,9 @@ private:
 	/** Whether to snap to the end value upon completion. */
 	bool bSnapToEndOnComplete = true;
 
+	/** Whether to trigger events during state changes. */
+	bool bTriggerEvents = true;
+
 	/** Easing type for the tween. */
 	EEaseType EaseType = EEaseType::Linear;
 

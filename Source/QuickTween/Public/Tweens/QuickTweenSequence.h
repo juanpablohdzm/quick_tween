@@ -383,6 +383,9 @@ private:
 	/** Whether to snap to the end value upon completion. */
 	bool bSnapToEndOnComplete = true;
 
+	/** Whether to trigger events during state changes. */
+	bool bTriggerEvents = true;
+
 	/** Current loop index. */
 	int32 CurrentLoop = 1;
 

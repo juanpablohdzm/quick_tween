@@ -52,6 +52,7 @@ struct FQuickTweenEvaluatePayload
 {
 	bool bIsActive;
 	bool bIsReversed;
+	bool bShouldTriggerEvents;
 	float Value;
 };
 
