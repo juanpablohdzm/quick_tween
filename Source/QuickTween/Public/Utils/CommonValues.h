@@ -47,5 +47,14 @@ static TMap<EQuickTweenState, TArray<EQuickTweenState>> ValidTransitions =
 	{EQuickTweenState::Kill,     {}},
 };
 
+// Payload structure for evaluating QuickTweens
+struct FQuickTweenEvaluatePayload
+{
+	bool bIsActive;
+	bool bIsReversed;
+	bool bShouldTriggerEvents;
+	float Value;
+};
+
 
 #define INFINITE_LOOPS -1
