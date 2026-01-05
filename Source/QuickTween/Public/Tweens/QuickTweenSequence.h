@@ -296,7 +296,7 @@ private:
 	struct FQuickTweenSequenceStateResult
 	{
 		int32 Loop = 0;
-		float Alpha = 0.0f;
+		float LoopLocalTime = 0.0f;
 	};
 
 	/**
@@ -312,17 +312,15 @@ private:
 	FQuickTweenSequenceStateResult ComputeSequenceState(float time) const;
 
 	/**
-	 * Apply a normalized alpha value (0.0 - 1.0) to the sequence.
+	 * Apply a time value between [0, loopDuration].
 	 *
 	 * Updates contained tweens/groups to reflect the provided progress.
 	 * Implementations should map this alpha to each tween's local progress and
-	 * set their evaluated values accordingly. If `alpha` is outside the
-	 * canonical range \[0.0, 1.0\], callers or implementations may clamp or
-	 * handle extrapolation as appropriate.
+	 * set their evaluated values accordingly.
 	 *
-	 * @param alpha Normalized progress value where 0.0 = start and 1.0 = end.
+	 * @param loopLocalTime Normalized progress value where 0.0 = start and loopDuration = end.
 	 */
-	void ApplyAlphaValue(float alpha);
+	void SeekTime(float loopLocalTime);
 
 	bool InstigatorIsOwner(const UQuickTweenable* instigator) const
 	{
@@ -377,8 +375,8 @@ private:
 	/** Whether the sequence was previously active within a parent sequence. */
 	bool bWasActive = false;
 
-	/** Current normalized alpha value (0.0 - 1.0). */
-	float CurrentAlpha = 0.0f;
+	/** Previous loop local time for tracking changes. */
+	float PreviousLoopLocalTime = 0.0f;
 
 	/** Whether to snap to the end value upon completion. */
 	bool bSnapToEndOnComplete = true;

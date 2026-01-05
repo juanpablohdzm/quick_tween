@@ -19,6 +19,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Engine/World.h"
 #include "Engine.h"
+#include "QuickEmptyTween.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogQuickTweenLatentLibrary, Log, All);
 
@@ -321,6 +322,40 @@ UQuickIntTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenInt(
 				easeCurve,
 				loops,
 				loopType,
+				tweenTag,
+				bShouldAutoKill,
+				bShouldPlayWhilePaused);
+
+			latentActionManager.AddNewAction(latentInfo.CallbackTarget, latentInfo.UUID, new FQuickTweenLatentAction(latentInfo, Cast<UQuickTweenBase>(tween), latentStep));
+			if (bShouldAutoPlay)
+			{
+				tween->Play();
+			}
+			return tween;
+		}
+	}
+	return nullptr;
+}
+
+UQuickEmptyTween* UQuickTweenLatentLibrary::QuickTweenCreateLatentTweenEmpty(
+	UObject* worldContextObject,
+	FLatentActionInfo latentInfo,
+	EQuickTweenLatentSteps& latentStep,
+	float duration,
+	const FString& tweenTag,
+	bool bShouldAutoKill,
+	bool bShouldPlayWhilePaused,
+	bool bShouldAutoPlay)
+{
+	if (UWorld* world = GEngine->GetWorldFromContextObjectChecked(worldContextObject))
+	{
+		FLatentActionManager& latentActionManager = world->GetLatentActionManager();
+
+		if (latentActionManager.FindExistingAction<FQuickTweenLatentAction>(latentInfo.CallbackTarget, latentInfo.UUID) == nullptr)
+		{
+			UQuickEmptyTween* tween = UQuickTweenLibrary::QuickTweenCreateTweenEmpty(
+				worldContextObject,
+				duration,
 				tweenTag,
 				bShouldAutoKill,
 				bShouldPlayWhilePaused);

@@ -9,6 +9,7 @@
 #include "Utils/CommonValues.h"
 #include "QuickTweenLibrary.generated.h"
 
+class UQuickEmptyTween;
 class USpringArmComponent;
 class UCameraComponent;
 class UImage;
@@ -286,6 +287,31 @@ public:
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+
+	/**
+	 * Create an empty tween that acts as a timed marker or delay without modifying values.
+	 *
+	 * The empty tween runs for \p duration seconds and can be tagged and configured to
+	 * auto-kill, play while the game is paused, or auto-play on creation. Useful for
+	 * creating delays, sequencing, or timed callbacks in Blueprints and C++.
+	 *
+	 * @param worldContextObject Context object used to find the world for the tween.
+	 * @param duration           Time in seconds for the tween to complete (default 1.0f).
+	 * @param tweenTag           Optional tag to identify the created tween (default empty).
+	 * @param bShouldAutoKill    If true the tween will be automatically killed when complete.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay    If true the tween will start playing immediately after creation.
+	 * @return                   Pointer to the created UQuickEmptyTween, or nullptr on failure.
+	 */
+	UFUNCTION(BlueprintPure, meta = (Keywords = "Tween | Empty", WorldContext = "worldContextObject"), Category = "QuickTween")
+	static UQuickEmptyTween* QuickTweenCreateTweenEmpty(
+		UObject* worldContextObject,
+		float duration = 1.0f,
 		const FString& tweenTag = "",
 		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,

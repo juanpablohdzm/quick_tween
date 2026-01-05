@@ -10,6 +10,7 @@
 #include "Utils/LoopType.h"
 #include "QuickTweenLatentLibrary.generated.h"
 
+class UQuickEmptyTween;
 class USpringArmComponent;
 class UCameraComponent;
 class UImage;
@@ -319,6 +320,33 @@ public:
 		UCurveFloat* easeCurve = nullptr,
 		int32 loops = 1,
 		ELoopType loopType = ELoopType::Restart,
+		const FString& tweenTag = "",
+		bool bShouldAutoKill = true,
+		bool bShouldPlayWhilePaused = false,
+		bool bShouldAutoPlay = false);
+
+	/**
+	 * Create a latent "empty" tween (no value) that can be used as a timed latent node in Blueprints.
+	 *
+	 * This function exposes a latent Blueprint node that creates a UQuickEmptyTween which only tracks time
+	 * and latent execution steps (useful for delays, sequencing or timing without changing any property).
+	 *
+	 * @param worldContextObject World context for latent action execution (Blueprint-provided).
+	 * @param latentInfo Latent action execution info supplied by Blueprint.
+	 * @param latentStep Enum reference expanded as exec pins to control flow from Blueprint.
+	 * @param duration Duration of the empty tween in seconds.
+	 * @param tweenTag Optional tag to identify the created tween.
+	 * @param bShouldAutoKill If true the tween will be auto-killed when finished.
+	 * @param bShouldPlayWhilePaused If true the tween will update while the game is paused.
+	 * @param bShouldAutoPlay If true the tween will start immediately after creation.
+	 * @return Pointer to the created UQuickEmptyTween instance.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContextObject", Latent, LatentInfo = "latentInfo", ExpandEnumAsExecs = "latentStep", Keywords = "Tween | Empty | Create | Make | Latent", HidePin = "latentStep"), Category = "QuickTween")
+	static UQuickEmptyTween* QuickTweenCreateLatentTweenEmpty(
+		UObject* worldContextObject,
+		FLatentActionInfo latentInfo,
+		EQuickTweenLatentSteps& latentStep,
+		float duration = 1.0f,
 		const FString& tweenTag = "",
 		bool bShouldAutoKill = true,
 		bool bShouldPlayWhilePaused = false,
