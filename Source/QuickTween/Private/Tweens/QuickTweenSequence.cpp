@@ -161,7 +161,7 @@ void UQuickTweenSequence::Update(float deltaTime)
 		}
 	}
 
-	ApplyAlphaValue(state.Alpha);
+	SeekTime(state.LoopLocalTime);
 
 	if (bTriggerEvents && OnUpdate.IsBound())
 	{
@@ -182,7 +182,7 @@ void UQuickTweenSequence::Evaluate(const FQuickTweenEvaluatePayload& payload, co
 		auto simulateOnStart = [&]()
 		{
 			CurrentLoop = bIsReversed ? GetLoops() - 1 : 0;
-			CurrentAlpha = bIsReversed ? 1.0f : 0.0f;
+			PreviousLoopLocalTime = bIsReversed ? GetLoopDuration() : 0.0f;
 			HandleOnStart();
 		};
 
@@ -229,7 +229,7 @@ void UQuickTweenSequence::Evaluate(const FQuickTweenEvaluatePayload& payload, co
 		}
 	}
 
-	ApplyAlphaValue(state.Alpha);
+	SeekTime(state.LoopLocalTime);
 
 	if (bTriggerEvents && OnUpdate.IsBound())
 	{
@@ -245,33 +245,29 @@ UQuickTweenSequence::FQuickTweenSequenceStateResult UQuickTweenSequence::Compute
 
 	result.Loop = FMath::FloorToInt(time / loopDuration);
 
-	float localTime = FMath::Fmod(time, loopDuration);
+	result.LoopLocalTime = FMath::Fmod(time, loopDuration);
 
-	if (result.Loop != 0 && FMath::IsNearlyZero(localTime))
+	if (result.Loop != 0 && FMath::IsNearlyZero(result.LoopLocalTime))
 	{
-		localTime  = GetLoopDuration();
+		result.LoopLocalTime  = loopDuration;
 	}
 
-	if (localTime < 0.f)
+	if (result.LoopLocalTime < 0.f)
 	{
-		localTime += loopDuration;
+		result.LoopLocalTime += loopDuration;
 	}
 
-	result.Alpha = localTime / loopDuration;
 	if (GetLoopType() == ELoopType::PingPong && (result.Loop & 1) != 0) // ... odd loop, backward traversal
 	{
-		result.Alpha = 1.f - result.Alpha;
+		result.LoopLocalTime = loopDuration - result.LoopLocalTime;
 	}
 
 	return result;
 }
 
-void UQuickTweenSequence::ApplyAlphaValue(float alpha)
+void UQuickTweenSequence::SeekTime(float loopLocalTime)
 {
-	const float fromTime = CurrentAlpha * GetLoopDuration();
-	const float toTime = alpha * GetLoopDuration();
-	const float deltaTime = FMath::Abs(toTime - fromTime);
-	const bool bIsForward = toTime >= fromTime;
+	const bool bIsForward = loopLocalTime >= PreviousLoopLocalTime;
 
 	const auto evaluateAtTime = [&](float sequenceTime, bool bEnableEvents  = true)
 	{
@@ -283,83 +279,68 @@ void UQuickTweenSequence::ApplyAlphaValue(float alpha)
 
 			for (UQuickTweenable* tween : group.Tweens)
 			{
-				const bool bIsActive = bIsGroupActive &&  /*isSpecificTweenActive*/ (sequenceTime >= startTime && sequenceTime <= (startTime + tween->GetTotalDuration()));
-				if (bIsActive)
-				{
-					const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration();
-					FQuickTweenEvaluatePayload payload{
-						.bIsActive = true,
-						.bIsReversed = !bIsForward,
-						.bShouldTriggerEvents = bEnableEvents,
-						.Value = childTime
-					};
-					tween->Evaluate(payload, this);
-				}
-				else
-				{
-					FQuickTweenEvaluatePayload payload{
-						.bIsActive = false,
-						.bIsReversed = !bIsForward,
-						.bShouldTriggerEvents = bEnableEvents,
-						.Value = bIsForward ? 1.0f : 0.0f
-					};
-					tween->Evaluate(payload, this);
-				}
+				const bool bIsTweenActive = bIsGroupActive &&  /*isSpecificTweenActive*/ (sequenceTime >= startTime && sequenceTime <= (startTime + tween->GetTotalDuration()));
+
+				const float childTime = (sequenceTime - group.StartTime) / tween->GetTotalDuration();
+				FQuickTweenEvaluatePayload payload{
+					.bIsActive = bIsTweenActive,
+					.bIsReversed = !bIsForward,
+					.bShouldTriggerEvents = bEnableEvents,
+					.Value = FMath::Clamp(childTime, 0.0f, 1.0f)
+				};
+				tween->Evaluate(payload, this);
 			}
 		}
 	};
 
-	constexpr float smallStepThreshold = 0.01f;
-
 	// ... if the step is small enough, just evaluate directly
-	if (deltaTime <= smallStepThreshold)
+	constexpr float smallStepThreshold = 0.01f;
+	if (FMath::Abs(loopLocalTime - PreviousLoopLocalTime) <= smallStepThreshold)
 	{
-		evaluateAtTime(toTime, bTriggerEvents);
-		CurrentAlpha = alpha;
-		return;
+		evaluateAtTime(loopLocalTime, bTriggerEvents);
+	}
+	else
+	{
+		// ... otherwise, collect breakpoints and evaluate at each
+        TArray<float> breakpoints;
+        breakpoints.Add(loopLocalTime);
+
+        // ... collect breakpoints
+        [&](TArray<float>& points)
+        {
+        	const float Min = FMath::Min(PreviousLoopLocalTime, loopLocalTime);
+        	const float Max = FMath::Max(PreviousLoopLocalTime, loopLocalTime);
+
+        	for (const FQuickTweenSequenceGroup& group : TweenGroups)
+        	{
+        		for (UQuickTweenable* tween : group.Tweens)
+        		{
+        			const float start = group.StartTime;
+        			const float end   = start + tween->GetTotalDuration();
+
+        			if (start > Min && start < Max)
+        				points.AddUnique(start);
+
+        			if (end > Min && end < Max)
+        				points.AddUnique(end);
+        		}
+        	}
+        	points.Sort();
+        }(breakpoints);
+
+        if (!bIsForward)
+        {
+        	Algo::Reverse(breakpoints);
+        }
+
+        for (float point : breakpoints)
+        {
+        	evaluateAtTime(point, /*bEnableEvents*/ false);
+        }
+
 	}
 
-	// ... otherwise, collect breakpoints and evaluate at each
-	TArray<float> breakpoints;
-	breakpoints.Add(toTime);
-
-	// ... collect breakpoints
-	[&](TArray<float>& points)
-	{
-		const float Min = FMath::Min(fromTime, toTime);
-		const float Max = FMath::Max(fromTime, toTime);
-
-		for (const FQuickTweenSequenceGroup& group : TweenGroups)
-		{
-			for (UQuickTweenable* tween : group.Tweens)
-			{
-				if (!tween) continue;
-
-				const float start = group.StartTime;
-				const float end   = start + tween->GetTotalDuration();
-
-				if (start > Min && start < Max)
-					points.AddUnique(start);
-
-				if (end > Min && end < Max)
-					points.AddUnique(end);
-			}
-		}
-	}(breakpoints);
-
-	breakpoints.Sort();
-
-	if (!bIsForward)
-	{
-		Algo::Reverse(breakpoints);
-	}
-
-	for (float point : breakpoints)
-	{
-		evaluateAtTime(point, /*bEnableEvents*/ false);
-	}
-
-	CurrentAlpha = alpha;
+	PreviousLoopLocalTime = loopLocalTime;
 }
 
 float UQuickTweenSequence::GetLoopDuration() const
@@ -407,7 +388,7 @@ void UQuickTweenSequence::Play()
 		{
 			ElapsedTime = bIsReversed ? GetTotalDuration() : 0.0f;
 			CurrentLoop = bIsReversed ? GetLoops() - 1 : 0;
-			CurrentAlpha = bIsReversed ? 1.0f : 0.0f;
+			PreviousLoopLocalTime = bIsReversed ? GetLoopDuration() : 0.0f;
 			HandleOnStart();
 		}
 	}
@@ -495,7 +476,7 @@ void UQuickTweenSequence::HandleOnComplete()
 	}
 
 	const bool bSnapToBeginning  = !bSnapToEnd || (GetLoopType() == ELoopType::PingPong && GetLoops() % 2 == 0);
-	ApplyAlphaValue(bSnapToBeginning ? -0.1f : 1.1f); // ... to ensure all child tweens reach their end state
+	SeekTime(bSnapToBeginning ? -0.1f * GetLoopDuration() : 1.1f * GetLoopDuration()); // ... to ensure all child tweens reach their end state
 
 	if (bTriggerEvents && OnComplete.IsBound())
 	{
