@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 4,
-	"VersionName": "1.4",
+	"Version": 5,
+	"VersionName": "1.4.1",
 	"FriendlyName": "QuickTween",
 	"Description": "Quick and simple library for tweening",
 	"Category": "Other",
