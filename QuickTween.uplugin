@@ -27,6 +27,19 @@
 				"IOS",
 				"TVOS"
 			]
+		},
+		{
+			"Name": "QuickTweenVisualTool",
+			"Type": "Editor",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64",
+				"Mac",
+				"Linux",
+				"Android",
+				"IOS",
+				"TVOS"
+			]
 		}
 	],
 	"Icon": "Resources/QuickTweenIcon.png"
