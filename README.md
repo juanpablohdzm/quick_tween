@@ -154,3 +154,22 @@ See `CHANGELOG.md` (not present yet). Use semantic versioning for releases. This
 ## Author
 
 Juan Pablo Hernandez Mosti
+
+---
+
+## License
+
+Proprietary License
+
+Copyright (c) 2025 Juan Pablo Hernandez Mosti.
+All rights reserved.
+
+Permission is granted to use this software for personal or commercial projects.
+
+You may NOT:
+- Distribute the software
+- Sublicense or resell the software
+- Claim the software as your own
+
+This software is provided "as is", without warranty of any kind.
+
