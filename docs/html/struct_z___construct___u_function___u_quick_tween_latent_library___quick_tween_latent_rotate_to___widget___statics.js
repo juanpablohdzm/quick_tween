@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_rotate_to___widget___statics =
+[
+    [ "QuickTweenLatentLibrary_eventQuickTweenLatentRotateTo_Widget_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_rotate_to_afeedf44664a92b4a6915de0f18d437d.html", null ]
+];

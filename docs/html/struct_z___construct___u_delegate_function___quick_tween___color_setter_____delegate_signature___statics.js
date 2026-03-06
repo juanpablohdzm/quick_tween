@@ -1,0 +1,4 @@
+var struct_z___construct___u_delegate_function___quick_tween___color_setter_____delegate_signature___statics =
+[
+    [ "_Script_QuickTween_eventColorSetter_Parms", "struct_z___construct___u_delegate_function___quick_tween___color_setter_____delegate_signature__be35fe6368c3923f5b1f1154bca84f3a.html", null ]
+];

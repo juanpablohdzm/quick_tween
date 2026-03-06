@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_change_fov_to___camera___statics =
+[
+    [ "QuickTweenLatentLibrary_eventQuickTweenLatentChangeFovTo_Camera_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_change_fov9e3dc2532090ed30e085a190fc94569f.html", null ]
+];

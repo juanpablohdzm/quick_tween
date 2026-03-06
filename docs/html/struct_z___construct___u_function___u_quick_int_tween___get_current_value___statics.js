@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_int_tween___get_current_value___statics =
+[
+    [ "QuickIntTween_eventGetCurrentValue_Parms", "struct_z___construct___u_function___u_quick_int_tween___get_current_value___statics_1_1_quick_ind8794c8f72ce42031a24567d0a8c1e86.html", null ]
+];

@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_color_parameter_by___material___statics =
+[
+    [ "QuickTweenLatentLibrary_eventQuickTweenLatentColorParameterBy_Material_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_color_para2ca2354909cc45e032c910eeb92a49b4.html", null ]
+];

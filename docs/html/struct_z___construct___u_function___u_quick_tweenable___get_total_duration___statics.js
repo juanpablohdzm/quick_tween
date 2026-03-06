@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tweenable___get_total_duration___statics =
+[
+    [ "QuickTweenable_eventGetTotalDuration_Parms", "struct_z___construct___u_function___u_quick_tweenable___get_total_duration___statics_1_1_quick_td6cff6bbd1a63da425e1a8d80e4c51f5.html", null ]
+];

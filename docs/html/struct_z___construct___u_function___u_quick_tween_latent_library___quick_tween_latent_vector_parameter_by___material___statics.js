@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_vector_parameter_by___material___statics =
+[
+    [ "QuickTweenLatentLibrary_eventQuickTweenLatentVectorParameterBy_Material_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_vector_parc68c1242acbebe88d78fa75c04a18175.html", null ]
+];

@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_change_opacity_to___widget___statics =
+[
+    [ "QuickTweenLatentLibrary_eventQuickTweenLatentChangeOpacityTo_Widget_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_change_opa0098649265c3bf264a560ca3a2e32df6.html", null ]
+];

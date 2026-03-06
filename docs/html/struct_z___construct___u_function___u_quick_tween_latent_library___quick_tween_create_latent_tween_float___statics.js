@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_create_latent_tween_float___statics =
+[
+    [ "QuickTweenLatentLibrary_eventQuickTweenCreateLatentTweenFloat_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_create_latent_twe6914bd8da5928be75ed71922911db5bc.html", null ]
+];

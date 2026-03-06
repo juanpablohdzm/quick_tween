@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_library___quick_tween_vector_parameter_by___material___statics =
+[
+    [ "QuickTweenLibrary_eventQuickTweenVectorParameterBy_Material_Parms", "struct_z___construct___u_function___u_quick_tween_library___quick_tween_vector_parameter_by___ma34967aa84fe98133c8595187c00b6ec5.html", null ]
+];

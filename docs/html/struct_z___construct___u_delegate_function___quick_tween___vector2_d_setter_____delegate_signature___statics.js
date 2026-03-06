@@ -1,0 +1,4 @@
+var struct_z___construct___u_delegate_function___quick_tween___vector2_d_setter_____delegate_signature___statics =
+[
+    [ "_Script_QuickTween_eventVector2DSetter_Parms", "struct_z___construct___u_delegate_function___quick_tween___vector2_d_setter_____delegate_signatue1e2e329bdbd1e8d528350f3ede36c6d.html", null ]
+];

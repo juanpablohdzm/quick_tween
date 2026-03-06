@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_float_tween___get_end_value___statics =
+[
+    [ "QuickFloatTween_eventGetEndValue_Parms", "struct_z___construct___u_function___u_quick_float_tween___get_end_value___statics_1_1_quick_floab35c2666cb54b9616ccbb038ed9ad5cb.html", null ]
+];

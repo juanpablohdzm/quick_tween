@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_base___assign_on_start_event___statics =
+[
+    [ "QuickTweenBase_eventAssignOnStartEvent_Parms", "struct_z___construct___u_function___u_quick_tween_base___assign_on_start_event___statics_1_1_qui713f7c35767ab55340cd651fc617223a.html", null ]
+];

@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_scale_by___widget___statics =
+[
+    [ "QuickTweenLatentLibrary_eventQuickTweenLatentScaleBy_Widget_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_scale_by__1c000dda872a8690fd1495fbc062eff1.html", null ]
+];

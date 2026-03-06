@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_library___quick_tween_find_tween_by_tag___statics =
+[
+    [ "QuickTweenLibrary_eventQuickTweenFindTweenByTag_Parms", "struct_z___construct___u_function___u_quick_tween_library___quick_tween_find_tween_by_tag___stat055dbb67539cbe71ffa08d5a1c312852.html", null ]
+];

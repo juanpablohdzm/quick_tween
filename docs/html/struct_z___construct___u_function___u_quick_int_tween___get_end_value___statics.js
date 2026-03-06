@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_int_tween___get_end_value___statics =
+[
+    [ "QuickIntTween_eventGetEndValue_Parms", "struct_z___construct___u_function___u_quick_int_tween___get_end_value___statics_1_1_quick_int_tw2b3e0b40184effbb969459254ff79950.html", null ]
+];

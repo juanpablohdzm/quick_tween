@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_scalar_parameter_to___material___statics =
+[
+    [ "QuickTweenLatentLibrary_eventQuickTweenLatentScalarParameterTo_Material_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_scalar_par4f5df02dfef76e815225c0ed04fc24ba.html", null ]
+];
