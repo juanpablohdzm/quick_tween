@@ -147,7 +147,7 @@ See `CHANGELOG.md` (not present yet). Use semantic versioning for releases. This
 
 ## Further Documentation
 
-- Documentation: https://juanpablohdzm.github.io/QuickTweenDocs/
+- Documentation: https://juanpablohdzm.github.io/quick_tween/
 
 ---
 
