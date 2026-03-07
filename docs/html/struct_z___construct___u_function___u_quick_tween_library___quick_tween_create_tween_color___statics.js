@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_library___quick_tween_create_tween_color___statics =
+[
+    [ "QuickTweenLibrary_eventQuickTweenCreateTweenColor_Parms", "struct_z___construct___u_function___u_quick_tween_library___quick_tween_create_tween_color___sta7c592f71c2169b5c5d8f337ba10dd917.html", null ]
+];

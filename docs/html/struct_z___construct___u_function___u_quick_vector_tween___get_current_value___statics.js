@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_vector_tween___get_current_value___statics =
+[
+    [ "QuickVectorTween_eventGetCurrentValue_Parms", "struct_z___construct___u_function___u_quick_vector_tween___get_current_value___statics_1_1_quickeeef3906a25b6f3240a06a177ae302b2.html", null ]
+];

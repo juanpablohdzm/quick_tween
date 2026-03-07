@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tweenable___get_loop_type___statics =
+[
+    [ "QuickTweenable_eventGetLoopType_Parms", "struct_z___construct___u_function___u_quick_tweenable___get_loop_type___statics_1_1_quick_tweenaf7e89e0862a0a60961529c3d55856dab.html", null ]
+];

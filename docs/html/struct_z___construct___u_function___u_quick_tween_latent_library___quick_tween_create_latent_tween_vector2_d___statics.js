@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_create_latent_tween_vector2_d___statics =
+[
+    [ "QuickTweenLatentLibrary_eventQuickTweenCreateLatentTweenVector2D_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_create_latent_twe007d38dc88ecbb5a8849f0afaf307c9e.html", null ]
+];

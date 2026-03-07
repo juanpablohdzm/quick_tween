@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_library___quick_tween_create_tween_empty___statics =
+[
+    [ "QuickTweenLibrary_eventQuickTweenCreateTweenEmpty_Parms", "struct_z___construct___u_function___u_quick_tween_library___quick_tween_create_tween_empty___sta857a1d5e542f26300e61e93ae1557d3d.html", null ]
+];

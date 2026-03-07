@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_rotator_tween___get_start_value___statics =
+[
+    [ "QuickRotatorTween_eventGetStartValue_Parms", "struct_z___construct___u_function___u_quick_rotator_tween___get_start_value___statics_1_1_quick_772a0ebdfa5c1eedb0528d5cda5b8d40.html", null ]
+];

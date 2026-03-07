@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_rotate_aroa4d4a9330ccd009b21b22cdd5d1ca93d =
+[
+    [ "QuickTweenLatentLibrary_eventQuickTweenLatentRotateAroundPoint_SceneComponent_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_rotate_aro4449edbadd68244358344fe30a680026.html", null ]
+];

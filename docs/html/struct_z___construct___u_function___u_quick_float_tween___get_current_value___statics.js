@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_float_tween___get_current_value___statics =
+[
+    [ "QuickFloatTween_eventGetCurrentValue_Parms", "struct_z___construct___u_function___u_quick_float_tween___get_current_value___statics_1_1_quick_78e8e87654c97f25b3d2ddd0a0120ad2.html", null ]
+];

@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_float_tween___get_start_value___statics =
+[
+    [ "QuickFloatTween_eventGetStartValue_Parms", "struct_z___construct___u_function___u_quick_float_tween___get_start_value___statics_1_1_quick_fl01f29ab2b9c8e1cf56e78c38a8007b70.html", null ]
+];

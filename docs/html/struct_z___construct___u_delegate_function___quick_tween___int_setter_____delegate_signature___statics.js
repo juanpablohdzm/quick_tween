@@ -1,0 +1,4 @@
+var struct_z___construct___u_delegate_function___quick_tween___int_setter_____delegate_signature___statics =
+[
+    [ "_Script_QuickTween_eventIntSetter_Parms", "struct_z___construct___u_delegate_function___quick_tween___int_setter_____delegate_signature___s348cfe8a8f0cccfaae5261f6ae244f3a.html", null ]
+];

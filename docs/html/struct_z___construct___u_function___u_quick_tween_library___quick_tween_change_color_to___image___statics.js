@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_tween_library___quick_tween_change_color_to___image___statics =
+[
+    [ "QuickTweenLibrary_eventQuickTweenChangeColorTo_Image_Parms", "struct_z___construct___u_function___u_quick_tween_library___quick_tween_change_color_to___image_56d095439e46ab9a6dc290b3eca7d48c.html", null ]
+];

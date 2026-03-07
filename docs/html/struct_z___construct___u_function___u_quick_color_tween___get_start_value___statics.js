@@ -1,0 +1,4 @@
+var struct_z___construct___u_function___u_quick_color_tween___get_start_value___statics =
+[
+    [ "QuickColorTween_eventGetStartValue_Parms", "struct_z___construct___u_function___u_quick_color_tween___get_start_value___statics_1_1_quick_codc08890528efb3fff65923c8add80070.html", null ]
+];
