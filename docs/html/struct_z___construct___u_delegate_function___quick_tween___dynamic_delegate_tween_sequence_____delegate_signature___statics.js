@@ -1,4 +1,0 @@
-var struct_z___construct___u_delegate_function___quick_tween___dynamic_delegate_tween_sequence_____delegate_signature___statics =
-[
-    [ "_Script_QuickTween_eventDynamicDelegateTweenSequence_Parms", "struct_z___construct___u_delegate_function___quick_tween___dynamic_delegate_tween_sequence_____dcec52c717d88908c796aa2c551a07dba.html", null ]
-];

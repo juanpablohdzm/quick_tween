@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_library___quick_tween_scalar_parameter_to___material___statics =
-[
-    [ "QuickTweenLibrary_eventQuickTweenScalarParameterTo_Material_Parms", "struct_z___construct___u_function___u_quick_tween_library___quick_tween_scalar_parameter_to___maa49418fe5bb96f3974272b4f74331753.html", null ]
-];

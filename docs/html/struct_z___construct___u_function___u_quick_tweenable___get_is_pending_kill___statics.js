@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tweenable___get_is_pending_kill___statics =
-[
-    [ "QuickTweenable_eventGetIsPendingKill_Parms", "struct_z___construct___u_function___u_quick_tweenable___get_is_pending_kill___statics_1_1_quick_f808c16f1e12a9e3d1b5be171e90f9b3.html", null ]
-];

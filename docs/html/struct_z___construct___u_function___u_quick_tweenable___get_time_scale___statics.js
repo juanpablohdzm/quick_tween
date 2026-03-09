@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tweenable___get_time_scale___statics =
-[
-    [ "QuickTweenable_eventGetTimeScale_Parms", "struct_z___construct___u_function___u_quick_tweenable___get_time_scale___statics_1_1_quick_tweenfb9282a2d9a985ffcb6e73fdb00b20f9.html", null ]
-];

@@ -1,4 +1,0 @@
-var struct_z___construct___u_delegate_function___quick_tween___rotator_setter_____delegate_signature___statics =
-[
-    [ "_Script_QuickTween_eventRotatorSetter_Parms", "struct_z___construct___u_delegate_function___quick_tween___rotator_setter_____delegate_signature82c0c55013fa4ac39322ee80e50553b2.html", null ]
-];

@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_base___remove_all_on_complete_event___statics =
-[
-    [ "QuickTweenBase_eventRemoveAllOnCompleteEvent_Parms", "struct_z___construct___u_function___u_quick_tween_base___remove_all_on_complete_event___statics_bdffa73779b2564d3e7f42c7ca8bdac1.html", null ]
-];

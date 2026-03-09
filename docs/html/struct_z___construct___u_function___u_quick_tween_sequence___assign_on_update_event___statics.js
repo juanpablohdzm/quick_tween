@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_sequence___assign_on_update_event___statics =
-[
-    [ "QuickTweenSequence_eventAssignOnUpdateEvent_Parms", "struct_z___construct___u_function___u_quick_tween_sequence___assign_on_update_event___statics_1_f2ad701d4fdc5834a4faf85013fb4a57.html", null ]
-];

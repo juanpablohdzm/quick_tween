@@ -1,4 +1,0 @@
-var struct_z___construct___u_delegate_function___quick_tween___vector_setter_____delegate_signature___statics =
-[
-    [ "_Script_QuickTween_eventVectorSetter_Parms", "struct_z___construct___u_delegate_function___quick_tween___vector_setter_____delegate_signature_88acb38254b124435e24860a784c2c3c.html", null ]
-];

@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_library___quick_tween_change_distance_by___spring_arm___statics =
-[
-    [ "QuickTweenLibrary_eventQuickTweenChangeDistanceBy_SpringArm_Parms", "struct_z___construct___u_function___u_quick_tween_library___quick_tween_change_distance_by___spr1acf34317e9bfecdce632b692eb00b83.html", null ]
-];

@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_vector2_d_tween___get_start_value___statics =
-[
-    [ "QuickVector2DTween_eventGetStartValue_Parms", "struct_z___construct___u_function___u_quick_vector2_d_tween___get_start_value___statics_1_1_quicf3d12df140f02ceb000ce9d8c69d629d.html", null ]
-];

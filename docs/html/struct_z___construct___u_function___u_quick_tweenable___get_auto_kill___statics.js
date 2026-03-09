@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tweenable___get_auto_kill___statics =
-[
-    [ "QuickTweenable_eventGetAutoKill_Parms", "struct_z___construct___u_function___u_quick_tweenable___get_auto_kill___statics_1_1_quick_tweenaaccda04df063cbb4bbdabe34db1dcd58.html", null ]
-];

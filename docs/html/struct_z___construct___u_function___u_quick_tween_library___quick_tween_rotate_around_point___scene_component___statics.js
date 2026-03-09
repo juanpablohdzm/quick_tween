@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_library___quick_tween_rotate_around_point___scene_component___statics =
-[
-    [ "QuickTweenLibrary_eventQuickTweenRotateAroundPoint_SceneComponent_Parms", "struct_z___construct___u_function___u_quick_tween_library___quick_tween_rotate_around_point___sc9196a0e1288adff600891390fd7e33fa.html", null ]
-];

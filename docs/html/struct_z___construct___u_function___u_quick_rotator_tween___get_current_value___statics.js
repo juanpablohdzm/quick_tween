@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_rotator_tween___get_current_value___statics =
-[
-    [ "QuickRotatorTween_eventGetCurrentValue_Parms", "struct_z___construct___u_function___u_quick_rotator_tween___get_current_value___statics_1_1_quic260647f863659360a1b065d37cf8be7f.html", null ]
-];

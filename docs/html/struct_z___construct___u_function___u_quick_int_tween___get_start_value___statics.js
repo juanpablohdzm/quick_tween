@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_int_tween___get_start_value___statics =
-[
-    [ "QuickIntTween_eventGetStartValue_Parms", "struct_z___construct___u_function___u_quick_int_tween___get_start_value___statics_1_1_quick_int_d7981d8cf8817d13f67d8fa1ad1511f1.html", null ]
-];

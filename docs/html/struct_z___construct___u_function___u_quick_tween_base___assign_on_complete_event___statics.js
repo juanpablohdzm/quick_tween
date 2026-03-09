@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_base___assign_on_complete_event___statics =
-[
-    [ "QuickTweenBase_eventAssignOnCompleteEvent_Parms", "struct_z___construct___u_function___u_quick_tween_base___assign_on_complete_event___statics_1_1_0be640b8206d43491b521dd61948df84.html", null ]
-];

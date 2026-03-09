@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_library___quick_tween_scale_to___widget___statics =
-[
-    [ "QuickTweenLibrary_eventQuickTweenScaleTo_Widget_Parms", "struct_z___construct___u_function___u_quick_tween_library___quick_tween_scale_to___widget___stat555f1f943cd1aaf7cdfbfce015fb606a.html", null ]
-];

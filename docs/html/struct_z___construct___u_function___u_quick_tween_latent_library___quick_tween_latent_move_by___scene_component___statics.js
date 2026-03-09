@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_move_by___scene_component___statics =
-[
-    [ "QuickTweenLatentLibrary_eventQuickTweenLatentMoveBy_SceneComponent_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_move_by___ee228dbab1e32aae24adbf3619fd7b29.html", null ]
-];

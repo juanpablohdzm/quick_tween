@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_library___quick_tween_rotate_by___widget___statics =
-[
-    [ "QuickTweenLibrary_eventQuickTweenRotateBy_Widget_Parms", "struct_z___construct___u_function___u_quick_tween_library___quick_tween_rotate_by___widget___sta50a9e31355e51de5a4118b8032f5514e.html", null ]
-];

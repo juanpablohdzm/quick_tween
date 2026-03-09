@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_library___quick_tween_create_tween_vector2_d___statics =
-[
-    [ "QuickTweenLibrary_eventQuickTweenCreateTweenVector2D_Parms", "struct_z___construct___u_function___u_quick_tween_library___quick_tween_create_tween_vector2_d__0e7ee3cacf723b72b1611ef014f90e3a.html", null ]
-];

@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tweenable___get_ease_type___statics =
-[
-    [ "QuickTweenable_eventGetEaseType_Parms", "struct_z___construct___u_function___u_quick_tweenable___get_ease_type___statics_1_1_quick_tweena23351ac386f7d85104e021b09625e24e.html", null ]
-];

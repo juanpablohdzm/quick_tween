@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_sequence___remove_all_on_killed_event___statics =
-[
-    [ "QuickTweenSequence_eventRemoveAllOnKilledEvent_Parms", "struct_z___construct___u_function___u_quick_tween_sequence___remove_all_on_killed_event___static665082ba1f418af347d57a0292eb32cb.html", null ]
-];

@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tweenable___get_loop_duration___statics =
-[
-    [ "QuickTweenable_eventGetLoopDuration_Parms", "struct_z___construct___u_function___u_quick_tweenable___get_loop_duration___statics_1_1_quick_twd140f0265effed951d478c349f555d69.html", null ]
-];

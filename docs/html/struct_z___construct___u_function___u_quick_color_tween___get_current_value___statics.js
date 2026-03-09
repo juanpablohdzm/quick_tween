@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_color_tween___get_current_value___statics =
-[
-    [ "QuickColorTween_eventGetCurrentValue_Parms", "struct_z___construct___u_function___u_quick_color_tween___get_current_value___statics_1_1_quick_1224f1e451eb7dca9d17e3dde6b08ad8.html", null ]
-];

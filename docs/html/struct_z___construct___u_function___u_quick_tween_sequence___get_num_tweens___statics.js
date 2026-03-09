@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_sequence___get_num_tweens___statics =
-[
-    [ "QuickTweenSequence_eventGetNumTweens_Parms", "struct_z___construct___u_function___u_quick_tween_sequence___get_num_tweens___statics_1_1_quick_87ea3ab5eb2cb17b41e09d7d857e0c4d.html", null ]
-];

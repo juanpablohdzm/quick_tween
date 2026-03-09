@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_rotate_by___scene_component___statics =
-[
-    [ "QuickTweenLatentLibrary_eventQuickTweenLatentRotateBy_SceneComponent_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_rotate_by_789519b908ecb83130cf169de2c18a59.html", null ]
-];

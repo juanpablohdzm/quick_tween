@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_library___quick_tween_color_parameter_by___material___statics =
-[
-    [ "QuickTweenLibrary_eventQuickTweenColorParameterBy_Material_Parms", "struct_z___construct___u_function___u_quick_tween_library___quick_tween_color_parameter_by___mat1774864cd12751852f578b309739841e.html", null ]
-];

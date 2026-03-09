@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tweenable___get_loops___statics =
-[
-    [ "QuickTweenable_eventGetLoops_Parms", "struct_z___construct___u_function___u_quick_tweenable___get_loops___statics_1_1_quick_tweenable__event_get_loops___parms.html", null ]
-];

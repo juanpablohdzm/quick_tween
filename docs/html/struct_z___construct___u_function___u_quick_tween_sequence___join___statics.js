@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_sequence___join___statics =
-[
-    [ "QuickTweenSequence_eventJoin_Parms", "struct_z___construct___u_function___u_quick_tween_sequence___join___statics_1_1_quick_tween_sequence__event_join___parms.html", null ]
-];

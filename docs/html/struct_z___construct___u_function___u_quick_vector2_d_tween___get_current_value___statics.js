@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_vector2_d_tween___get_current_value___statics =
-[
-    [ "QuickVector2DTween_eventGetCurrentValue_Parms", "struct_z___construct___u_function___u_quick_vector2_d_tween___get_current_value___statics_1_1_qucec7b0f13702842ec04580e97541e8b2.html", null ]
-];

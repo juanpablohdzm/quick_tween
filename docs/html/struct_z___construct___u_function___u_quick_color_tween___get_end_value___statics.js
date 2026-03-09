@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_color_tween___get_end_value___statics =
-[
-    [ "QuickColorTween_eventGetEndValue_Parms", "struct_z___construct___u_function___u_quick_color_tween___get_end_value___statics_1_1_quick_colo64bcbc891057a9a547b42ae2a686394b.html", null ]
-];

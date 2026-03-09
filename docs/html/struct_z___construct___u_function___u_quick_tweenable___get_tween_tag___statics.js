@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tweenable___get_tween_tag___statics =
-[
-    [ "QuickTweenable_eventGetTweenTag_Parms", "struct_z___construct___u_function___u_quick_tweenable___get_tween_tag___statics_1_1_quick_tweena7f7c0899d56a9a14e3a951e7e044c0b4.html", null ]
-];

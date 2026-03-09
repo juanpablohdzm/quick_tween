@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_change_color_to___image___statics =
-[
-    [ "QuickTweenLatentLibrary_eventQuickTweenLatentChangeColorTo_Image_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_change_col32fdd1d3e5635fb881878be66d8f517a.html", null ]
-];

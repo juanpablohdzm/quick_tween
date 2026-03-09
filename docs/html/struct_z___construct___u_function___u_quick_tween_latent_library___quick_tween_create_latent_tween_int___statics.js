@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_create_latent_tween_int___statics =
-[
-    [ "QuickTweenLatentLibrary_eventQuickTweenCreateLatentTweenInt_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_create_latent_twe31671a64ce1a2606ddd44eb6d135f952.html", null ]
-];

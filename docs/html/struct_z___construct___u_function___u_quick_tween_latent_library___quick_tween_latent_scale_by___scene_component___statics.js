@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_scale_by___scene_component___statics =
-[
-    [ "QuickTweenLatentLibrary_eventQuickTweenLatentScaleBy_SceneComponent_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_latent_scale_by__72ffd0c8c9f318d6e39243147919c6c7.html", null ]
-];

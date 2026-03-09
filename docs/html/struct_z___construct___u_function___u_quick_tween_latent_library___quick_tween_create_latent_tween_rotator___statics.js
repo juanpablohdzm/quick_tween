@@ -1,4 +1,0 @@
-var struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_create_latent_tween_rotator___statics =
-[
-    [ "QuickTweenLatentLibrary_eventQuickTweenCreateLatentTweenRotator_Parms", "struct_z___construct___u_function___u_quick_tween_latent_library___quick_tween_create_latent_twe6063908ecc74a8e8d8ec312280943dab.html", null ]
-];
